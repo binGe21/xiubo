@@ -483,15 +483,19 @@ async function createWeapon(context) {
         bloom: 0,
         heat: 0,
         smoke: 0,
+        smokeTick: 0,
         adsLin: 0,
         adsE: 0,
         sprintT: 0,
         reloadW: 0,
+        rackW: 0,
         boltT: 9,
         boltLocked: !1,
         flashT: 0,
         idleT: 0,
         inspect: -1,
+        meleeCd: 0,
+        meleeT: 0,
       }));
     for (let Me of ["kZ", "kP", "kY", "kR", "swY", "swP", "jY", "jP", "bump"])
       ((k[Me].x = 0), (k[Me].v = 0));

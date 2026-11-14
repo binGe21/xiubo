@@ -502,7 +502,12 @@ async function createEnemies(context) {
       clear() {
         for (let T of d) T.active && T._deactivate();
         for (let T of v) T.active && T._deactivate();
-        ((t.length = 0), (n.length = 0), (h.tokens = 0));
+        ((t.length = 0),
+          (n.length = 0),
+          (h.tokens = 0),
+          (h.tokenT = -9),
+          (h.lastType = ""),
+          (h.wantT = { gull: -9, hound: -9 }));
         for (let T of g) T.on = !1;
         ((m.count = 0), M && M.light && (M.light.intensity = 0));
       },

@@ -204,10 +204,11 @@ async function startGame() {
   }
   await setBootProgress("等待第一缕光", 0.92);
   try {
-    await context.render.onLevel就绪();
+    // Method is English on the renderer; a prior localization typo called onLevel就绪.
+    await context.render.onLevelReady();
   } catch (h) {
     console.error(
-      "[boot] render.onLevel就绪 failed: " + ((h && h.stack) || h),
+      "[boot] render.onLevelReady failed: " + ((h && h.stack) || h),
     );
   }
   let averageFrameSeconds = 0;
