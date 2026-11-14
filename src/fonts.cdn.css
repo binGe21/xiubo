@@ -1,0 +1,2 @@
+/* Single-file build: Latin + CJK come from the Google Fonts <link> in index.html.
+   Keeps the HTML self-contained without shipping dozens of woff2 files. */

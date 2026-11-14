@@ -1,0 +1,115 @@
+// World dimensions, lighting, player dimensions and quality presets.
+import { Color, Vector3 } from "../vendor/three-r180.js";
+
+var WORLD_BOUNDS = {
+  min: new Vector3(-40, 0, -30),
+  max: new Vector3(40, 30, 30),
+  groundY: 0,
+  seaY: -1.6,
+  quayX: 30,
+};
+
+var SUN_LIGHT = {
+  dir: new Vector3(0.9, 0.24, 0.36).normalize(),
+  // Warmer sodium dusk than the original — rust port atmosphere.
+  color: new Color(1, 0.68, 0.38),
+  intensity: 9.6,
+};
+
+var SKY_COLORS = {
+  zenith: new Color(0.045, 0.075, 0.125),
+  horizon: new Color(0.98, 0.52, 0.26),
+  horizonAway: new Color(0.14, 0.2, 0.28),
+  fog: new Color(0.4, 0.46, 0.52),
+};
+
+var PLAYER_DIMENSIONS = {
+  eye: 1.68,
+  crouchEye: 1.05,
+  radius: 0.32,
+  height: 1.8,
+  fov: 74,
+  viewFov: 54,
+};
+
+var vf = 0;
+
+var zc = 1;
+
+var QUALITY_PRESETS = {
+  test: {
+    name: "test",
+    scale: 1,
+    msaa: 0,
+    shadow: 1024,
+    tex: 256,
+    volSteps: 10,
+    ao: !0,
+    planar: 0.5,
+    bloom: !0,
+    motionBlur: !1,
+    rain: 0.4,
+  },
+  low: {
+    name: "low",
+    scale: 0.72,
+    msaa: 0,
+    shadow: 2048,
+    tex: 512,
+    volSteps: 14,
+    ao: !1,
+    planar: 0,
+    bloom: !0,
+    motionBlur: !1,
+    rain: 0.62,
+  },
+  medium: {
+    name: "medium",
+    scale: 0.92,
+    msaa: 2,
+    shadow: 2048,
+    tex: 1024,
+    volSteps: 20,
+    ao: !0,
+    planar: 0.7,
+    bloom: !0,
+    motionBlur: !1,
+    rain: 0.95,
+  },
+  high: {
+    name: "high",
+    scale: 1,
+    msaa: 4,
+    shadow: 4096,
+    tex: 1536,
+    volSteps: 30,
+    ao: !0,
+    planar: 0.85,
+    bloom: !0,
+    motionBlur: !0,
+    rain: 1.08,
+  },
+  ultra: {
+    name: "ultra",
+    scale: 1,
+    msaa: 4,
+    shadow: 4096,
+    tex: 2048,
+    volSteps: 52,
+    ao: !0,
+    planar: 1,
+    bloom: !0,
+    motionBlur: !0,
+    rain: 1.22,
+  },
+};
+
+export {
+  SUN_LIGHT,
+  PLAYER_DIMENSIONS,
+  vf,
+  zc,
+  QUALITY_PRESETS,
+  WORLD_BOUNDS,
+  SKY_COLORS,
+};
