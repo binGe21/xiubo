@@ -4,3 +4,5 @@ dist-single/
 .DS_Store
 *.log
 .vite/
+playtest-out/**
+!playtest-out/README.md
