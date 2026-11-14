@@ -409,8 +409,8 @@ function createGameFlow(context) {
         r.mode === "drag"
           ? r.describeMode()
           : r.touch
-            ? ""
-            : "继续后将重新锁定鼠标。",
+            ? "触屏操控已启用 \u2014 点「继续」返回港区。"
+            : "继续后将重新锁定鼠标。Esc / P 可再次暂停。",
       ),
       o.show(!1),
       l.show("paused"),

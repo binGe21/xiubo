@@ -1,5 +1,6 @@
 // DOM menus, persisted settings and controls panels.
 import { PLAYER_DIMENSIONS, QUALITY_PRESETS } from "../core/config.js";
+import { chooseQuality } from "../core/quality.js";
 
 var SETTINGS_KEY = "xiubo.settings.v1";
 
@@ -11,9 +12,10 @@ var DEFAULT_SETTINGS = {
   fov: PLAYER_DIMENSIONS.fov,
 };
 
-var QUALITY_NAMES = ["low", "medium", "high", "ultra"];
+var QUALITY_NAMES = ["auto", "low", "medium", "high", "ultra"];
 
 var QUALITY_LABELS = {
+  auto: "自动",
   low: "低",
   medium: "中",
   high: "高",
@@ -28,8 +30,7 @@ function loadSettings() {
     let e = JSON.parse(localStorage.getItem(SETTINGS_KEY) || "null");
     e &&
       typeof e == "object" &&
-      ((e.quality === "auto" || QUALITY_NAMES.includes(e.quality)) &&
-        (i.quality = e.quality),
+      (QUALITY_NAMES.includes(e.quality) && (i.quality = e.quality),
       Number.isFinite(e.sens) && (i.sens = Math.min(3, Math.max(0.2, e.sens))),
       (i.invertY = !!e.invertY),
       Number.isFinite(e.volume) &&
@@ -93,7 +94,7 @@ function createMenus(context, e) {
           <button class="btn" data-act="settings">设置</button>
           <button class="btn m-only-narrow" data-act="controls">操作</button>
         </div>
-        <p class="m-note">雨幕已起。机械在钢箱之间游猎——切断闸口，杀到趸船。</p>
+        <p class="m-note">键盘鼠标或触屏均可 · 设置可调画质、灵敏度与音量 · Esc / P 暂停</p>
       </div>
       <aside class="m-legend" aria-label="操作速览">
         <div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</span><span><kbd>鼠标</kbd> 视角</span><span><kbd>左键</kbd> 开火</span><span><kbd>右键</kbd> 开镜</span><span><kbd>R</kbd> 换弹</span></div>
@@ -117,6 +118,7 @@ function createMenus(context, e) {
     <section class="m-screen m-card m-dead" data-s="dead" aria-label="信号中断">
       <div class="m-k">突击手倒地</div>
       <h2 class="m-h">信号中断</h2>
+      <p class="m-line">港区未静。重整装具，再次突入切断闸口。</p>
       <dl class="m-stats"><div><dt>存活时间</dt><dd data-f="dead-time">00:00</dd></div><div><dt>已切闸口</dt><dd data-f="dead-relays">0/3</dd></div></dl>
       <div class="m-actions col"><button class="btn primary" data-act="retry">再次突入</button></div>
     </section>
@@ -124,6 +126,7 @@ function createMenus(context, e) {
     <section class="m-screen m-card m-debrief" data-s="complete" aria-label="任务结算">
       <div class="m-k">深水八号 \xB7 任务结算</div>
       <h2 class="m-h">锈泊已暗</h2>
+      <p class="m-line">三处闸口已切断，趸船撤离成功。</p>
       <div class="m-rating"><span>评级</span><b data-f="rating">干净</b></div>
       <dl class="m-stats">
         <div><dt>用时</dt><dd data-f="time">00:00</dd></div>
@@ -144,12 +147,12 @@ function createMenus(context, e) {
       </header>
       <div class="panel-b" data-pane="settings">
         <div class="row"><label id="l-q">画质</label>
-          <div class="seg" role="group" aria-labelledby="l-q">${QUALITY_NAMES.map((U) => `<button data-q="${U}" aria-pressed="false">${QUALITY_LABELS[U]}</button>`).join("")}</div></div>
-        <div class="row"><label for="s-sens">鼠标灵敏度</label><div class="slider"><input id="s-sens" type="range" min="0.2" max="3" step="0.05"><output data-o="sens"></output></div></div>
-        <div class="row"><label id="l-inv">反转 Y 轴</label><button class="toggle" data-act="invert" aria-labelledby="l-inv" aria-pressed="false"><i></i><span>关</span></button></div>
+          <div class="seg" role="group" aria-labelledby="l-q">${QUALITY_NAMES.map((U) => `<button type="button" data-q="${U}" aria-pressed="false">${QUALITY_LABELS[U]}</button>`).join("")}</div></div>
+        <div class="row"><label for="s-sens">视角灵敏度</label><div class="slider"><input id="s-sens" type="range" min="0.2" max="3" step="0.05"><output data-o="sens"></output></div></div>
+        <div class="row"><label id="l-inv">反转 Y 轴</label><button type="button" class="toggle" data-act="invert" aria-labelledby="l-inv" aria-pressed="false"><i></i><span>关</span></button></div>
         <div class="row"><label for="s-vol">主音量</label><div class="slider"><input id="s-vol" type="range" min="0" max="100" step="1"><output data-o="vol"></output></div></div>
         <div class="row"><label for="s-fov">视野 FOV</label><div class="slider"><input id="s-fov" type="range" min="60" max="95" step="1"><output data-o="fov"></output></div></div>
-        <div class="row" data-row="fs"><label id="l-fs">显示</label><button class="btn small" data-act="fullscreen" aria-labelledby="l-fs fs-t"><span id="fs-t">进入全屏</span></button></div>
+        <div class="row" data-row="fs"><label id="l-fs">显示</label><button type="button" class="btn small" data-act="fullscreen" aria-labelledby="l-fs fs-t"><span id="fs-t">进入全屏</span></button></div>
         <p class="panel-note" data-f="qnote"></p>
       </div>
       <div class="panel-b" data-pane="controls" hidden>
@@ -199,7 +202,8 @@ function createMenus(context, e) {
           !context.params.q &&
           n.quality !== (context.quality && context.quality.name)))
     ) {
-      let T = QUALITY_PRESETS[n.quality];
+      let T =
+        n.quality === "auto" ? chooseQuality() : QUALITY_PRESETS[n.quality];
       if (T)
         try {
           context.render && context.render.setQuality
@@ -217,10 +221,10 @@ function createMenus(context, e) {
   function g() {
     let U =
       n.quality === "auto"
-        ? context.quality && context.quality.name
+        ? (context.quality && context.quality.name) || "high"
         : n.quality;
     for (let D of r(".seg button"))
-      D.setAttribute("aria-pressed", String(D.dataset.q === U));
+      D.setAttribute("aria-pressed", String(D.dataset.q === n.quality));
     ((u.value = n.sens),
       (h.value = Math.round(n.volume * 100)),
       (f.value = n.fov),

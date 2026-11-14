@@ -27,13 +27,24 @@
 | `player/player.js` | `createPlayer`、`PLAYER_MOVEMENT`：移动、跳跃、镜头、生命和后坐力 |
 | `combat/combat.js` | `createCombat`：射线命中、伤害和击杀统计 |
 | `weapons/` | `weapon.js` 管理状态/射击/装填；`geometry.js` 建模；`rig.js` 装配与动画 |
-| `enemies/` | `enemies.js` 管理生成/回收与 `ENEMY_TUNING`；`models.js` 建模；`walker.js`、`drone.js` 行为 |
+| `enemies/` | `enemies.js` 管理生成/回收与 `ENEMY_TUNING`；`models.js` 建模；`walker.js`、`drone.js` 行为（命名见下表） |
 | `effects/` | `effects.js` 创建/更新特效；`particles.js` 纹理/粒子；`pools.js` 复用池 |
 | `audio/` | `synthesis.js` 合成器；`music.js` 音乐；`library.js` 音库；`audio.js` 调度/混音 |
 | `ui/hud.js`、`ui/menus.js`、`ui.css` | HUD、字幕、菜单、设置、控件和布局 |
 | `game/flow.js` | `createGameFlow`、`GAME_FLOW`：三中继任务、波次、撤离、暂停、死亡和结算 |
 
 常见改动可直接从这些地方入手：移动速度在 `PLAYER_MOVEMENT`，画质在 `QUALITY_PRESETS`，任务节奏在 `GAME_FLOW`，键位在 `KEY_BINDINGS`，敌人参数在对应敌人模块中。
+
+### 敌人命名对照（易混）
+
+文件名与直觉对调：改敌人数值或行为时以 **type / 中文称呼** 为准，不要凭文件名猜测空中或地面单位。
+
+| 游戏内称呼 | 代码 `type` | 实现文件 | 调参常量 | 实际行为 |
+| --- | --- | --- | --- | --- |
+| 鸥 | `gull` | `enemies/walker.js` | `WALKER_TUNING` | 空中盘旋射击 |
+| 獒 | `hound` | `enemies/drone.js` | `DRONE_TUNING` | 地面奔跑扑击 |
+
+`enemies.js` 中映射为 `gull: WALKER_TUNING`、`hound: DRONE_TUNING`。物理重命名文件留给专用 PR，避免与行为改动混在一起。
 
 ## 依赖和运行上下文
 
@@ -97,9 +108,9 @@ Vite 将当前入口、ES 模块、CSS 和字体输出到 `dist/`。源文件已
 ```sh
 npm run check            # 检查所有模块的语法、导入/导出、循环依赖和归档完整性
 npm run build            # 构建生产版本
-npm run verify:refactor  # 可选：核对本次拆分与原始归档的代码等价性
+npm run verify:refactor  # 可选考古：核对拆分与原始归档的语句等价性（非日常门禁）
 ```
 
-`verify:refactor` 使用 `scripts/refactor-map.json` 将模块语句对应回原始归档，检查表达式、常量、着色器/模板、局部绑定及语句覆盖。只允许模块边界、作用域内改名和不改变逻辑的空 if 包裹块差异。它用于证明这次迁移，**后续有意修改游戏逻辑时预期会失败**，因此没有加入日常 `check`，也不需要为继续开发重写原始归档。
+`verify:refactor` 使用 `scripts/refactor-map.json` 将模块语句对应回原始归档，检查表达式、常量、着色器/模板、局部绑定及语句覆盖。只允许模块边界、作用域内改名和不改变逻辑的空 if 包裹块差异。它用于证明这次迁移，**后续有意修改游戏逻辑或氛围时预期会失败**（例如锈泊暖钠灯已使现行仓库失败），因此没有加入日常 `check`，也不需要为继续开发重写原始归档。失败时请对照差异，勿为了让脚本变绿而回退有意的锈泊改动。
 
 依赖版本锁定在 `package-lock.json`。完整恢复记录见 `archive/manifest.json`，字体下载来源及逐文件摘要见 `archive/font-manifest.json`。

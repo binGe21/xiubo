@@ -52,7 +52,7 @@ function createHUD(context) {
   let c = createElement(
       "div",
       "h-obj",
-      '<div class="h-k">任务</div><div class="h-obj-t"></div><div class="h-relays"><span>闸口</span><i></i><i></i><i></i><b>0/3</b></div>',
+      '<div class="h-k">任务</div><div class="h-obj-t"></div><div class="h-relays" aria-label="闸口进度"><span>闸口</span><i></i><i></i><i></i><b>0/3</b></div>',
     ),
     u = c.querySelector(".h-obj-t"),
     h = c.querySelector(".h-relays"),

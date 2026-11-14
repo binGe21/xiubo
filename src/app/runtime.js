@@ -238,6 +238,7 @@ async function startGame() {
     benchmark && enableBenchmark(context),
     await setBootProgress("就绪", 1),
     bootElement.classList.add("done"),
+    bootElement.setAttribute("aria-busy", "false"),
     setTimeout(() => {
       bootElement.hidden = !0;
     }, 700));

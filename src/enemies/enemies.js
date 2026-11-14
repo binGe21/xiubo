@@ -27,6 +27,7 @@ defineModuleExports(enemiesShowcaseModule, {
   showcase: () => showcaseEnemies,
 });
 
+// gull（鸥）→ walker.js 空中单位；hound（獒）→ drone.js 地面单位。文件名与直觉对调。
 var ENEMY_TUNING = {
   gull: WALKER_TUNING,
   hound: DRONE_TUNING,

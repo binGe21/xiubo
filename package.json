@@ -12,7 +12,9 @@
     "preview": "vite preview --host 127.0.0.1 --port 8743",
     "check": "node scripts/check-source.mjs && node scripts/verify-archive.mjs",
     "format": "prettier --write index.html \"src/**/*.js\" src/*.css vite.config.js scripts/*.mjs scripts/lib/*.mjs",
-    "verify:archive": "node scripts/verify-archive.mjs"
+    "verify:archive": "node scripts/verify-archive.mjs",
+    "verify:refactor": "node scripts/verify-refactor.mjs",
+    "playtest:shots": "node scripts/playtest-shots.mjs"
   },
   "engines": {
     "node": "^20.19.0 || >=22.12.0"
@@ -20,6 +22,7 @@
   "devDependencies": {
     "@babel/parser": "7.29.13",
     "@babel/traverse": "7.29.13",
+    "playwright": "1.57.0",
     "prettier": "3.9.10",
     "vite": "6.4.1",
     "vite-plugin-singlefile": "2.3.0"
