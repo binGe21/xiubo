@@ -16,6 +16,7 @@ var FALLBACKS = {
   backdrop: () => ({
     stub: !0,
     update: noop,
+    setExtractOffset: noop,
   }),
   fx: () => ({
     stub: !0,

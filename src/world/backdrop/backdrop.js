@@ -113,6 +113,7 @@ function Eb(i, { only: e = null, showcase: t = !1 } = {}) {
           0.05 * Math.sin(x * 0.9 + 0.4) + 0.016 * Math.sin(x * 2.1)),
         (a.hullGrp.rotation.z = 0.02 * Math.sin(x * 1.3 + 2))));
   }
+  let extractionPoint = new Vector3(30, 0, 20);
   return (
     y(0),
     {
@@ -127,7 +128,15 @@ function Eb(i, { only: e = null, showcase: t = !1 } = {}) {
       colliders: p,
       spreader: l ? l.spreader : null,
       boatBase: r,
-      extractionPoint: new Vector3(30, 0, 20),
+      extractionPoint,
+      // Keep barge visually moored at the berth extract ladder (layout.extractZ).
+      setExtractOffset(b) {
+        let m = Number.isFinite(b) ? b : 0,
+          A = 21 + m;
+        ((r.z = A),
+          a && a.root && ((a.root.position.z = A), (a.root.position.x = r.x)),
+          extractionPoint.set(30, 0, 20 + m));
+      },
       shipName: "锈潮号",
       craneId: "锈泊 08",
       stats: {

@@ -1510,6 +1510,24 @@ kbd {
   font-size: clamp(30px, 8.6vw, 44px) !important;
   white-space: nowrap;
 }
+.m-debrief[data-berth="b4"] {
+  border-top-color: #7ec8d4;
+}
+.m-debrief[data-berth="b4"] .m-h {
+  color: #9ad8e2;
+}
+.m-debrief[data-berth="b4"] .m-rating b {
+  color: #9ad8e2;
+}
+.m-debrief[data-berth="b6"] {
+  border-top-color: #e08a3c;
+}
+.m-debrief[data-berth="b6"] .m-h {
+  color: #f0a45a;
+}
+.m-debrief[data-berth="b6"] .m-rating b {
+  color: #f0a45a;
+}
 .m-line {
   font: 400 13px/1.55 var(--f-label);
   letter-spacing: var(--track-ui);
@@ -1779,6 +1797,18 @@ kbd {
   bottom: 2px;
   width: 3px;
   background: var(--signal);
+}
+.loc-card[data-berth="b4"] i {
+  background: #7ec8d4;
+}
+.loc-card[data-berth="b6"] i {
+  background: #e08a3c;
+}
+.loc-card[data-berth="b4"] b {
+  color: #d7f4f8;
+}
+.loc-card[data-berth="b6"] b {
+  color: #ffe0c2;
 }
 .loc-card b {
   display: block;
