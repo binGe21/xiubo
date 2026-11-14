@@ -101,8 +101,32 @@ function createInput(context) {
             P || W(),
             M && M.root.classList.toggle("on", P && f.touch)));
       },
-      setPrompt(P) {
-        M && M.btn.interact.classList.toggle("on", !!P);
+      setPrompt(P, V = 0) {
+        if (!M) return;
+        let Y = M.btn.interact,
+          L = !!P,
+          Z = Math.max(0, Math.min(1, +V || 0));
+        (Y.classList.toggle("on", L),
+          Y.classList.toggle("holding", L && Z > 0.02),
+          Y.classList.toggle("ready", L && Z >= 0.98));
+        let J = Y.querySelector(".t-hold-fg");
+        if (J) {
+          let oe = 2 * Math.PI * 18,
+            fe = (oe * (1 - Z)).toFixed(2);
+          J.getAttribute("stroke-dashoffset") !== fe &&
+            J.setAttribute("stroke-dashoffset", fe);
+        }
+        // Touch hold ticks — short buzz as boarding fills.
+        if (L && f.touch && Z > 0) {
+          let oe = Math.floor(Z * 5);
+          if (oe !== M._holdTick) {
+            M._holdTick = oe;
+            try {
+              navigator.vibrate && navigator.vibrate(oe >= 4 ? 32 : 12);
+            } catch {}
+            oe >= 1 && rumble(0.12 + Z * 0.25, 0.2 + Z * 0.4, 40 + Z * 50);
+          }
+        } else M._holdTick = -1;
       },
       onModeChange(P) {
         h.push(P);
@@ -298,7 +322,7 @@ function createInput(context) {
     let P = document.createElement("div");
     ((P.className = "touch"),
       (P.innerHTML =
-        '<div class="t-stick"><i class="t-ring"></i><i class="t-nub"></i></div><button type="button" class="t-btn t-fire" data-a="fire" aria-label="开火"><span>开火</span></button><button type="button" class="t-btn t-ads" data-a="ads" aria-label="开镜" aria-pressed="false"><span>开镜</span></button><button type="button" class="t-btn t-reload" data-a="reload" aria-label="换弹"><span>换弹</span></button><button type="button" class="t-btn t-jump" data-a="jump" aria-label="跳跃"><span>跳跃</span></button><button type="button" class="t-btn t-crouch" data-a="crouch" aria-label="蹲下"><span>蹲</span></button><button type="button" class="t-btn t-melee" data-a="melee" aria-label="近战"><span>近战</span></button><button type="button" class="t-btn t-interact" data-a="interact" aria-label="互动"><span>互动</span></button><button type="button" class="t-btn t-pause" data-a="pause" aria-label="暂停"><span>暂停</span></button>'),
+        '<div class="t-stick"><i class="t-ring"></i><i class="t-nub"></i></div><button type="button" class="t-btn t-fire" data-a="fire" aria-label="开火"><span>开火</span></button><button type="button" class="t-btn t-ads" data-a="ads" aria-label="开镜" aria-pressed="false"><span>开镜</span></button><button type="button" class="t-btn t-reload" data-a="reload" aria-label="换弹"><span>换弹</span></button><button type="button" class="t-btn t-jump" data-a="jump" aria-label="跳跃"><span>跳跃</span></button><button type="button" class="t-btn t-crouch" data-a="crouch" aria-label="蹲下"><span>蹲</span></button><button type="button" class="t-btn t-melee" data-a="melee" aria-label="近战"><span>近战</span></button><button type="button" class="t-btn t-interact" data-a="interact" aria-label="互动"><svg class="t-hold" viewBox="-22 -22 44 44" aria-hidden="true"><circle class="t-hold-bg" r="18"/><circle class="t-hold-fg" r="18" stroke-dasharray="113.1" stroke-dashoffset="113.1" transform="rotate(-90)"/></svg><span>互动</span></button><button type="button" class="t-btn t-pause" data-a="pause" aria-label="暂停"><span>暂停</span></button>'),
       t.appendChild(P));
     let V = (L) => P.querySelector(L),
       Y = {

@@ -637,6 +637,13 @@ body {
 .h-prompt.busy .h-plabel {
   color: var(--signal);
 }
+.h-prompt.almost .fg {
+  stroke: var(--signal-hot);
+  stroke-width: 4;
+}
+.h-prompt.almost .h-plabel {
+  border-left-color: var(--signal-hot);
+}
 
 /* kill feed + transient message */
 .h-feed {
@@ -1033,9 +1040,58 @@ body {
   color: var(--signal);
   display: none;
   background: rgba(11, 13, 15, 0.62);
+  overflow: visible;
 }
 .t-interact.on {
   display: block;
+}
+.t-interact .t-hold {
+  position: absolute;
+  inset: -6px;
+  width: auto;
+  height: auto;
+  pointer-events: none;
+}
+.t-interact .t-hold-bg,
+.t-interact .t-hold-fg {
+  fill: none;
+  stroke-width: 3.2;
+}
+.t-interact .t-hold-bg {
+  stroke: rgba(232, 228, 218, 0.22);
+}
+.t-interact .t-hold-fg {
+  stroke: var(--signal);
+  transition: stroke 0.12s;
+}
+.t-interact.holding {
+  color: var(--signal-hot);
+  border-color: var(--signal-hot);
+  box-shadow: 0 0 0 2px rgba(255, 179, 71, 0.28);
+  transform: scale(1.06);
+}
+.t-interact.holding .t-hold-fg {
+  stroke: var(--signal-hot);
+  stroke-width: 4;
+}
+.t-interact.ready {
+  background: rgba(255, 179, 71, 0.22);
+}
+body:has(.hud[data-berth="b4"]) .t-interact.holding {
+  border-color: #7ec8d4;
+  color: #9ad8e2;
+  box-shadow: 0 0 0 2px rgba(126, 200, 212, 0.35);
+}
+body:has(.hud[data-berth="b4"]) .t-interact.holding .t-hold-fg {
+  stroke: #7ec8d4;
+}
+body:has(.hud[data-berth="b6"]) .t-interact.holding {
+  border-color: #e08a3c;
+  color: #f0a45a;
+  box-shadow: 0 0 0 2px rgba(224, 138, 60, 0.35);
+}
+body:has(.hud[data-berth="b6"]) .t-interact.holding .t-hold-fg {
+  stroke: #e08a3c;
 }
 .t-pause {
   width: var(--touch-min);

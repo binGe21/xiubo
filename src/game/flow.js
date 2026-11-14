@@ -709,12 +709,16 @@ function createGameFlow(context) {
   (context.events.on("enemy:alert", () => {
     if (((c.alertT = 10), _.state !== "playing")) return;
     if (!c.contactSaid) {
-      ((c.contactSaid = !0), o.radio && o.radio(_l.contact, 3.2));
+      // Contact wins the channel — drop tip so rushers don't hear stacked lines.
+      ((c.contactSaid = !0),
+        (c.tipSaid = !0),
+        o.clearRadioTag && o.clearRadioTag("tip"),
+        o.radio && o.radio(_l.contact, 3.2, "contact"));
       return;
     }
     !c.pursuitSaid &&
       c.cut >= 1 &&
-      ((c.pursuitSaid = !0), o.radio && o.radio(_l.pursuit, 3));
+      ((c.pursuitSaid = !0), o.radio && o.radio(_l.pursuit, 3, "pursuit"));
   }),
     context.events.on("player:hit", () => {
       c.alertT = Math.max(c.alertT, 8);
@@ -971,9 +975,10 @@ function createGameFlow(context) {
             ? ((y -= P), y <= 0 && ((y = 2), o.message(r.describeMode(), 2.6)))
             : (y = 0.8),
           !c.tipSaid &&
-            c.time > 6.5 &&
+            c.time > 11.5 &&
             !c.contactSaid &&
-            ((c.tipSaid = !0), o.radio && o.radio(_l.tip, 3.8)),
+            c.alertT <= 0 &&
+            ((c.tipSaid = !0), o.radio && o.radio(_l.tip, 3.8, "tip")),
           !c.lowSaid &&
             n.alive &&
             n.health < 30 &&
