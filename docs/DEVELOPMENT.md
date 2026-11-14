@@ -31,9 +31,10 @@
 | `effects/` | `effects.js` 创建/更新特效；`particles.js` 纹理/粒子；`pools.js` 复用池 |
 | `audio/` | `synthesis.js` 合成器；`music.js` 音乐；`library.js` 音库；`audio.js` 调度/混音 |
 | `ui/hud.js`、`ui/menus.js`、`ui.css` | HUD、字幕、菜单、设置、控件和布局 |
-| `game/flow.js` | `createGameFlow`、`GAME_FLOW`：三中继任务、波次、撤离、暂停、死亡和结算 |
+| `game/flow.js` | `createGameFlow`、`GAME_FLOW`：闸口任务、波次、撤离、暂停、死亡和结算 |
+| `game/missions.js` | `MISSIONS` / `resolveMission`：三泊位短任务（b8 / b4 / b6）文案、出生点、闸口顺序、战斗压迫 |
 
-常见改动可直接从这些地方入手：移动速度在 `PLAYER_MOVEMENT`，画质在 `QUALITY_PRESETS`，任务节奏在 `GAME_FLOW`，键位在 `KEY_BINDINGS`，敌人参数在对应敌人模块中。
+常见改动可直接从这些地方入手：移动速度在 `PLAYER_MOVEMENT`，画质在 `QUALITY_PRESETS`，任务节奏在 `GAME_FLOW` / `missions.js`，键位在 `KEY_BINDINGS`，敌人参数在对应敌人模块中。
 
 ### 敌人命名对照（易混）
 
@@ -94,6 +95,7 @@ window.__G;        // 运行中的游戏上下文
 | `/?q=low` | 低画质 |
 | `/?q=high` | 高画质 |
 | `/?seed=4207` | 固定程序化随机种子 |
+| `/?mission=b8` / `b4` / `b6` | 泊位任务：深水八号 / 冷藏四号 / 机修六号 |
 | `/?autostart=1` | 跳过标题/入场，直接进入游戏 |
 | `/?noaudio=1` | 禁用声音模块 |
 | `/?bench=1` | 原版巡游基准和帧时间面板 |
