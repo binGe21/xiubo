@@ -3,46 +3,47 @@ import { Euler, Vector3 } from "../vendor/three-r180.js";
 import { PLAYER_DIMENSIONS, WORLD_BOUNDS } from "../core/config.js";
 import { clamp, damp, lerp, saturate, smoothstep } from "../core/math.js";
 
+// Cohesive 锈泊 gamefeel: weighty acceleration, readable kick, smooth stance FOV.
 var PLAYER_MOVEMENT = {
-  walk: 3.95,
-  sprint: 6.75,
-  crouch: 2.05,
-  ads: 2.55,
-  accelGround: 38,
-  decelGround: 28,
-  accelAir: 10,
+  walk: 4.05,
+  sprint: 7.05,
+  crouch: 2,
+  ads: 2.45,
+  accelGround: 32,
+  decelGround: 24,
+  accelAir: 9,
   gravity: 21,
   jumpApex: 1.05,
   coyote: 0.14,
   jumpBuffer: 0.14,
   standHeight: PLAYER_DIMENSIONS.height,
   crouchHeight: 1.15,
-  eyeRate: 12,
+  eyeRate: 9,
   stride: {
     walk: 1.58,
-    sprint: 2.15,
-    crouch: 1.08,
+    sprint: 2.22,
+    crouch: 1.05,
   },
-  bobY: 0.022,
-  bobX: 0.012,
-  bobSprint: 1.85,
-  bobAds: 0.14,
-  rollStrafe: 0.018,
-  landDip: 0.34,
-  landDipMax: 0.18,
-  fovSprint: 7,
-  fovAds: 48,
-  adsLook: 0.52,
+  bobY: 0.024,
+  bobX: 0.013,
+  bobSprint: 1.95,
+  bobAds: 0.12,
+  rollStrafe: 0.02,
+  landDip: 0.38,
+  landDipMax: 0.19,
+  fovSprint: 9,
+  fovAds: 46,
+  adsLook: 0.48,
   regenDelay: 3.6,
   regenRate: 28,
-  recoilKeep: 0.28,
-  recoilApply: 42,
-  recoilRecover: 8.6,
-  recoilHold: 0.07,
-  shakeDecay: 1.85,
-  shakePitch: 0.028,
+  recoilKeep: 0.34,
+  recoilApply: 48,
+  recoilRecover: 10.2,
+  recoilHold: 0.08,
+  shakeDecay: 2.05,
+  shakePitch: 0.03,
   shakeYaw: 0.028,
-  shakeRoll: 0.04,
+  shakeRoll: 0.042,
   pitchLimit: 1.5,
 };
 
@@ -509,7 +510,11 @@ function createPlayer(context) {
         PLAYER_MOVEMENT.fovAds,
         C.ads,
       );
-      ((H = F > 0 ? damp(H, Z, C.ads > 0.02 && C.ads < 0.98 ? 30 : 7, F) : Z),
+      // ADS snaps in; sprint FOV eases so stance changes feel continuous.
+      ((H =
+          F > 0
+            ? damp(H, Z, C.ads > 0.02 && C.ads < 0.98 ? 26 : C.sprinting ? 6 : 8, F)
+            : Z),
         Math.abs(e.fov - H) > 0.01 &&
           ((e.fov = H), e.updateProjectionMatrix()));
     }

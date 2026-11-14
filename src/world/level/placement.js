@@ -512,7 +512,7 @@ function cb(i) {
     i.label("趸船站 8", 0.2, u - 1.3, 0.006, h - 1.4, "y+", {
       color: "yellow",
       font: "stencil",
-      distress: 0.4,
+      distress: 0.18,
     });
   }
   let _ = new TorusGeometry(0.4, 0.16, 8, 16);
@@ -1315,7 +1315,7 @@ function hR(i) {
     i.label("八号泊位 · 机修", 0.55, 4.2, 4.3, no.Z1 + 0.064, "z+", {
       color: "white",
       font: "stencil",
-      distress: 0.45,
+      distress: 0.2,
     }),
     i.decal("berth4", 3.2, -12, 3.4, no.Z1 + 0.064, "z+"),
     i.decal("rust_run", 1, 9, 3.2, no.Z1 + 0.064, "z+"),

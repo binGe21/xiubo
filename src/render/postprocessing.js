@@ -405,13 +405,13 @@ void main(){
 
   // ---- grade (display-linear) ----
   float l = luma(col);
-  // split tone: teal shadows, warm highlights
-  vec3 sh = vec3(0.80, 1.01, 1.13), hi = vec3(1.07, 1.0, 0.90);
+  // 锈泊 sodium dusk: cool-steel shadows, sodium-orange highlights
+  vec3 sh = vec3(0.84, 0.97, 1.08), hi = vec3(1.14, 0.98, 0.78);
   col *= mix(sh, hi, smoothstep(0.03, 0.55, l));
   // gentle S-curve
-  col = mix(col, col * col * (3.0 - 2.0 * col), 0.22);
-  // lifted, slightly teal blacks
-  col = col * 0.988 + vec3(0.006, 0.0085, 0.011);
+  col = mix(col, col * col * (3.0 - 2.0 * col), 0.24);
+  // lifted blacks with a faint warm lift (less teal lift than Saltline)
+  col = col * 0.986 + vec3(0.009, 0.0075, 0.008);
   // saturation (gameplay driven)
   float sat = uSaturation * (1.0 - 0.65 * uLowHealth) * (1.0 - 0.5 * uDamage);
   l = luma(col);
@@ -528,32 +528,32 @@ ${fe}`,
       },
     }),
     g = {
-      volSunScale: 0.85,
-      volAmbient: 0.2,
-      volSigma: 0.0034,
-      volMaxDist: 170,
-      volFarHaze: 0.48,
-      volInteriorDust: 6,
+      volSunScale: 0.92,
+      volAmbient: 0.24,
+      volSigma: 0.0037,
+      volMaxDist: 165,
+      volFarHaze: 0.58,
+      volInteriorDust: 6.4,
       aoRadius: 0.9,
-      aoIntensity: 1.6,
+      aoIntensity: 1.65,
       aoStrength: 0.95,
-      bloom: 0.078,
-      bloomMix: 0.7,
-      dirt: 0.12,
-      streak: 0.038,
-      streakThreshold: 2.05,
-      flare: 0.18,
-      key: 0.125,
-      minExposure: 0.58,
-      maxExposure: 2.05,
-      adaptTau: 1.35,
-      agxMix: 0.22,
-      ca: 0.00145,
-      vignette: 0.36,
-      grain: 0.026,
-      sharpen: 0.34,
-      lookPower: 1.22,
-      lookSat: 1.3,
+      bloom: 0.095,
+      bloomMix: 0.72,
+      dirt: 0.14,
+      streak: 0.042,
+      streakThreshold: 1.95,
+      flare: 0.2,
+      key: 0.118,
+      minExposure: 0.56,
+      maxExposure: 2.0,
+      adaptTau: 1.45,
+      agxMix: 0.2,
+      ca: 0.0015,
+      vignette: 0.4,
+      grain: 0.03,
+      sharpen: 0.32,
+      lookPower: 1.18,
+      lookSat: 1.22,
     },
     x = !1;
   try {

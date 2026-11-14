@@ -421,14 +421,14 @@ function Fb(i, e, t) {
 
 function Nb(i, e) {
   let t = i.rng && i.rng.fork ? i.rng.fork() : Math.random,
-    n = Math.max(0.18, (i.quality.rain || 0.5) * 1.08),
+    n = Math.max(0.2, (i.quality.rain || 0.5) * 1.16),
     s = Math.round(1e4 * n),
     o = 280,
     r = Math.round(980 * n),
     a = [0, 1, 2, 3].map(() => new Vector3()),
     l = [0, 1, 2, 3].map(() => new Vector3()),
-    c = SUN_LIGHT.color.clone().multiplyScalar(1.9),
-    u = SKY_COLORS.fog.clone().multiplyScalar(0.15),
+    c = SUN_LIGHT.color.clone().multiplyScalar(2.2),
+    u = SKY_COLORS.fog.clone().multiplyScalar(0.18),
     h = {
       uTime: {
         value: 0,
@@ -465,7 +465,7 @@ function Nb(i, e) {
         value: 0,
       },
       uVel: {
-        value: new Vector3(-2.6, -9.4, 1.1),
+        value: new Vector3(-3.1, -10.2, 1.35),
       },
       uBox: {
         value: new Vector3(26, 15, 26),
@@ -511,8 +511,9 @@ function Nb(i, e) {
     (y.renderOrder = 890),
     (y.name = "rainSplash"),
     (y.matrixAutoUpdate = !1));
-  let b = 0.6,
-    m = 0.6,
+  // Steady harbour rain — denser than the Saltline baseline.
+  let b = 0.78,
+    m = 0.78,
     A = 22 + t() * 25,
     _ = 0,
     M = new Vector2();

@@ -822,7 +822,7 @@ function z1(i, e, t = {}) {
   let me = i.mats.label("锈泊 08", {
       color: "white",
       font: "stencil",
-      distress: 0.35,
+      distress: 0.16,
     }),
     ee = Math.max(1, me.aspect || 6);
   {
