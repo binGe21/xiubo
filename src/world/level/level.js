@@ -140,29 +140,31 @@ async function createLevel(context) {
       pos: mt(-32, 0, 6),
       yaw: -ts,
     },
-    v = [
-      {
+    // Physical relay nodes (shared map). Mission overlays reorder / relabel these.
+    relayNodes = {
+      relay_a: {
         id: "relay_a",
         label: "闸口甲 \u2014 堆场",
         zone: "yard",
         pos: mt(1.5, 0, 7.5),
         object: o,
       },
-      {
+      relay_b: {
         id: "relay_b",
         label: "闸口乙 \u2014 仓库",
         zone: "shed",
         pos: mt(n.relayPos.x, no.FLOOR, n.relayPos.z),
         object: r,
       },
-      {
+      relay_c: {
         id: "relay_c",
         label: "闸口丙 \u2014 码头",
         zone: "quay",
         pos: mt(s.relayPos.x, 0, s.relayPos.z),
         object: a,
       },
-    ],
+    },
+    v = [],
     g = (z, H, O) => ({
       pos: mt(z, 0, H),
       zone: O,
@@ -369,47 +371,94 @@ async function createLevel(context) {
     y.forEach((z) => {
       z.type === "ground" && E(z.pos);
     }));
-  let w = !1;
-  return {
-    root: e,
-    playerStart: d,
-    objectives: v,
-    extraction: {
-      pos: s.extraction.clone(),
-      radius: 2.5,
-    },
-    enemySpawns: y,
-    zones: b,
-    interiorBoxes: m,
-    cinematicPath: A,
-    coverPoints: _,
-    skylights: n.skylights,
-    shedLights: n.lights,
-    vantage: {
-      stairsFoot: mt(-2.2, 0, 12.4),
-      roof: mt(13.5, 2.59, 12.4),
-    },
-    stats: {
-      labelsAtlased: h.count,
-      containers: t.placed.filter((z) => z.name.startsWith("container")).length,
-      props: t.placed.length,
-      tris: Math.round(p),
-      meshes: f.children.length + pR(t.dynRoot),
-    },
-    placed: t.placed,
-    groundSurfaceAt(z, H) {
-      return t.isMetal(z, H) ? "metal" : "concrete";
-    },
-    update(z) {
-      (n.update(z), h.update(z));
-      for (let H = 0; H < t.updaters.length; H++)
-        try {
-          t.updaters[H](z);
-        } catch (O) {
-          w || ((w = !0), console.error("[level] prop update threw", O));
+  let w = !1,
+    S = {
+      root: e,
+      playerStart: d,
+      objectives: v,
+      missionId: "b8",
+      relayNodes: relayNodes,
+      extraction: {
+        pos: s.extraction.clone(),
+        radius: 2.5,
+        label: "趸船",
+      },
+      enemySpawns: y,
+      zones: b,
+      interiorBoxes: m,
+      cinematicPath: A,
+      coverPoints: _,
+      skylights: n.skylights,
+      shedLights: n.lights,
+      vantage: {
+        stairsFoot: mt(-2.2, 0, 12.4),
+        roof: mt(13.5, 2.59, 12.4),
+      },
+      stats: {
+        labelsAtlased: h.count,
+        containers: t.placed.filter((z) => z.name.startsWith("container"))
+          .length,
+        props: t.placed.length,
+        tris: Math.round(p),
+        meshes: f.children.length + pR(t.dynRoot),
+      },
+      placed: t.placed,
+      // Mission object from game/missions.js — keeps world/ free of game imports.
+      applyMission(H) {
+        if (!H || !H.id) return null;
+        S.missionId = H.id;
+        let O = H.playerStart;
+        O &&
+          O.pos &&
+          (S.playerStart.pos.copy(O.pos), (S.playerStart.yaw = O.yaw || 0));
+        let q = (H.objectiveOrder || Object.keys(relayNodes))
+          .map((U) => relayNodes[U])
+          .filter(Boolean)
+          .map((U) => {
+            let T = H.labels && H.labels[U.id];
+            return T ? ((U.label = T), U) : U;
+          });
+        ((S.objectives.length = 0),
+          S.objectives.push(...q),
+          (S.extraction.label = H.extractLabel || "趸船"));
+        // Nodes not on this briefing read as already dark — avoids false interactables.
+        for (let U of Object.values(relayNodes)) {
+          let T = U.object && U.object.userData;
+          if (!(T && typeof T.setState == "function")) continue;
+          try {
+            T.setState(q.includes(U) ? "live" : "cut");
+          } catch (D) {
+            console.error("[level] relay setState threw", D);
+          }
         }
+        return H;
+      },
+      groundSurfaceAt(z, H) {
+        return t.isMetal(z, H) ? "metal" : "concrete";
+      },
+      update(z) {
+        (n.update(z), h.update(z));
+        for (let H = 0; H < t.updaters.length; H++)
+          try {
+            t.updaters[H](z);
+          } catch (O) {
+            w || ((w = !0), console.error("[level] prop update threw", O));
+          }
+      },
+    };
+  // Default briefing until flow applies the selected mission.
+  return (S.applyMission({
+    id: "b8",
+    playerStart: d,
+    objectiveOrder: ["relay_a", "relay_b", "relay_c"],
+    labels: {
+      relay_a: "闸口甲 \u2014 堆场",
+      relay_b: "闸口乙 \u2014 仓库",
+      relay_c: "闸口丙 \u2014 码头",
     },
-  };
+    extractLabel: "趸船",
+  }),
+  S);
 }
 
 function dR(i, e) {

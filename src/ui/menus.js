@@ -1,6 +1,7 @@
 // DOM menus, persisted settings and controls panels.
 import { PLAYER_DIMENSIONS, QUALITY_PRESETS } from "../core/config.js";
 import { chooseQuality } from "../core/quality.js";
+import { listMissions, resolveMission } from "../game/missions.js";
 
 var SETTINGS_KEY = "xiubo.settings.v1";
 
@@ -10,6 +11,7 @@ var DEFAULT_SETTINGS = {
   invertY: !1,
   volume: 0.88,
   fov: PLAYER_DIMENSIONS.fov,
+  mission: "b8",
 };
 
 var QUALITY_NAMES = ["auto", "low", "medium", "high", "ultra"];
@@ -35,7 +37,8 @@ function loadSettings() {
       (i.invertY = !!e.invertY),
       Number.isFinite(e.volume) &&
         (i.volume = Math.min(1, Math.max(0, e.volume))),
-      Number.isFinite(e.fov) && (i.fov = Math.min(95, Math.max(60, e.fov))));
+      Number.isFinite(e.fov) && (i.fov = Math.min(95, Math.max(60, e.fov))),
+      e.mission && resolveMission(e.mission).id === e.mission && (i.mission = e.mission));
   } catch {}
   return i;
 }
@@ -86,15 +89,23 @@ function createMenus(context, e) {
 
     <section class="m-screen m-title" data-s="title" aria-label="锈泊">
       <div class="m-title-main">
-        <div class="m-eyebrow"><span class="m-tag">B8</span><span>港区突入编制</span><span class="m-dim">锈泊港区 \xB7 深水八号泊位 \xB7 05:42</span></div>
+        <div class="m-eyebrow"><span class="m-tag" data-f="mission-tag">B8</span><span data-f="mission-role">港区突入编制</span><span class="m-dim" data-f="mission-berth">锈泊港区 \xB7 深水八号泊位 \xB7 05:42</span></div>
         <h1 class="m-word">锈泊</h1>
-        <p class="m-premise">闸控失守，港区沦为机器的领地。切断堆场、仓库、码头三处数据闸口，在雨幕与钢箱之间杀到趸船。</p>
+        <p class="m-premise" data-f="mission-premise">闸控失守，港区沦为机器的领地。切断堆场、仓库、码头三处数据闸口，在雨幕与钢箱之间杀到趸船。</p>
+        <div class="m-missions" role="radiogroup" aria-label="选择泊位任务">
+          ${listMissions()
+            .map(
+              (U) =>
+                `<button type="button" class="m-mission" role="radio" data-mission="${U.id}" aria-checked="false"><b>${U.tag}</b><span>${U.name}</span><i>${U.clock}</i></button>`,
+            )
+            .join("")}
+        </div>
         <div class="m-actions">
           <button class="btn primary" data-act="deploy">开始突入</button>
           <button class="btn" data-act="settings">设置</button>
           <button class="btn m-only-narrow" data-act="controls">操作</button>
         </div>
-        <p class="m-note">键盘鼠标或触屏均可 · 设置可调画质、灵敏度与音量 · Esc / P 暂停</p>
+        <p class="m-note">三泊位短任务 · 共享港区 · 键盘鼠标或触屏均可 · Esc / P 暂停</p>
       </div>
       <aside class="m-legend" aria-label="操作速览">
         <div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</span><span><kbd>鼠标</kbd> 视角</span><span><kbd>左键</kbd> 开火</span><span><kbd>右键</kbd> 开镜</span><span><kbd>R</kbd> 换弹</span></div>
@@ -124,9 +135,9 @@ function createMenus(context, e) {
     </section>
 
     <section class="m-screen m-card m-debrief" data-s="complete" aria-label="任务结算">
-      <div class="m-k">深水八号 \xB7 任务结算</div>
-      <h2 class="m-h">锈泊已暗</h2>
-      <p class="m-line">三处闸口已切断，趸船撤离成功。</p>
+      <div class="m-k" data-f="debrief-k">深水八号 \xB7 任务结算</div>
+      <h2 class="m-h" data-f="debrief-h">锈泊已暗</h2>
+      <p class="m-line" data-f="debrief-line">三处闸口已切断，趸船撤离成功。</p>
       <div class="m-rating"><span>评级</span><b data-f="rating">干净</b></div>
       <dl class="m-stats">
         <div><dt>用时</dt><dd data-f="time">00:00</dd></div>
@@ -164,7 +175,7 @@ function createMenus(context, e) {
       </div>
     </div>
 
-    <div class="loc-card" aria-hidden="true"><i></i><b>锈泊港区 \xB7 深水八号泊位 \xB7 05:42</b><span>港区突入编制 \u2014 单人突击，无后援</span></div>
+    <div class="loc-card" aria-hidden="true"><i></i><b data-f="loc-berth">锈泊港区 \xB7 深水八号泊位 \xB7 05:42</b><span data-f="loc-sub">港区突入编制 \u2014 单人突击，无后援</span></div>
   `),
     t.appendChild(s));
   let o = (U) => s.querySelector(U),
@@ -177,6 +188,22 @@ function createMenus(context, e) {
     f = o("#s-fov"),
     p = "none",
     d = null;
+  function setMissionBriefing(U) {
+    let T = resolveMission(U && (U.id || U));
+    ((n.mission = T.id),
+      (c("mission-tag").textContent = T.tag),
+      (c("mission-role").textContent = T.role),
+      (c("mission-berth").textContent = T.berthLine),
+      (c("mission-premise").textContent = T.premise),
+      (c("loc-berth").textContent = T.berthLine),
+      (c("loc-sub").textContent = T.locSub),
+      (c("debrief-k").textContent = T.debriefK),
+      (c("debrief-h").textContent = T.debriefH),
+      (c("debrief-line").textContent = T.debriefLine));
+    for (let D of r(".m-mission"))
+      D.setAttribute("aria-checked", String(D.dataset.mission === T.id));
+    saveSettings(n);
+  }
   function v(U) {
     if (
       ((!U || U === "sens") && (context.input.sensitivity = n.sens),
@@ -320,6 +347,12 @@ function createMenus(context, e) {
       ((n.quality = T.dataset.q), v("quality"), g(), saveSettings(n));
       return;
     }
+    if (T.dataset.mission) {
+      e.selectMission
+        ? e.selectMission(T.dataset.mission)
+        : setMissionBriefing(T.dataset.mission);
+      return;
+    }
     if (T.dataset.tab) {
       z(T.dataset.tab);
       return;
@@ -381,6 +414,7 @@ function createMenus(context, e) {
         return !a.hidden;
       },
       closePanel: S,
+      setMissionBriefing: setMissionBriefing,
       show(U) {
         U !== p &&
           ((p = U),
@@ -413,7 +447,13 @@ function createMenus(context, e) {
       },
       applySettings: v,
     };
-  return (g(), q);
+  return (
+    setMissionBriefing(
+      (context.params && context.params.mission) || n.mission || "b8",
+    ),
+    g(),
+    q
+  );
 }
 
 export {

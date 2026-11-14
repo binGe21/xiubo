@@ -1171,6 +1171,65 @@ body {
   height: 3px;
   background: linear-gradient(90deg, var(--rust), var(--signal));
 }
+.m-missions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: clamp(14px, 2.4vh, 22px);
+  max-width: 42em;
+}
+.m-mission {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 2px;
+  align-items: baseline;
+  text-align: left;
+  min-height: 52px;
+  padding: 8px 10px 7px;
+  color: var(--bone);
+  background: rgba(11, 13, 15, 0.48);
+  border: 1px solid rgba(232, 228, 218, 0.28);
+  border-radius: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    color 0.12s;
+}
+.m-mission b {
+  grid-row: 1 / span 2;
+  align-self: center;
+  font: 900 15px/1 var(--f-display);
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  background: rgba(232, 228, 218, 0.78);
+  padding: 5px 6px 4px;
+}
+.m-mission span {
+  font: 600 14px/1.2 var(--f-label);
+  letter-spacing: 0.04em;
+}
+.m-mission i {
+  font: 500 11px/1.2 var(--f-label);
+  letter-spacing: var(--track-label);
+  color: var(--steel);
+  font-style: normal;
+}
+.m-mission:hover {
+  border-color: rgba(232, 228, 218, 0.7);
+  background: rgba(232, 228, 218, 0.1);
+}
+.m-mission[aria-checked="true"] {
+  border-color: var(--signal);
+  background: rgba(255, 179, 71, 0.12);
+}
+.m-mission[aria-checked="true"] b {
+  background: var(--signal);
+}
 .m-actions {
   display: flex;
   flex-wrap: wrap;
@@ -1655,6 +1714,10 @@ kbd {
 
 /* ---- narrow screens (phones, portrait) ---- */
 @media (max-width: 760px) {
+  .m-missions {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
   .h-obj {
     top: calc(78px + var(--sat));
     max-width: 62vw;

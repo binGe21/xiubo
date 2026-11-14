@@ -32,6 +32,7 @@ function printHelp() {
 Options:
   --seed=<n>          Fixed RNG seed (default ${DEFAULT_SEED})
   --q=<preset>        Quality preset (default ${DEFAULT_QUALITY})
+  --mission=<id>      Mission berth: b8 | b4 | b6 (optional)
   --label=<name>      Output folder under playtest-out/ (default manual)
   --out=<dir>         Absolute or repo-relative output dir (overrides --label)
   --shots=<list>      Comma list: title,settings,hud,paused (default all)
@@ -53,6 +54,7 @@ function parseArgs(argv) {
   const opts = {
     seed: DEFAULT_SEED,
     q: DEFAULT_QUALITY,
+    mission: "",
     label: "manual",
     out: null,
     shots: [...DEFAULT_SHOTS],
@@ -88,6 +90,9 @@ function parseArgs(argv) {
         break;
       case "q":
         opts.q = value;
+        break;
+      case "mission":
+        opts.mission = String(value || "").toLowerCase();
         break;
       case "label":
         opts.label = value.replace(/[/\\]/g, "-") || "manual";
@@ -129,6 +134,7 @@ function buildQuery(opts, extra = {}) {
     noaudio: "1",
     ...extra,
   });
+  if (opts.mission) params.set("mission", opts.mission);
   return `/?${params.toString()}`;
 }
 
@@ -439,6 +445,7 @@ async function main() {
     const manifest = {
       seed: opts.seed,
       q: opts.q,
+      mission: opts.mission || null,
       label: opts.label,
       baseUrl,
       viewports: opts.viewports,

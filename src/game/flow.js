@@ -2,6 +2,7 @@
 import { Vector3 } from "../vendor/three-r180.js";
 import { clamp, damp, saturate, smoothstep } from "../core/math.js";
 import { createMenus } from "../ui/menus.js";
+import { resolveMission } from "./missions.js";
 
 var GAME_FLOW = {
   introSeconds: 3.8,
@@ -9,6 +10,7 @@ var GAME_FLOW = {
   interactRange: 2.4,
   interactFacing: 0.42,
   cutSeconds: 2.15,
+  // Baseline combat — overwritten per selected mission.
   patrol: {
     gull: 2,
     hound: 1,
@@ -48,21 +50,6 @@ var jC = [
   "西北",
 ];
 
-var _l = {
-  intro:
-    "突击手，这里是指挥部。深水八号泊位已失守，「港主」接管闸控。切断三处上行链路——堆场、仓库、码头。雨会盖住脚步，集装箱是你的掩护。",
-  tip: "提示：右键开镜压散布；开火前听清蓄力尖啸再侧步。按住 E 切断闸口。鸥怕遮挡，獒会扑近。",
-  contact: "它发现你了。鸥在天上飞，獒在地上跑。干掉它们。",
-  pursuit: "编制在追着你的热源。别停在空旷处——钻进箱巷，切开它们的夹击线。",
-  cut: [
-    "一处闸口已暗。它感觉到了——机械正在压过来。",
-    "两处已暗。它把剩下的编制全压上来了。用钢箱切开它们的视线。",
-  ],
-  all: "三处全灭。趸船停在码头南端舷梯旁，绿灯还在闪。跑，别回头。",
-  low: "你伤得很重。躲进钢箱后面，喘口气。生命会缓慢回升。",
-  done: "突击手已登船。锈泊链路已盲。雨还在下——但港区重新安静了。干得漂亮。",
-};
-
 function createGameFlow(context) {
   let e = (context.render && context.render.post) || {},
     t = typeof e.saturation == "number" ? e.saturation : 1,
@@ -77,6 +64,8 @@ function createGameFlow(context) {
         console.error(`[game] ${V} threw`, L);
       }
     },
+    _l = resolveMission("b8").radio,
+    Mi = null,
     l = createMenus(context, {
       deploy() {
         (a(context.audio, "resume"), r.requestLock(), U({}));
@@ -108,6 +97,9 @@ function createGameFlow(context) {
           U({
             quick: !0,
           }));
+      },
+      selectMission(P) {
+        we(P);
       },
     });
   l.applySettings();
@@ -148,6 +140,12 @@ function createGameFlow(context) {
       flow: GAME_FLOW,
       run: c,
       menus: l,
+      get mission() {
+        return Mi;
+      },
+      setMission(P) {
+        we(P);
+      },
       start(P = {}) {
         U({
           skipIntro: !!P.skipIntro,
@@ -166,6 +164,27 @@ function createGameFlow(context) {
         P && me(P);
       },
     };
+  function we(P) {
+    let V = resolveMission(P && (P.id || P));
+    Mi = V;
+    context.mission = V;
+    _l = V.radio || _l;
+    let Y = V.combat || {};
+    (Object.assign(GAME_FLOW, {
+      patrol: Y.patrol || GAME_FLOW.patrol,
+      waves: Y.waves || GAME_FLOW.waves,
+      maxAlive: Y.maxAlive ?? GAME_FLOW.maxAlive,
+      spawnStagger: Y.spawnStagger ?? GAME_FLOW.spawnStagger,
+      spawnFar: Y.spawnFar ?? GAME_FLOW.spawnFar,
+      pursuitEvery: Y.pursuitEvery ?? GAME_FLOW.pursuitEvery,
+      pursuitMinAlive: Y.pursuitMinAlive ?? GAME_FLOW.pursuitMinAlive,
+      pursuitExtra: Y.pursuitExtra ?? GAME_FLOW.pursuitExtra,
+    }),
+      s && s.applyMission && s.applyMission(V),
+      l.setMissionBriefing && l.setMissionBriefing(V),
+      // Cinematic state is ready after init; title switches call w() safely.
+      typeof w == "function" && w());
+  }
   function M(P) {
     let V = _.state;
     P !== V &&
@@ -318,7 +337,7 @@ function createGameFlow(context) {
       P.push({
         id: "extract",
         short: "撤",
-        label: "趸船",
+        label: (s.extraction && s.extraction.label) || "趸船",
         pos: s.extraction.pos,
         kind: "extract",
       }),
@@ -361,9 +380,12 @@ function createGameFlow(context) {
   }
   function D() {
     if (c.allCut) return "前往趸船撤离";
-    let P = c.relays.length - c.cut;
+    let P = c.relays.length - c.cut,
+      V = c.relays.length;
     return c.cut === 0
-      ? "切断三处数据闸口"
+      ? V === 3
+        ? "切断三处数据闸口"
+        : `切断 ${V} 处数据闸口`
       : P === 1
         ? "切断最后一处闸口"
         : `切断剩余 ${P} 处闸口`;
@@ -666,7 +688,11 @@ function createGameFlow(context) {
         ? ((c.extractT = Math.min(1, c.extractT + P / 1.35)),
           c.extractT >= 1 && ee())
         : (c.extractT = Math.max(0, c.extractT - P * 1.5)),
-        o.setPrompt && o.setPrompt("登船撤离", saturate(c.extractT)));
+        o.setPrompt &&
+          o.setPrompt(
+            "登船撤离",
+            saturate(c.extractT),
+          ));
     } else
       ((c.extractT = 0),
         o.setPrompt && o.setPrompt(null),
@@ -674,7 +700,7 @@ function createGameFlow(context) {
           !c.allCut &&
           c.extractHint <= 0 &&
           ((c.extractHint = 8),
-          o.message("闸口仍在线 \u2014 交火中趸船不会等你", 3.5)));
+          o.message("闸口仍在线 — 交火中趸船不会等你", 3.5)));
     c.extractHint = Math.max(0, c.extractHint - P);
   }
   function me(P) {
@@ -833,7 +859,12 @@ function createGameFlow(context) {
     return !1;
   }
   return (
-    w(),
+    we(
+      (context.mission && context.mission.id) ||
+        (context.params && context.params.mission) ||
+        (l.settings && l.settings.mission) ||
+        "b8",
+    ),
     (n.enabled = !1),
     o.show(!1),
     a(context.weapon, "setVisible", !1),
