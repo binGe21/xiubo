@@ -3,6 +3,12 @@ import { Vector3 } from "../vendor/three-r180.js";
 import { clamp, damp, saturate, smoothstep } from "../core/math.js";
 import { createMenus } from "../ui/menus.js";
 import { resolveMission } from "./missions.js";
+import {
+  formatScoreLine,
+  getEntry,
+  recordClear,
+  recordDeath,
+} from "./scores.js";
 
 var GAME_FLOW = {
   introSeconds: 3.8,
@@ -744,11 +750,20 @@ function createGameFlow(context) {
       o.show(!1),
       o.clearRadio && o.clearRadio(),
       l.locationCard && l.locationCard(!1),
-      l.setDead({
-        time: c.time,
-        relays: c.cut,
-        total: c.relays.length,
-      }),
+      (() => {
+        let P = (Mi && Mi.id) || "b8",
+          V = recordDeath(P),
+          Y = getEntry(P);
+        l.setDead({
+          time: c.time,
+          relays: c.cut,
+          total: c.relays.length,
+          deaths: V.deaths,
+          bestLine: Y.bestTime
+            ? `本机最佳 ${formatScoreLine(Y)}`
+            : "本机尚无通关记录",
+        });
+      })(),
       M("dead"));
   });
   function ee() {
@@ -771,13 +786,22 @@ function createGameFlow(context) {
         (c.time < 270 ? 2 : c.time < 400 ? 1 : 0) +
         (V >= 0.5 ? 2 : V >= 0.3 ? 1 : 0) +
         (c.retries === 0 ? 1 : 0),
-      L = ["狼狈", "喧闹", "稳健", "干净", "凌厉", "外科手术"][Y];
+      L = ["狼狈", "喧闹", "稳健", "干净", "凌厉", "外科手术"][Y],
+      Z = (Mi && Mi.id) || "b8",
+      J = recordClear(Z, {
+        time: c.time,
+        rating: L,
+      }),
+      oe = J.newBest
+        ? `新纪录！本机最佳 ${l.fmtTime(J.entry.bestTime)} · 通关 ${J.entry.clears} · 阵亡 ${J.entry.deaths}`
+        : `本局未破纪录 · ${formatScoreLine(J.entry)}`;
     (l.setDebrief({
       time: c.time,
       accuracy: V,
       kills: P.kills || 0,
       retries: c.retries,
       rating: L,
+      scoreNote: oe,
     }),
       M("complete"));
   }
