@@ -1499,7 +1499,7 @@ function buildGuardBooth(i, e = {}) {
       !0,
     ),
     t.decal(
-      Mi(i, "闸口控制", {
+      Mi(i, e.text || "闸口控制", {
         color: "black",
         font: "stencil",
         distress: 0.2,
@@ -1511,7 +1511,19 @@ function buildGuardBooth(i, e = {}) {
       null,
       0.9,
     ),
-    t.decal(Jn(i, "berth4"), 0.34, a - 0.003, 0.56, 0.3, [0, hn / 2, 0]),
+    t.decal(
+      Jn(
+        i,
+        ["berth8", "berth4", "berth4c", "berth6"].includes(e.sign)
+          ? e.sign
+          : "berth8",
+      ),
+      0.34,
+      a - 0.003,
+      0.56,
+      0.3,
+      [0, hn / 2, 0],
+    ),
     t.decal(Jn(i, "no_entry"), 0.2, w, 0.72, M + 0.0265, null),
     t.decal(Jn(i, "grime_streak"), 0.7, -0.6, 0.55, l - 0.003, null, 0.3),
     t.decal(

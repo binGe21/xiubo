@@ -2796,15 +2796,29 @@ function fR(i, layout) {
         seg: 10,
       });
   }
-  (i.col(t - 0.4, 0, r, t - 0.1, 7, a, "metal", {
-    playerOnly: !0,
-  }),
-    e("guard_booth", -35.2, 0.35, 0, {
-      seed: 1,
+  {
+    let gate = (layout && layout.gateShell) || {},
+      boothZ = 0.35 + (Number.isFinite(gate.boothShift) ? gate.boothShift : 0);
+    (i.col(t - 0.4, 0, r, t - 0.1, 7, a, "metal", {
+      playerOnly: !0,
     }),
-    e("gate_arm", -36.3, 5, ts, {
-      seed: 2,
-    }));
+      e("guard_booth", -35.2, boothZ, 0, {
+        seed: 1,
+        color: gate.boothColor || "white",
+        sign: gateDecal,
+        text: gate.boothText || "闸口控制",
+      }),
+      e(
+        "gate_arm",
+        -36.3,
+        5,
+        ts + (Number.isFinite(gate.armYaw) ? gate.armYaw : 0),
+        {
+          seed: 2,
+          open: Number.isFinite(gate.armOpen) ? gate.armOpen : 0,
+        },
+      ));
+  }
   for (let [c, u] of [
     [-37, 1.75],
     [-34.4, 2.3],
