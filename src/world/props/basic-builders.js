@@ -1824,10 +1824,10 @@ var Jg = [
 ];
 
 var E3 = [
-  "授权人员专用",
-  "禁止行人",
+  "锈泊港区专用",
+  "深水八号泊位",
   "反光衣与安全帽",
-  "自动驾驶车辆",
+  "港机作业区",
   "禁止停留",
 ];
 
@@ -1870,7 +1870,7 @@ function buildSignPost(i, e = {}) {
       Mi(i, e.text || E3[n % E3.length], {
         color: "black",
         font: "sans",
-        distress: 0.15,
+        distress: 0.08,
       }),
       0.07,
       0,
@@ -1922,7 +1922,7 @@ function buildFloodlightStand(i, e = {}) {
     r = t.M("steel_dark"),
     a = t.M("aluminium"),
     l = t.M("rubber"),
-    c = i.mats.emissive(16773596, e.on === !1 ? 0.02 : 10);
+    c = i.mats.emissive(16773596, e.on === !1 ? 0.03 : 12.5);
   (t.cyl(a, 0.021, 0.021, 1.1, 0, 0.75, 0, {
     seg: 8,
     open: !0,

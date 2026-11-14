@@ -626,7 +626,7 @@ async function createWeapon(context) {
       pt = Oe && !k.prevFire;
     ((k.prevFire = Oe), Oe || (k.dryDone = !1));
     let ut = !!we.sprinting && !Oe && !be.ads && !k.reload;
-    ((k.sprintT = damp(k.sprintT, ut ? 1 : 0, 9, Me)),
+    ((k.sprintT = damp(k.sprintT, ut ? 1 : 0, 7, Me)),
       be.pressed && be.pressed("reload") && Fe(),
       k.autoReload >= 0 && ((k.autoReload -= Me), k.autoReload < 0 && Fe()));
     let nn = 0;
@@ -773,7 +773,8 @@ async function createWeapon(context) {
           }))),
       (k.heat = Math.max(0, k.heat - Me * 0.2)));
     let Os = !!be.ads && !k.reload && k.sprintT < 0.35;
-    ((k.adsLin = clamp(k.adsLin + (Os ? Me : -Me) / 0.14, 0, 1)),
+    // Slightly deliberate ADS in/out so FOV + sway land together.
+    ((k.adsLin = clamp(k.adsLin + (Os ? Me : -Me) / 0.155, 0, 1)),
       (k.adsE = Yo(k.adsLin)),
       (ve.ads = k.adsE));
     let pn = we.speed || 0,

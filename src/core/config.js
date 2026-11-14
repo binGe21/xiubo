@@ -10,17 +10,18 @@ var WORLD_BOUNDS = {
 };
 
 var SUN_LIGHT = {
-  dir: new Vector3(0.9, 0.24, 0.36).normalize(),
-  // Warmer sodium dusk than the original — rust port atmosphere.
-  color: new Color(1, 0.68, 0.38),
-  intensity: 9.6,
+  // Lower, warmer sodium dusk — 锈泊 identity (not Saltline parity).
+  dir: new Vector3(0.86, 0.2, 0.4).normalize(),
+  color: new Color(1, 0.62, 0.32),
+  intensity: 10.2,
 };
 
 var SKY_COLORS = {
-  zenith: new Color(0.045, 0.075, 0.125),
-  horizon: new Color(0.98, 0.52, 0.26),
-  horizonAway: new Color(0.14, 0.2, 0.28),
-  fog: new Color(0.4, 0.46, 0.52),
+  zenith: new Color(0.032, 0.052, 0.108),
+  horizon: new Color(1, 0.46, 0.18),
+  horizonAway: new Color(0.11, 0.15, 0.22),
+  // Warm sodium haze rather than cool grey fog.
+  fog: new Color(0.5, 0.42, 0.34),
 };
 
 var PLAYER_DIMENSIONS = {
@@ -48,7 +49,7 @@ var QUALITY_PRESETS = {
     planar: 0.5,
     bloom: !0,
     motionBlur: !1,
-    rain: 0.4,
+    rain: 0.48,
   },
   low: {
     name: "low",
@@ -61,7 +62,7 @@ var QUALITY_PRESETS = {
     planar: 0,
     bloom: !0,
     motionBlur: !1,
-    rain: 0.62,
+    rain: 0.72,
   },
   medium: {
     name: "medium",
@@ -74,7 +75,7 @@ var QUALITY_PRESETS = {
     planar: 0.7,
     bloom: !0,
     motionBlur: !1,
-    rain: 0.95,
+    rain: 1.05,
   },
   high: {
     name: "high",
@@ -87,7 +88,7 @@ var QUALITY_PRESETS = {
     planar: 0.85,
     bloom: !0,
     motionBlur: !0,
-    rain: 1.08,
+    rain: 1.18,
   },
   ultra: {
     name: "ultra",
@@ -100,7 +101,7 @@ var QUALITY_PRESETS = {
     planar: 1,
     bloom: !0,
     motionBlur: !0,
-    rain: 1.22,
+    rain: 1.32,
   },
 };
 

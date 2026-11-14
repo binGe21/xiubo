@@ -371,7 +371,7 @@ function vb(i, e) {
   let A = i.mats.label("三趾鸥号", {
     color: "white",
     font: "sans",
-    distress: 0.3,
+    distress: 0.14,
   });
   {
     let ue = Math.min(12, 1.7 * Math.max(2, A.aspect || 6));

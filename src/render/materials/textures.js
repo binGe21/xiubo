@@ -24,21 +24,23 @@ precision highp float;
 uniform sampler2D tA; uniform float uSq; in vec2 vUv; out vec4 o;
 void main(){ vec4 t = texture(tA, vUv); o = uSq > 0.5 ? vec4(t.rgb * t.rgb, t.a) : t; }`;
 
+// Prefer CJK-capable faces so 港区标识 stay readable in canvas labels.
 var o3 =
-  '"Big Shoulders Display", "Barlow Condensed", "Arial Narrow", Impact, "Helvetica Neue", Arial, sans-serif';
+  '"Noto Sans SC", "ZCOOL QingKe HuangYou", "Big Shoulders Display", "Barlow Condensed", "Arial Narrow", Impact, "Helvetica Neue", Arial, sans-serif';
 
 var r3 =
-  '"Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif';
+  '"Noto Sans SC", "Barlow Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif';
 
-var oA = '"IBM Plex Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace';
+var oA =
+  '"Noto Sans SC", "IBM Plex Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace';
 
 var Ut = {
-  white: [226, 223, 213],
-  black: [24, 24, 26],
-  yellow: [222, 172, 30],
-  red: [168, 36, 28],
-  navy: [24, 38, 58],
-  orange: [206, 100, 30],
+  white: [242, 236, 220],
+  black: [22, 20, 18],
+  yellow: [236, 178, 36],
+  red: [176, 40, 28],
+  navy: [22, 34, 52],
+  orange: [214, 108, 28],
 };
 
 var An = (i, e = 1) => `rgba(${i[0]},${i[1]},${i[2]},${e})`;
@@ -592,7 +594,7 @@ function l3(i, e = 4) {
                 weight: 900,
                 maxW: g - 80,
               }),
-              Ks(v, g, x, 0.55, y));
+              Ks(v, g, x, 0.28, y));
           },
           {
             bleed: Ut.yellow,
@@ -1228,6 +1230,9 @@ function l3(i, e = 4) {
             } catch {}
         };
       for (let x of [
+        '700 20px "Noto Sans SC"',
+        '900 20px "Noto Sans SC"',
+        '700 20px "ZCOOL QingKe HuangYou"',
         '700 20px "Big Shoulders Display"',
         '900 20px "Big Shoulders Display"',
         '600 20px "Barlow Condensed"',
