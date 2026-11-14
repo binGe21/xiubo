@@ -327,6 +327,7 @@ uniform vec3 uSunCol;
 uniform vec2 uSunUv;
 uniform float uTime, uAspect, uBloom, uDirt, uStreak, uFlare, uCA, uVignette;
 uniform float uDamage, uLowHealth, uAds, uFlash, uFade, uSaturation, uSunOn, uThunder, uAgxMix;
+uniform vec3 uGradeSh, uGradeHi;
 
 // ---- AgX (Filament/Blender fit, as in three.js) ----
 const mat3 SL_REC2020_TO_SRGB = mat3(vec3(1.6605, -0.1246, -0.0182), vec3(-0.5876, 1.1329, -0.1006), vec3(-0.0728, -0.0083, 1.1187));
@@ -403,10 +404,10 @@ void main(){
   // filmic curve: ACES (Hill fit) for punch and burning oranges, pulled toward AgX so highlights roll off to white
   col = mix(slAces(col), slAgx(col), uAgxMix);
 
-  // ---- grade (display-linear) ----
+  // ---- grade (display-linear); uGradeSh/Hi are berth-tinted ----
   float l = luma(col);
-  // 锈泊 sodium dusk: cool-steel shadows, sodium-orange highlights
-  vec3 sh = vec3(0.84, 0.97, 1.08), hi = vec3(1.14, 0.98, 0.78);
+  // Baseline 锈泊 sodium dusk; berth layouts push cool (B4) or harder night (B6).
+  vec3 sh = uGradeSh, hi = uGradeHi;
   col *= mix(sh, hi, smoothstep(0.03, 0.55, l));
   // gentle S-curve
   col = mix(col, col * col * (3.0 - 2.0 * col), 0.24);
@@ -979,6 +980,12 @@ ${fe}`,
         uAgxMix: {
           value: g.agxMix,
         },
+        uGradeSh: {
+          value: new Vector3(0.84, 0.97, 1.08),
+        },
+        uGradeHi: {
+          value: new Vector3(1.14, 0.98, 0.78),
+        },
       },
       {
         defines: {
@@ -1269,6 +1276,14 @@ ${fe}`,
         (be.uSaturation.value = Number.isFinite(I.saturation)
           ? I.saturation
           : 1),
+        I.berthSh
+          ? be.uGradeSh.value.set(I.berthSh[0], I.berthSh[1], I.berthSh[2])
+          : be.uGradeSh.value.set(0.84, 0.97, 1.08),
+        I.berthHi
+          ? be.uGradeHi.value.set(I.berthHi[0], I.berthHi[1], I.berthHi[2])
+          : be.uGradeHi.value.set(1.14, 0.98, 0.78),
+        Number.isFinite(I.grain) && (g.grain = I.grain),
+        Number.isFinite(I.vignette) && (g.vignette = I.vignette),
         l(Q, y.ldr));
     }
     {

@@ -844,17 +844,28 @@ function hR(i, layout) {
           ],
         ]))
       : mid === "open"
-        ? (t(3.7, -5.12, [
-            [
-              20,
-              "blue",
-              {
-                doors: 0.8,
-                flip: !0,
-              },
-            ],
-          ]),
-          t(13.53, -5.12, [[20, "grey"]]))
+        ? // B6 — clear south sightline; single low stack only.
+          (t(13.53, -5.12, [[20, "grey"]]),
+          e(
+            "pipe_stack",
+            4.1,
+            -6.4,
+            0.2,
+            {
+              seed: 211,
+            },
+            0,
+          ),
+          e(
+            "toolbox_cart",
+            2.2,
+            -3.8,
+            -0.3,
+            {
+              seed: 212,
+            },
+            0,
+          ))
         : (t(3.7, -5.12, [
             [
               20,
@@ -914,9 +925,28 @@ function hR(i, layout) {
           },
           0,
         ),
-        t(12.3, 2.08, [
-          [20, "yellow"],
-        ]))
+        e(
+          "gas_cylinders",
+          0.4,
+          5.8,
+          0.1,
+          {
+            seed: 205,
+          },
+          0,
+        ),
+        e(
+          "floodlight_stand",
+          -3.6,
+          6.8,
+          0.4,
+          {
+            seed: 206,
+          },
+          0,
+        ),
+        // Far mid kept thin so north–south sightlines stay readable.
+        t(12.3, 2.08, [[20, "yellow"]]))
       : mid === "reefer"
         ? (t(0.8, 2.08, [
             [
@@ -949,6 +979,33 @@ function hR(i, layout) {
             [
               20,
               "white",
+              {
+                reefer: !0,
+              },
+            ],
+          ]),
+          // Extra east choke — cold cabinets seal the quay approach.
+          t(18.6, -1.4, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+                flip: !0,
+              },
+            ],
+          ]),
+          t(18.9, 6.2, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+            [
+              20,
+              "grey",
               {
                 reefer: !0,
               },
@@ -1204,15 +1261,26 @@ function hR(i, layout) {
       e0(i, -8.6 - 1, 4.5 + 0.78, 0.2),
       e0(i, -11.9, 3.6, 2.4));
   }
-  (e("jersey_barrier", -2.9, 5.3, 0.12, {
-    seed: 11,
-  }),
+  // Mid clutter — B6 keeps the corridor open; B8/B4 keep denser cover.
+  mid !== "open" &&
+    (e("jersey_barrier", -2.9, 5.3, 0.12, {
+      seed: 11,
+    }),
     e("jersey_barrier", 5.6, 5, -0.1, {
       seed: 12,
     }),
-    e("sandbags", -1.7, 9.7, 0.5, {
-      seed: 13,
+    e("jersey_barrier", 11.6, 3.95, 0.03, {
+      seed: 81,
     }),
+    e("jersey_barrier", 12.2, 0.4, 0.03, {
+      seed: 28,
+    }),
+    e("jersey_barrier", -0.9, -7.5, 0.1, {
+      seed: 31,
+    }));
+  (e("sandbags", -1.7, 9.7, 0.5, {
+    seed: 13,
+  }),
     e("ibc_tote", 5.9, 8.9, 0.1, {
       seed: 14,
     }),
@@ -1238,39 +1306,40 @@ function hR(i, layout) {
     e("tarp_cargo", 12.9, 10, 0.04, {
       seed: 21,
     }),
-    e("jersey_barrier", 11.6, 3.95, 0.03, {
-      seed: 81,
-    }),
     e("ibc_tote", 15.2, 10.2, 0.1, {
       seed: 82,
     }));
-  for (let [s, o] of [
-    [0.2, 6.3],
-    [2.9, 6.4],
-    [2.9, 8.8],
-    [0.1, 8.7],
-  ])
-    e("traffic_cone", s, o, 0, {
-      seed: Math.round(s * 9 + o * 5),
-    });
+  mid !== "open" &&
+    [
+      [0.2, 6.3],
+      [2.9, 6.4],
+      [2.9, 8.8],
+      [0.1, 8.7],
+    ].forEach(([s, o]) =>
+      e("traffic_cone", s, o, 0, {
+        seed: Math.round(s * 9 + o * 5),
+      }),
+    );
   (Qa(i, -9.55, 9.3, 0.04),
     Ef(i, -7.6, 11.9, ts + 0.06),
     Qa(i, 9.9, 12.9, ts, "paint_blue"),
     e("sign_post", -4.8, 3.72, ts, {
       seed: 22,
       sign: "hazard_voltage",
+      text: (layout && layout.gateSignText) || "深水八号泊位",
     }),
-    lv(i, 0.9, 3.62, 0),
-    Lr(
-      i,
-      [
-        [0.9, 3.9],
-        [1.2, 5.2],
-        [0.8, 6.2],
-        [1.5, 7.1],
-      ],
-      0.03,
-    ),
+    mid !== "open" && lv(i, 0.9, 3.62, 0),
+    mid !== "open" &&
+      Lr(
+        i,
+        [
+          [0.9, 3.9],
+          [1.2, 5.2],
+          [0.8, 6.2],
+          [1.5, 7.1],
+        ],
+        0.03,
+      ),
     e("tarp_cargo", -13.5, -3.1, 0.05, {
       seed: 23,
     }),
@@ -1287,19 +1356,14 @@ function hR(i, layout) {
     e("barrel", 5.2, 0.3, 0.4, {
       seed: 27,
     }),
-    e("jersey_barrier", 12.2, 0.4, 0.03, {
-      seed: 28,
-    }),
     e("crate_wood", 11.2, -3.3, 0.3, {
       seed: 29,
     }),
-    e("cardboard_boxes", -2, 0.3, 0.2, {
-      seed: 30,
-    }),
-    Ka(i, -4.2, -3.2, 0.03, "paint_orange", 3),
-    e("jersey_barrier", -0.9, -7.5, 0.1, {
-      seed: 31,
-    }),
+    mid !== "open" &&
+      e("cardboard_boxes", -2, 0.3, 0.2, {
+        seed: 30,
+      }),
+    mid !== "open" && Ka(i, -4.2, -3.2, 0.03, "paint_orange", 3),
     e("sandbags", -6.7, -7.8, -0.1, {
       seed: 32,
     }),
@@ -1452,10 +1516,13 @@ function hR(i, layout) {
     e("ibc_tote", -26.6, 21.2, 0, {
       seed: 80,
     }),
-    Sf(i, -22.9, -3.62, "一道", "x-"),
-    Sf(i, -22.95, 3.62, "二道", "x-"),
-    Sf(i, -25, 14, "三道", "x-"),
-    Sf(i, 16.9, 9.5, "二道", "x+"),
+    (() => {
+      let marks = (layout && layout.laneMarks) || ["一道", "二道", "三道", "主道"];
+      Sf(i, -22.9, -3.62, marks[0] || "一道", "x-");
+      Sf(i, -22.95, 3.62, marks[1] || "二道", "x-");
+      Sf(i, -25, 14, marks[2] || "三道", "x-");
+      Sf(i, 16.9, 9.5, marks[3] || marks[1] || "二道", "x+");
+    })(),
     i.label(
       (layout && layout.yardTitle) || "八号泊位 · 深水",
       0.55,
@@ -1470,7 +1537,7 @@ function hR(i, layout) {
       },
     ),
     i.decal(
-      (layout && layout.gateDecal) || "berth4",
+      (layout && layout.gateDecal) || "berth8",
       3.2,
       -12,
       3.4,
@@ -1485,8 +1552,88 @@ function hR(i, layout) {
 /** Collision + prop garnish that steers routes per berth. */
 function applyLayoutExtras(i, layout) {
   let e = (layout && layout.extras) || "none",
-    t = i.place;
-  if (e === "cold")
+    t = i.place,
+    signText = (layout && layout.gateSignText) || "深水八号泊位";
+  if (e === "home")
+    // B8 landmarks — yellow portal + forklift corridor so gate→yard reads in ~10s.
+    (t(
+      "jersey_barrier",
+      -24.2,
+      4.2,
+      Math.PI / 2 + 0.05,
+      {
+        seed: 401,
+      },
+      0,
+    ),
+      t(
+        "jersey_barrier",
+        -24.2,
+        7.6,
+        Math.PI / 2 - 0.04,
+        {
+          seed: 402,
+        },
+        0,
+      ),
+      t(
+        "traffic_cone",
+        -23.4,
+        5.1,
+        0,
+        {
+          seed: 403,
+        },
+        0,
+      ),
+      t(
+        "traffic_cone",
+        -23.5,
+        6.8,
+        0,
+        {
+          seed: 404,
+        },
+        0,
+      ),
+      t(
+        "sign_post",
+        -23.1,
+        3.2,
+        ts,
+        {
+          seed: 405,
+          sign: "arrow",
+          text: signText,
+        },
+        0,
+      ),
+      t(
+        "sandbags",
+        -21.4,
+        5.9,
+        0.2,
+        {
+          seed: 406,
+        },
+        0,
+      ),
+      t(
+        "pallet_stack",
+        -20.2,
+        8.4,
+        0.15,
+        {
+          seed: 407,
+        },
+        0,
+      ),
+      i.label("主突入道", 0.28, -23.6, 0.02, 5.9, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.22,
+      }));
+  else if (e === "cold")
     (t(
       "jersey_barrier",
       16.2,
@@ -1518,12 +1665,52 @@ function applyLayoutExtras(i, layout) {
         0,
       ),
       t(
+        "jersey_barrier",
+        16.3,
+        7.8,
+        Math.PI / 2 + 0.06,
+        {
+          seed: 307,
+        },
+        0,
+      ),
+      t(
+        "jersey_barrier",
+        16.15,
+        -5.6,
+        Math.PI / 2 - 0.08,
+        {
+          seed: 308,
+        },
+        0,
+      ),
+      t(
         "reefer_unit",
         19.6,
         -1.2,
         0.2,
         {
           seed: 304,
+        },
+        0,
+      ),
+      t(
+        "reefer_unit",
+        19.4,
+        3.8,
+        -0.15,
+        {
+          seed: 309,
+        },
+        0,
+      ),
+      t(
+        "reefer_unit",
+        21.8,
+        -10.6,
+        0.35,
+        {
+          seed: 310,
         },
         0,
       ),
@@ -1538,6 +1725,16 @@ function applyLayoutExtras(i, layout) {
         0,
       ),
       t(
+        "generator",
+        24.4,
+        -9.8,
+        0.2,
+        {
+          seed: 316,
+        },
+        0,
+      ),
+      t(
         "cable_reel",
         22.1,
         -6.2,
@@ -1547,7 +1744,69 @@ function applyLayoutExtras(i, layout) {
         },
         0,
       ),
-      i.col(15.85, 0, -3.2, 16.55, 1.1, 5.2, "concrete"));
+      t(
+        "cable_reel",
+        23.4,
+        -11.8,
+        1.1,
+        {
+          seed: 317,
+        },
+        0,
+      ),
+      t(
+        "floodlight_stand",
+        20.4,
+        -12.6,
+        0.5,
+        {
+          seed: 318,
+        },
+        0,
+      ),
+      t(
+        "sign_post",
+        21.6,
+        -9.4,
+        -0.2,
+        {
+          seed: 319,
+          sign: "hazard_voltage",
+          text: "冷链岸电 · 禁停",
+        },
+        0,
+      ),
+      Lr(
+        i,
+        [
+          [21.4, -8.2],
+          [20.2, -5.4],
+          [19.8, -2.1],
+          [19.5, 1.4],
+          [19.7, 4.2],
+        ],
+        0.026,
+      ),
+      Lr(
+        i,
+        [
+          [22.6, -9.6],
+          [22.1, -7.1],
+          [21.8, -4.4],
+        ],
+        0.018,
+      ),
+      i.col(15.85, 0, -6.2, 16.6, 1.15, 8.4, "concrete"),
+      i.label("冷藏管制区", 0.32, 17.4, 0.02, -3.8, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.28,
+      }),
+      i.label("岸电闸", 0.24, 22.8, 0.02, -0.6, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.2,
+      }));
   else if (e === "maint")
     (t(
       "pipe_stack",
@@ -1570,12 +1829,42 @@ function applyLayoutExtras(i, layout) {
         0,
       ),
       t(
+        "pipe_stack",
+        15.4,
+        -11.4,
+        0.35,
+        {
+          seed: 320,
+        },
+        0,
+      ),
+      t(
+        "pipe_stack",
+        -5.2,
+        1.4,
+        0.2,
+        {
+          seed: 321,
+        },
+        0,
+      ),
+      t(
         "toolbox_cart",
         -8.4,
         -11.2,
         0.4,
         {
           seed: 313,
+        },
+        0,
+      ),
+      t(
+        "toolbox_cart",
+        -3.1,
+        -1.8,
+        -0.5,
+        {
+          seed: 322,
         },
         0,
       ),
@@ -1599,17 +1888,93 @@ function applyLayoutExtras(i, layout) {
         },
         0,
       ),
-      i.col(14.2, 0, -15.4, 16.1, 1.2, -7.2, "metal"));
+      t(
+        "gas_cylinders",
+        -7.2,
+        -0.6,
+        0.3,
+        {
+          seed: 323,
+        },
+        0,
+      ),
+      t(
+        "floodlight_stand",
+        1.1,
+        0.8,
+        0.6,
+        {
+          seed: 324,
+        },
+        0,
+      ),
+      t(
+        "light_mast",
+        -1.8,
+        -4.6,
+        0,
+        {
+          seed: 325,
+        },
+        0,
+      ),
+      t(
+        "light_mast",
+        8.4,
+        6.2,
+        0,
+        {
+          seed: 326,
+        },
+        0,
+      ),
+      t(
+        "crate_stack",
+        -9.8,
+        -3.4,
+        0.15,
+        {
+          seed: 327,
+        },
+        0,
+      ),
+      t(
+        "sign_post",
+        -5.6,
+        -4.2,
+        ts,
+        {
+          seed: 328,
+          sign: "hazard_general",
+          text: "机修通道 · 快进快出",
+        },
+        0,
+      ),
+      Ka(i, 6.8, -2.2, 0.2, "paint_orange", 11),
+      Ka(i, -10.2, 6.4, -0.15, "paint_blue", 12),
+      i.col(14.2, 0, -15.4, 16.1, 1.2, -7.2, "metal"),
+      i.label("机修通道", 0.34, -0.6, 0.02, 1.8, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.18,
+      }),
+      i.label("开敞作业区", 0.26, 4.8, 0.02, 4.6, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.25,
+      }));
 }
 
-function fR(i) {
+function fR(i, layout) {
   let e = i.place,
     t = -38,
     n = 30,
     s = -30,
     o = 28,
     r = 2,
-    a = 8;
+    a = 8,
+    gateSign = (layout && layout.gateSignText) || "深水八号泊位",
+    gateDecal = (layout && layout.gateDecal) || "berth8";
   function l(c, u, h, f, p) {
     let d = Math.hypot(h - c, f - u),
       v = Math.max(1, Math.round(d / 3.35)),
@@ -1727,11 +2092,13 @@ function fR(i) {
     }),
     e("sign_post", -25.3, 1.1, ts, {
       seed: 9,
-      sign: "berth4",
+      sign: gateDecal,
+      text: gateSign,
     }),
     e("sign_post", -36.6, -1.6, ts, {
       seed: 10,
       sign: "hazard_general",
+      text: gateSign,
     }));
   for (let [c, u] of [
     [-34.6, 5.6],

@@ -1819,6 +1819,9 @@ var Jg = [
   "no_entry",
   "hazard_voltage",
   "berth4",
+  "berth8",
+  "berth4c",
+  "berth6",
   "arrow",
   "hazard_flammable",
 ];

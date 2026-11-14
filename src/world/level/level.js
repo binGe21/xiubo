@@ -20,7 +20,7 @@ async function createLevel(context) {
     e = new Group();
   ((e.name = "level"), context.scene.add(e));
   let t = ob(context);
-  (hR(t, layout), fR(t));
+  (hR(t, layout), fR(t, layout));
   let n = ab(t),
     s = cb(t, layout),
     o = t.place(
