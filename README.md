@@ -16,12 +16,68 @@ npm run dev
 打开 `http://127.0.0.1:8743`，在标题屏选择泊位任务，再点 **开始突入**。
 
 ```bash
-npm run build          # 常规静态站点 → dist/
+npm run build          # 常规静态站点 → dist/（含本地字体）
 npm run build:single   # 单文件 HTML → dist-single/index.html
-npm run preview
+npm run release        # 单文件构建并同步到 release/xiubo.html（发版工件）
+npm run preview        # 预览 dist/（先 build）
+npm run preview:single # 预览 dist-single/（先 build:single）
 ```
 
-单文件版在联网时可拉中文字体；断网仍可玩，仅显示回退。
+单文件版在联网时可拉中文字体（Google Fonts CDN）；断网仍可玩，仅显示回退。常规 `dist/` 打进了 `public/fonts/`，离线字体更完整。
+
+## 部署 / 上线
+
+锈泊是**纯静态前端**：无后端、无账号服务。任选一种交付即可。
+
+### 方案 A — 静态站点（`dist/`）
+
+适合 GitHub Pages、Netlify、Cloudflare Pages、Nginx、对象存储静态网站等。
+
+```bash
+npm install
+npm run check
+npm run build
+```
+
+把 `dist/` 整目录挂到站点根（或子路径）。仓库已设 `base: "./"`，相对资源路径在子目录托管也能工作。
+
+**GitHub Pages（示例）**
+
+1. `npm run build`
+2. 将 `dist/` 内容推到 `gh-pages` 分支，或在仓库 Settings → Pages 选择 GitHub Actions / 部署该目录
+3. 项目页（`https://<user>.github.io/xiubo/`）与用户页均可；`dist/` 内含空文件 `.nojekyll`，避免 Jekyll 干扰
+4. 本地核对：`npm run preview` → `http://127.0.0.1:8743`
+
+**任意静态主机**
+
+上传 `dist/` 全部文件，确保 `index.html` 为入口，MIME 正常（`.js` → `application/javascript`，`.css` → `text/css`，字体 `woff2` 可访问）。HTTPS 推荐（指针锁定 / AudioContext 在部分浏览器要求安全上下文）。
+
+### 方案 B — 单文件 HTML（发版工件）
+
+适合邮件分发、内网 U 盘、或「丢一个文件就能开」的场景。
+
+```bash
+npm run release
+# → dist-single/index.html
+# → release/xiubo.html   ← 仓库内已提交的可玩快照，随版本刷新
+```
+
+用浏览器直接打开 `release/xiubo.html`，或放到任意静态目录。本地冒烟：`npm run preview:single` → `http://127.0.0.1:8744`。
+
+发版前建议：`npm run check && npm run build && npm run release`，确认 `dist/` 与 `release/xiubo.html` 均来自当前 `main`。
+
+### 上线核对清单
+
+| 项 | 期望 |
+| --- | --- |
+| `npm run check` | 语法 / 导入 / 归档校验通过 |
+| `npm run build` | 产出 `dist/index.html` + `assets/` + `fonts/` |
+| `npm run release` | 更新 `release/xiubo.html` |
+| 标题屏 | 品牌「锈泊」、泊位可选、**开始突入** |
+| 音频 | 首次手势后有雨/电台；`/?noaudio=1` 可静音排障 |
+| 设置 | 存在本机 `localStorage` 键 `xiubo.settings.v1` |
+
+不做：服务端存档、账号、实时联机。成绩仅局内结算；持久排行榜属后续可选增强。
 
 ## 操作
 
