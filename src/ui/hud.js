@@ -307,8 +307,8 @@ function createHUD(context) {
       if (
         (ve !== X.promptOn &&
           ((X.promptOn = ve),
-          m.classList.toggle("on", ve),
-          context.input.setPrompt && context.input.setPrompt(ve)),
+          m.classList.toggle("on", ve)),
+        context.input.setPrompt && context.input.setPrompt(ve, ce),
         !ve)
       )
         return;
@@ -329,16 +329,18 @@ function createHUD(context) {
       Pe !== X.promptT &&
         ((X.promptT = Pe),
         A.setAttribute("stroke-dashoffset", (ix * (1 - Pe)).toFixed(2)),
-        m.classList.toggle("busy", Pe > 0));
+        m.classList.toggle("busy", Pe > 0),
+        m.classList.toggle("almost", Pe >= 0.85));
     },
-    radio(k, ce = 4.5) {
+    radio(k, ce = 4.5, ve = null) {
       if (!k) return;
       // Hold long enough for typewriter + a beat to read the last glyphs.
-      let ve = String(k),
-        _e = Math.max(ce, ve.length / 46 + 1.55);
+      let _e = String(k),
+        Te = Math.max(ce, _e.length / 46 + 1.55);
       me.push({
-        text: ve,
-        secs: _e,
+        text: _e,
+        secs: Te,
+        tag: ve || null,
       });
     },
     clearRadio() {
@@ -349,6 +351,18 @@ function createHUD(context) {
           }),
         (ee = null),
         j.classList.remove("on"));
+    },
+    // Drop queued/active tip lines so contact can take the channel when rushing.
+    clearRadioTag(k) {
+      if (!k) return;
+      me = me.filter((ce) => ce.tag !== k);
+      if (ee && ee.tag === k) {
+        context.events.emit("radio:end", {
+          text: ee.text,
+        });
+        ee = null;
+        j.classList.remove("on");
+      }
     },
     warn(k, ce = 3) {
       ((d.textContent = k),
@@ -455,7 +469,8 @@ function createHUD(context) {
           oe
             .set(
               be.pos.x,
-              be.pos.y + (be.kind === "extract" ? 1.2 : 1.9),
+              // Sit above the physical beacon lens so the mesh stays readable.
+              be.pos.y + (be.kind === "extract" ? 3.7 : 1.9),
               be.pos.z,
             )
             .project(_e));

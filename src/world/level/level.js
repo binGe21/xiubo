@@ -1,15 +1,91 @@
 import {
   Group,
+  Mesh,
   PointLight,
+  SphereGeometry,
   defineModuleExports,
 } from "../../vendor/three-r180.js";
-import { batchStaticMeshes } from "../../core/geometry.js";
+import {
+  batchStaticMeshes,
+  createMesh,
+  cylinderGeometry,
+} from "../../core/geometry.js";
 import { ab, no, ob, rb } from "./buildings.js";
 import { resolveLayout } from "./layouts.js";
 import { Lr, cb, fR, hR, lv, mt, ts } from "./placement.js";
 
 function extractBeaconColor(i) {
   return i === "b4" ? 0x66d6e8 : i === "b6" ? 0xff8a3c : 0x7dff5a;
+}
+
+function setMatGlow(mat, hex, intensity) {
+  if (!mat) return;
+  if (mat.emissive && mat.emissive.isColor) {
+    mat.emissive.setHex(hex);
+    if ("emissiveIntensity" in mat) mat.emissiveIntensity = intensity;
+    return;
+  }
+  if (mat.uniforms && mat.uniforms.color && mat.uniforms.color.value) {
+    mat.uniforms.color.value.setHex(hex);
+    if (mat.uniforms.intensity) mat.uniforms.intensity.value = intensity;
+    return;
+  }
+  if (mat.color && mat.color.isColor) mat.color.setHex(hex);
+}
+
+/** Dedicated extract beacon — pole + lens + vertical glow (readable in B4 haze). */
+function buildExtractBeacon(context, layoutId, extraction) {
+  let hex = extractBeaconColor(layoutId),
+    cold = layoutId === "b4",
+    root = new Group(),
+    lensR = cold ? 0.34 : 0.24,
+    beamH = cold ? 1.55 : 1.15;
+  root.name = "extract-beacon-mesh";
+  root.userData.noMerge = !0;
+  let pole = createMesh(
+      cylinderGeometry(0.055, 0.075, 3.15, 10),
+      context.mats.get("steel_galv"),
+    ),
+    base = createMesh(
+      cylinderGeometry(0.3, 0.38, 0.1, 12),
+      context.mats.get("steel_dark"),
+    ),
+    collar = createMesh(
+      cylinderGeometry(0.12, 0.14, 0.08, 10),
+      context.mats.get("paint_yellow"),
+    ),
+    lensMat = context.mats.emissive(hex, 0.03).clone(),
+    beamMat = context.mats.emissive(hex, 0.02).clone(),
+    lens = new Mesh(new SphereGeometry(lensR, 16, 12), lensMat),
+    beam = new Mesh(cylinderGeometry(0.05, 0.05, beamH, 10), beamMat),
+    tip = new Mesh(
+      cylinderGeometry(0.02, 0.09, cold ? 0.55 : 0.38, 8),
+      beamMat.clone ? beamMat.clone() : beamMat,
+    );
+  ((pole.position.y = 1.55),
+    (base.position.y = 0.05),
+    (collar.position.y = 3.12),
+    (lens.position.y = 3.42),
+    (beam.position.y = 3.42 + beamH * 0.35),
+    (tip.position.y = 3.42 + beamH * 0.85),
+    (lens.userData.noMerge = !0),
+    (beam.userData.noMerge = !0),
+    (tip.userData.noMerge = !0),
+    root.add(base, pole, collar, beam, tip, lens),
+    root.position.set(extraction.x - 1.15, 0, extraction.z));
+  let lite = new PointLight(hex, 0, cold ? 26 : 18, 2);
+  ((lite.position.set(0, 3.5, 0)),
+    (lite.name = "extract-beacon-light"),
+    root.add(lite));
+  return {
+    root,
+    lite,
+    lensMat,
+    beamMat,
+    tipMat: tip.material,
+    hex,
+    cold,
+  };
 }
 
 var levelShowcaseModule = {};
@@ -143,18 +219,13 @@ async function createLevel(context) {
     for (let H = z.children.length - 1; H >= 0; H--) z.remove(z.children[H]);
     t.dynRoot.add(z);
   }
-  // Extract approach beacon — dark until all relays cut, then pulses berth color.
-  let extractLite = new PointLight(extractBeaconColor(layout.id), 0, 18, 2);
-  ((extractLite.position.set(
-    s.extraction.x - 1.2,
-    3.4,
-    s.extraction.z,
-  )),
-    (extractLite.name = "extract-beacon"),
-    t.dynRoot.add(extractLite));
-  let extractPulse = 0,
+  // Extract approach beacon — mesh + light; dark until all relays cut.
+  let extractBeacon = buildExtractBeacon(context, layout.id, s.extraction),
+    extractLite = extractBeacon.lite,
+    extractPulse = 0,
     extractOpen = !1,
     p = 0;
+  t.dynRoot.add(extractBeacon.root);
   f.traverse((z) => {
     if (z.isMesh) {
       let H = z.geometry;
@@ -480,10 +551,15 @@ async function createLevel(context) {
       },
       setExtractOpen(H) {
         extractOpen = !!H;
-        extractLite.color.setHex(extractBeaconColor(S.layoutId || layout.id));
+        let O = extractBeaconColor(S.layoutId || layout.id);
+        extractBeacon.hex = O;
+        extractLite.color.setHex(O);
         if (!extractOpen) {
           extractLite.intensity = 0;
           extractPulse = 0;
+          setMatGlow(extractBeacon.lensMat, O, 0.03);
+          setMatGlow(extractBeacon.beamMat, O, 0.015);
+          setMatGlow(extractBeacon.tipMat, O, 0.02);
         }
       },
       groundSurfaceAt(z, H) {
@@ -493,8 +569,17 @@ async function createLevel(context) {
         (n.update(z), h.update(z));
         if (extractOpen) {
           extractPulse += z;
+          let O = extractBeacon.hex,
+            q = extractBeacon.cold ? 1.35 : 1,
+            U =
+              0.55 +
+              0.45 * Math.sin(extractPulse * 4.2) +
+              0.18 * Math.sin(extractPulse * 11.5);
           extractLite.intensity =
-            22 + 14 * Math.sin(extractPulse * 4.6) + 6 * Math.sin(extractPulse * 11);
+            (extractBeacon.cold ? 34 : 24) * q * (0.55 + 0.45 * U);
+          setMatGlow(extractBeacon.lensMat, O, (extractBeacon.cold ? 18 : 12) * U);
+          setMatGlow(extractBeacon.beamMat, O, (extractBeacon.cold ? 10 : 6) * U);
+          setMatGlow(extractBeacon.tipMat, O, (extractBeacon.cold ? 16 : 9) * U);
         }
         for (let H = 0; H < t.updaters.length; H++)
           try {
