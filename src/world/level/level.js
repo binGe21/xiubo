@@ -1,8 +1,16 @@
-import { Group, defineModuleExports } from "../../vendor/three-r180.js";
+import {
+  Group,
+  PointLight,
+  defineModuleExports,
+} from "../../vendor/three-r180.js";
 import { batchStaticMeshes } from "../../core/geometry.js";
 import { ab, no, ob, rb } from "./buildings.js";
 import { resolveLayout } from "./layouts.js";
 import { Lr, cb, fR, hR, lv, mt, ts } from "./placement.js";
+
+function extractBeaconColor(i) {
+  return i === "b4" ? 0x66d6e8 : i === "b6" ? 0xff8a3c : 0x7dff5a;
+}
 
 var levelShowcaseModule = {};
 
@@ -135,7 +143,18 @@ async function createLevel(context) {
     for (let H = z.children.length - 1; H >= 0; H--) z.remove(z.children[H]);
     t.dynRoot.add(z);
   }
-  let p = 0;
+  // Extract approach beacon — dark until all relays cut, then pulses berth color.
+  let extractLite = new PointLight(extractBeaconColor(layout.id), 0, 18, 2);
+  ((extractLite.position.set(
+    s.extraction.x - 1.2,
+    3.4,
+    s.extraction.z,
+  )),
+    (extractLite.name = "extract-beacon"),
+    t.dynRoot.add(extractLite));
+  let extractPulse = 0,
+    extractOpen = !1,
+    p = 0;
   f.traverse((z) => {
     if (z.isMesh) {
       let H = z.geometry;
@@ -391,6 +410,7 @@ async function createLevel(context) {
         pos: s.extraction.clone(),
         radius: 2.5,
         label: "趸船",
+        mark: layout.extractMark || "撤",
       },
       enemySpawns: y,
       allSpawns: allSpawns,
@@ -437,6 +457,7 @@ async function createLevel(context) {
             (ly.feel && ly.feel.extractRadius) || S.extraction.radius || 2.5),
           (S.extraction.hold =
             (ly.feel && ly.feel.extractHold) || S.extraction.hold || 1.35),
+          (S.extraction.mark = ly.extractMark || "撤"),
           // Soft spawn bias for this berth (geometry layoutId may differ until rebuild).
           (S.enemySpawns = allSpawns
             .slice()
@@ -457,11 +478,24 @@ async function createLevel(context) {
         }
         return H;
       },
+      setExtractOpen(H) {
+        extractOpen = !!H;
+        extractLite.color.setHex(extractBeaconColor(S.layoutId || layout.id));
+        if (!extractOpen) {
+          extractLite.intensity = 0;
+          extractPulse = 0;
+        }
+      },
       groundSurfaceAt(z, H) {
         return t.isMetal(z, H) ? "metal" : "concrete";
       },
       update(z) {
         (n.update(z), h.update(z));
+        if (extractOpen) {
+          extractPulse += z;
+          extractLite.intensity =
+            22 + 14 * Math.sin(extractPulse * 4.6) + 6 * Math.sin(extractPulse * 11);
+        }
         for (let H = 0; H < t.updaters.length; H++)
           try {
             t.updaters[H](z);

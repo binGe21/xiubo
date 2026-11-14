@@ -142,7 +142,7 @@ function createMenus(context, e) {
       <div class="m-actions col"><button class="btn primary" data-act="retry">再次突入</button></div>
     </section>
 
-    <section class="m-screen m-card m-debrief" data-s="complete" aria-label="任务结算">
+    <section class="m-screen m-card m-debrief" data-s="complete" data-berth="b8" aria-label="任务结算">
       <div class="m-k" data-f="debrief-k">深水八号 \xB7 任务结算</div>
       <h2 class="m-h" data-f="debrief-h">锈泊已暗</h2>
       <p class="m-line" data-f="debrief-line">三处闸口已切断，趸船撤离成功。</p>
@@ -154,7 +154,7 @@ function createMenus(context, e) {
         <div><dt>重试次数</dt><dd data-f="retries">0</dd></div>
       </dl>
       <p class="m-score-note" data-f="score-note">本机成绩</p>
-      <div class="m-actions col"><button class="btn primary" data-act="redeploy">再度突入</button></div>
+      <div class="m-actions col"><button class="btn primary" data-act="redeploy" data-f="redeploy-btn">再度突入</button></div>
     </section>
 
     <div class="panel" role="dialog" aria-modal="true" aria-label="设置与操作" tabindex="-1" hidden>
@@ -184,7 +184,7 @@ function createMenus(context, e) {
       </div>
     </div>
 
-    <div class="loc-card" aria-hidden="true"><i></i><b data-f="loc-berth">锈泊港区 \xB7 深水八号泊位 \xB7 05:42</b><span data-f="loc-sub">港区突入编制 \u2014 单人突击，无后援</span></div>
+    <div class="loc-card" data-berth="b8" aria-hidden="true"><i></i><b data-f="loc-berth">锈泊港区 \xB7 深水八号泊位 \xB7 05:42</b><span data-f="loc-sub">港区突入编制 \u2014 单人突击，无后援</span></div>
   `),
     t.appendChild(s));
   let o = (U) => s.querySelector(U),
@@ -218,6 +218,17 @@ function createMenus(context, e) {
           ? ` — 当前 ${resolveMission(T).tag}：${formatScoreLine(G)}`
           : ` — 当前 ${resolveMission(T).tag}：尚无通关`));
   }
+  function setVictoryChrome(U) {
+    let T = resolveMission(U && (U.id || U) || n.mission),
+      D = o(".m-debrief"),
+      C = c("redeploy-btn");
+    (l.setAttribute("data-berth", T.id),
+      D && D.setAttribute("data-berth", T.id),
+      (c("debrief-k").textContent = T.debriefK),
+      (c("debrief-h").textContent = T.debriefH),
+      (c("debrief-line").textContent = T.debriefLine),
+      C && (C.textContent = T.redeploy || "再度突入"));
+  }
   function setMissionBriefing(U) {
     let T = resolveMission(U && (U.id || U));
     ((n.mission = T.id),
@@ -229,7 +240,8 @@ function createMenus(context, e) {
       (c("loc-sub").textContent = T.locSub),
       (c("debrief-k").textContent = T.debriefK),
       (c("debrief-h").textContent = T.debriefH),
-      (c("debrief-line").textContent = T.debriefLine));
+      (c("debrief-line").textContent = T.debriefLine),
+      setVictoryChrome(T));
     for (let D of r(".m-mission"))
       D.setAttribute("aria-checked", String(D.dataset.mission === T.id));
     (refreshScoreboard(T.id), saveSettings(n));
@@ -462,11 +474,19 @@ function createMenus(context, e) {
       locationCard(U) {
         l.classList.toggle("on", !!U);
       },
+      setVictoryChrome,
       setLandingBeat(U) {
-        let T = resolveMission(n.mission);
-        (c("loc-berth").textContent = T.berthLine),
-          (c("loc-sub").textContent =
-            U || T.debriefLine || "趸船撤离成功");
+        let T = resolveMission(n.mission),
+          D = U && typeof U == "object" ? U : null,
+          C = D ? D.h || T.landingH || T.debriefH : null,
+          G = D
+            ? D.line || T.landingLine || T.debriefLine
+            : U || T.debriefLine || "趸船撤离成功",
+          j = D ? D.k || T.landingK || "登船成功" : T.landingK || "登船成功";
+        (l.setAttribute("data-berth", T.id),
+          (c("loc-berth").textContent = C || T.landingH || T.debriefH || "锈泊已暗"),
+          (c("loc-sub").textContent = `${j} — ${G}`),
+          setVictoryChrome(T));
       },
       setLookMode(U) {
         c("lookmode").textContent = U || "";

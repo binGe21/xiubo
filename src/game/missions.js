@@ -21,9 +21,14 @@ var MISSIONS = {
     premise:
       "闸控失守，港区沦为机器的领地。切断堆场、仓库、码头三处数据闸口，在雨幕与钢箱之间杀到趸船。",
     locSub: "港区突入编制 — 单人突击，无后援",
+    landingK: "登船成功 · 深水八号",
+    landingH: "锈泊已暗",
+    landingLine: "三闸已切，趸船舷梯收起。雨还在下。",
+    landingHold: 2.9,
     debriefK: "深水八号 · 任务结算",
     debriefH: "锈泊已暗",
     debriefLine: "三处闸口已切断，趸船撤离成功。港区重新安静。",
+    redeploy: "再度突入深水",
     extractLabel: "趸船",
     objectiveOrder: ["relay_a", "relay_b", "relay_c"],
     labels: {
@@ -87,9 +92,14 @@ var MISSIONS = {
     premise:
       "冷藏岸桥被改写——堆场东侧冷柜堵死箱巷，只能贴岸推进。先掐断岸电闸口，再回切堆场与仓库链路，最后沿雨幕撤上冷岸趸船。",
     locSub: "冷链切断编制 — 侧翼突入，雨更密",
+    landingK: "冷岸登船 · 冷藏四号",
+    landingH: "冷链已断",
+    landingLine: "岸电熄灭，压缩机停转。湿甲板只剩雨声。",
+    landingHold: 3.4,
     debriefK: "冷藏四号 · 任务结算",
     debriefH: "冷链已断",
-    debriefLine: "岸电与冷链闸口已盲。冷柜停转，趸船撤离成功。",
+    debriefLine: "岸电与冷链闸口已盲。冷柜停转，冷岸趸船撤离成功。",
+    redeploy: "再度切断冷链",
     extractLabel: "冷岸趸船",
     // Quay first — player starts east and fights west through the yard.
     objectiveOrder: ["relay_c", "relay_a", "relay_b"],
@@ -155,9 +165,14 @@ var MISSIONS = {
     premise:
       "夜班机修环被接管——中央箱巷被腾空成机修通道，管材堵向码头。从开敞作业区楔入，优先切断仓库与堆场关键节点，再清码头备份闸口，赶在编制合围前登机修趸船。",
     locSub: "机修网突入 — 夜班短环，压迫更快",
+    landingK: "冲上趸船 · 机修六号",
+    landingH: "机修网已盲",
+    landingLine: "夜班合围散了。舷梯一收，链路安静。",
+    landingHold: 2.2,
     debriefK: "机修六号 · 任务结算",
     debriefH: "机修网已盲",
     debriefLine: "关键节点已切断，夜班编制失去合围，机修趸船撤离成功。",
+    redeploy: "再度冲入机修",
     extractLabel: "机修趸船",
     // Shed-first routing from a mid-yard start.
     objectiveOrder: ["relay_b", "relay_a", "relay_c"],

@@ -92,6 +92,7 @@ function createGameFlow(context) {
       a(context.audio, "setBerthAmbient", L),
       a(n, "applyFeel", feel),
       a(context.weapon, "setName", (P && P.weaponName) || "PAC-9 深水"),
+      a(context.backdrop, "setExtractOffset", V.extractZ || 0),
       s &&
         s.extraction &&
         ((s.extraction.radius = Number.isFinite(feel.extractRadius)
@@ -99,12 +100,15 @@ function createGameFlow(context) {
           : 2.5),
         (s.extraction.hold = Number.isFinite(feel.extractHold)
           ? feel.extractHold
-          : 1.35)),
+          : 1.35),
+        (s.extraction.mark = V.extractMark || "撤")),
+      a(s, "setExtractOpen", !1),
       a(o, "setBerthChrome", {
         channel: Z.channel || "指挥部",
         chip: Z.chip || ((P && P.tag) || "B8") + " · " + ((P && P.name) || ""),
         accent: Z.accent || V.id || "home",
-      });
+      }),
+      l.setVictoryChrome && l.setVictoryChrome(P);
   }
   let startAfterLayout = (P = {}) => {
       let V = () => {
@@ -352,6 +356,8 @@ function createGameFlow(context) {
       (c.extractHint = 0),
       (c.extractT = 0),
       (c.extractNearSaid = !1),
+      (c._debrief = null),
+      (c._landingHold = 0),
       c.used.clear(),
       (c.relays = A().map((P, V) => {
         let Y = (/([a-z0-9])$/i.exec(String(P.id || "")) || [
@@ -401,7 +407,7 @@ function createGameFlow(context) {
       s.extraction &&
       P.push({
         id: "extract",
-        short: "撤",
+        short: (s.extraction && s.extraction.mark) || "撤",
         label: (s.extraction && s.extraction.label) || "趸船",
         pos: s.extraction.pos,
         kind: "extract",
@@ -810,15 +816,23 @@ function createGameFlow(context) {
           (c.pursuitLeft = GAME_FLOW.pursuitExtra),
           (c.pursuitT = 12),
           (c.extractNearSaid = !1),
+          a(s, "setExtractOpen", !0),
           context.events.emit("objective:all", {}),
           o.radio && o.radio(_l.all, 4.5),
+          o.warn &&
+            o.warn(
+              (Mi && Mi.hud && Mi.hud.extractUnlock) ||
+                ((s.extraction && s.extraction.label) || "趸船") + "已亮",
+              3.6,
+            ),
           o.message &&
             o.message(
               ((Mi && Mi.hud && Mi.hud.extractUnlock) ||
                 ((s.extraction && s.extraction.label) || "趸船") +
                   "已亮 — 前往撤离"),
               3.4,
-            ))
+            ),
+          e && (e.flash = Math.max(e.flash || 0, 0.55)))
         : o.radio &&
           o.radio(_l.cut[Math.min(c.cut - 1, _l.cut.length - 1)], 3.6),
       o.setObjective(D()),
@@ -858,13 +872,20 @@ function createGameFlow(context) {
       o.show(!1),
       context.events.emit("extraction:reached", {}),
       o.clearRadio && o.clearRadio(),
-      // Landing beat — berth loc-card flashes before debrief so extract feels ritual, not instant.
+      a(s, "setExtractOpen", !1),
+      // Landing beat — berth-specific loc-card before debrief.
       l.setLandingBeat &&
-        l.setLandingBeat(
-          (Mi && Mi.debriefLine) || "趸船撤离成功",
-        ),
+        l.setLandingBeat({
+          k: (Mi && Mi.landingK) || "登船成功",
+          h: (Mi && Mi.landingH) || ((Mi && Mi.debriefH) || "锈泊已暗"),
+          line:
+            (Mi && Mi.landingLine) ||
+            (Mi && Mi.debriefLine) ||
+            "趸船撤离成功",
+        }),
       l.locationCard && l.locationCard(!0),
-      o.radio && o.radio(_l.done, 2.4));
+      o.radio && o.radio(_l.done, 2.6),
+      e && (e.flash = Math.max(e.flash || 0, 0.72)));
     let P = (context.combat && context.combat.stats) || {
         shots: 0,
         hits: 0,
@@ -884,7 +905,8 @@ function createGameFlow(context) {
       oe = J.newBest
         ? `新纪录！本机最佳 ${l.fmtTime(J.entry.bestTime)} · 通关 ${J.entry.clears} · 阵亡 ${J.entry.deaths}`
         : `本局未破纪录 · ${formatScoreLine(J.entry)}`;
-    (l.setDebrief({
+    // Stash debrief until landing hold finishes — each berth lingers differently.
+    ((c._debrief = {
       time: c.time,
       accuracy: V,
       kills: P.kills || 0,
@@ -892,6 +914,8 @@ function createGameFlow(context) {
       rating: L,
       scoreNote: oe,
     }),
+      (c._landingHold =
+        (Mi && Number.isFinite(Mi.landingHold) && Mi.landingHold) || 2.8),
       M("complete"));
   }
   function B(P) {
@@ -971,17 +995,23 @@ function createGameFlow(context) {
             (l.show("dead"), a(context.audio, "setIntensity", 0.15)),
           !0
         );
-      case "complete":
+      case "complete": {
+        let V =
+          (c._landingHold && Number.isFinite(c._landingHold) && c._landingHold) ||
+          2.8;
         return (
           (e.fade = damp(e.fade || 0, 0.72, 0.9, P)),
           (e.saturation = damp(e.saturation ?? 1, t * 0.7, 1, P)),
-          u > 2.8 &&
+          u > V &&
             l.screen !== "complete" &&
             (l.locationCard && l.locationCard(!1),
+            c._debrief &&
+              (l.setDebrief(c._debrief), (c._debrief = null)),
             l.show("complete"),
             a(context.audio, "setIntensity", 0.15)),
           !0
         );
+      }
     }
     return !1;
   }

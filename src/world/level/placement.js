@@ -415,6 +415,7 @@ function cb(i, layout) {
     } = i,
     { X: u, LADDER_Z: h, Z0: f, Z1: p } = lb,
     dZ = (layout && layout.extractZ) || 0,
+    // Ladder, boat, and extract radius share one Z so boarding reads as one ritual.
     hExtract = h + dZ,
     d = e("concrete"),
     v = e("concrete_dirty"),
@@ -422,8 +423,8 @@ function cb(i, layout) {
     x = e("steel_dark"),
     y = e("steel_galv"),
     b = e("paint_yellow"),
-    m = h - 0.42,
-    A = h + 0.42;
+    m = hExtract - 0.42,
+    A = hExtract + 0.42;
   for (let [E, w] of [
     [f - 1, m],
     [A, p + 1],
@@ -441,7 +442,7 @@ function cb(i, layout) {
   for (let E of [m, A])
     n(g, u - 0.38, -0.16, E - 0.02, u + 0.02, 0.034, E + 0.02);
   for (let E = f + 4; E < p; E += 6)
-    Math.abs(E - h) < 1 ||
+    Math.abs(E - hExtract) < 1 ||
       (n(x, u - 0.03, -4.2, E - 0.02, u - 0.012, -0.2, E + 0.02, {
         cast: !1,
       }),
@@ -455,7 +456,7 @@ function cb(i, layout) {
   {
     let E = u - 0.12;
     for (let S of [-1, 1]) {
-      let z = h + S * 0.26;
+      let z = hExtract + S * 0.26;
       (r(
         e("paint_yellow"),
         [
@@ -476,13 +477,23 @@ function cb(i, layout) {
         t(x, 0.12, 0.012, 0.12, E - 0.62, 0.034, z));
     }
     for (let S = -3.7; S < 0; S += 0.3)
-      o(y, [E, S, h - 0.26], [E, S, h + 0.26], 0.014, {
+      o(y, [E, S, hExtract - 0.26], [E, S, hExtract + 0.26], 0.014, {
         seg: 6,
       });
     for (let S of [-3, -1.6, -0.3])
       for (let z of [-1, 1])
-        o(y, [E, S, h + z * 0.26], [u - 0.38, S, h + z * 0.26], 0.012);
-    let w = [[h - 2.6], [h - 0.9], [h + 0.9], [h + 2.6]];
+        o(
+          y,
+          [E, S, hExtract + z * 0.26],
+          [u - 0.38, S, hExtract + z * 0.26],
+          0.012,
+        );
+    let w = [
+      [hExtract - 2.6],
+      [hExtract - 0.9],
+      [hExtract + 0.9],
+      [hExtract + 2.6],
+    ];
     for (let [S] of w)
       (s(b, 0.032, 1.05, u - 0.82, 0.525, S, {
         seg: 8,
@@ -494,8 +505,8 @@ function cb(i, layout) {
           seg: 8,
         }));
     for (let [S, z] of [
-      [h - 2.6, h - 0.9],
-      [h + 0.9, h + 2.6],
+      [hExtract - 2.6, hExtract - 0.9],
+      [hExtract + 0.9, hExtract + 2.6],
     ])
       for (let H of [0.98, 0.55])
         r(
@@ -524,18 +535,19 @@ function cb(i, layout) {
         distress: 0.18,
       },
     );
+    applyExtractPlaza(i, layout, hExtract);
   }
   let _ = new TorusGeometry(0.4, 0.16, 8, 16);
   _.rotateY(Math.PI / 2);
   for (let E = f + 2.5, w = 0; E < p; E += 5, w++) {
-    if (Math.abs(E - h) < 2) continue;
+    if (Math.abs(E - hExtract) < 2) continue;
     (n(e("wood_dark"), u + 0, -3.9, E - 0.16, u + 0.2, -0.25, E + 0.16, {
       bevel: 0.02,
     }),
       n(x, u - 0.01, -0.5, E - 0.2, u + 0.215, -0.42, E + 0.2),
       n(x, u - 0.01, -2.4, E - 0.2, u + 0.215, -2.32, E + 0.2));
     let S = E + 2.4;
-    if (Math.abs(S - h) < 1.6 || S > p - 0.5) continue;
+    if (Math.abs(S - hExtract) < 1.6 || S > p - 0.5) continue;
     let z = -0.85 - (w % 3) * 0.18;
     (l(_.clone(), e("tire"), {
       p: [u + 0.17, z, S],
@@ -562,9 +574,10 @@ function cb(i, layout) {
       seed: Math.round(E + 40),
     });
   {
-    let E = [...M.map((S) => [S - 1.1, S + 1.1]), [h - 3, h + 3]].sort(
-        (S, z) => S[0] - z[0],
-      ),
+    let E = [
+        ...M.map((S) => [S - 1.1, S + 1.1]),
+        [hExtract - 3, hExtract + 3],
+      ].sort((S, z) => S[0] - z[0]),
       w = f + 0.3;
     for (let [S, z] of [...E, [p - 0.3, p]]) {
       if (S - w > 1) {
@@ -751,10 +764,10 @@ function cb(i, layout) {
     Ef(i, 19.6, 17.5, Math.PI / 2 + 0.05),
     e0(i, 19.6, 10.4, 0.4),
     e0(i, 20.5, 16.1, -2.6),
-    c("traffic_cone", 28.2, 18.2, 0, {
+    c("traffic_cone", 28.2, hExtract - 1.8, 0, {
       seed: 60,
     }),
-    c("traffic_cone", 28.3, 21.8, 0, {
+    c("traffic_cone", 28.3, hExtract + 1.8, 0, {
       seed: 61,
     }),
     Lr(
@@ -1549,6 +1562,259 @@ function hR(i, layout) {
     applyLayoutExtras(i, layout));
 }
 
+/** Quay extract plaza — barge approach landmarks unique per berth. */
+function applyExtractPlaza(i, layout, hExtract) {
+  let e = i.place,
+    u = lb.X,
+    approach = (layout && layout.extractApproach) || "home",
+    board = (layout && layout.boardSign) || "撤离舷梯",
+    paint =
+      approach === "cold" ? "white" : approach === "maint" ? "yellow" : "yellow";
+  // Approach chevrons — each berth leads the eye differently to the ladder.
+  let arrows =
+    approach === "cold"
+      ? [
+          [u - 5.8, hExtract + 2.4],
+          [u - 4.2, hExtract + 1.1],
+          [u - 2.8, hExtract + 0.15],
+          [u - 5.2, hExtract - 2.1],
+        ]
+      : approach === "maint"
+        ? [
+            [u - 7.2, hExtract],
+            [u - 5.4, hExtract + 0.05],
+            [u - 3.6, hExtract - 0.05],
+            [u - 2.4, hExtract],
+          ]
+        : [
+            [u - 6.4, hExtract - 0.15],
+            [u - 4.6, hExtract],
+            [u - 2.9, hExtract + 0.1],
+          ];
+  for (let [s, o] of arrows) i.decal("arrow", 1.4, s, 0.006, o, "y+", 0);
+  (i.label(board, 0.36, u - 2.2, 0.02, hExtract + 2.1, "y+", {
+    color: paint,
+    font: "stencil",
+    distress: 0.16,
+  }),
+    i.label("登船点", 0.22, u - 1.55, 0.02, hExtract - 2.35, "y+", {
+      color: paint,
+      font: "stencil",
+      distress: 0.22,
+    }),
+    e(
+      "light_mast",
+      u - 3.8,
+      hExtract + 3.4,
+      0,
+      {
+        seed: 901,
+      },
+      0,
+    ),
+    e(
+      "floodlight_stand",
+      u - 2.6,
+      hExtract - 3.2,
+      0.4,
+      {
+        seed: 902,
+      },
+      0,
+    ));
+  if (approach === "cold")
+    (e(
+      "jersey_barrier",
+      u - 5.2,
+      hExtract - 2.8,
+      Math.PI / 2 + 0.08,
+      {
+        seed: 911,
+      },
+      0,
+    ),
+      e(
+        "jersey_barrier",
+        u - 5.15,
+        hExtract + 2.6,
+        Math.PI / 2 - 0.06,
+        {
+          seed: 912,
+        },
+        0,
+      ),
+      e(
+        "reefer_unit",
+        u - 7.1,
+        hExtract - 1.2,
+        0.2,
+        {
+          seed: 913,
+        },
+        0,
+      ),
+      e(
+        "cable_reel",
+        u - 6.4,
+        hExtract + 1.8,
+        0.5,
+        {
+          seed: 914,
+        },
+        0,
+      ),
+      e(
+        "sign_post",
+        u - 4.1,
+        hExtract - 4.2,
+        ts,
+        {
+          seed: 915,
+          sign: "hazard_voltage",
+          text: "冷岸登船 · 防滑",
+        },
+        0,
+      ),
+      i.col(u - 5.45, 0, hExtract - 3.2, u - 4.85, 1.05, hExtract + 3.0, "concrete"));
+  else if (approach === "maint")
+    (e(
+      "pipe_stack",
+      u - 7.4,
+      hExtract - 3.6,
+      0.15,
+      {
+        seed: 921,
+      },
+      0,
+    ),
+      e(
+        "pipe_stack",
+        u - 7.1,
+        hExtract + 3.2,
+        -0.2,
+        {
+          seed: 922,
+        },
+        0,
+      ),
+      e(
+        "toolbox_cart",
+        u - 5.6,
+        hExtract + 1.4,
+        0.3,
+        {
+          seed: 923,
+        },
+        0,
+      ),
+      e(
+        "traffic_cone",
+        u - 4.8,
+        hExtract - 1.6,
+        0,
+        {
+          seed: 924,
+        },
+        0,
+      ),
+      e(
+        "traffic_cone",
+        u - 4.7,
+        hExtract + 1.5,
+        0,
+        {
+          seed: 925,
+        },
+        0,
+      ),
+      e(
+        "sign_post",
+        u - 4.2,
+        hExtract + 4.0,
+        ts,
+        {
+          seed: 926,
+          sign: "hazard_general",
+          text: "机修登船 · 快进",
+        },
+        0,
+      ),
+      Ka(i, u - 6.2, hExtract - 0.4, 0.1, "paint_orange", 21));
+  else
+    (e(
+      "bollard_post",
+      u - 4.9,
+      hExtract - 2.2,
+      0,
+      {
+        seed: 931,
+      },
+      0,
+    ),
+      e(
+        "bollard_post",
+        u - 4.9,
+        hExtract + 2.2,
+        0,
+        {
+          seed: 932,
+        },
+        0,
+      ),
+      e(
+        "sandbags",
+        u - 5.6,
+        hExtract - 1.1,
+        0.2,
+        {
+          seed: 933,
+        },
+        0,
+      ),
+      e(
+        "sandbags",
+        u - 5.55,
+        hExtract + 1.0,
+        -0.15,
+        {
+          seed: 934,
+        },
+        0,
+      ),
+      e(
+        "sign_post",
+        u - 4.3,
+        hExtract - 3.8,
+        ts,
+        {
+          seed: 935,
+          sign: "arrow",
+          text: "主撤离舷梯",
+        },
+        0,
+      ),
+      e(
+        "traffic_cone",
+        u - 3.5,
+        hExtract - 1.35,
+        0,
+        {
+          seed: 936,
+        },
+        0,
+      ),
+      e(
+        "traffic_cone",
+        u - 3.45,
+        hExtract + 1.3,
+        0,
+        {
+          seed: 937,
+        },
+        0,
+      ));
+}
+
 /** Collision + prop garnish that steers routes per berth. */
 function applyLayoutExtras(i, layout) {
   let e = (layout && layout.extras) || "none",
@@ -2127,4 +2393,4 @@ function fR(i, layout) {
     i.decal("arrow", 2.2, -30.5, 0.006, 6, "y+", 0));
 }
 
-export { Lr, lv, cb, ts, mt, hR, fR, applyLayoutExtras };
+export { Lr, lv, cb, ts, mt, hR, fR, applyLayoutExtras, applyExtractPlaza };
