@@ -19,6 +19,21 @@ var LAYOUTS = {
     // Classic dense mixed stacks — the “home” yard→shed→quay read.
     midStyle: "mixed",
     extras: "home",
+    // Shed building shell + gate booth/boom (not grade/audio).
+    shedShell: {
+      title: "八号仓库",
+      accent: "paint_yellow",
+      wallBand: "paint_grey",
+      labelColor: "white",
+      interior: "mixed",
+    },
+    gateShell: {
+      boothColor: "white",
+      boothShift: 0,
+      armOpen: 0.08,
+      armYaw: 0,
+      boothText: "闸口控制 · 8",
+    },
     // Far gantry skyline + near quay crane identity (not grade/audio).
     skyline: {
       craneId: "锈泊 08",
@@ -77,6 +92,21 @@ var LAYOUTS = {
     // Cold-chain reefers choke east/south lanes; jersey wall forces quay approaches.
     midStyle: "reefer",
     extras: "cold",
+    // Cold shed shell — white/teal band, compressor accents; tight closed boom.
+    shedShell: {
+      title: "四号冷库",
+      accent: "paint_blue",
+      wallBand: "paint_white",
+      labelColor: "white",
+      interior: "cold",
+    },
+    gateShell: {
+      boothColor: "teal",
+      boothShift: -0.45,
+      armOpen: 0,
+      armYaw: -0.06,
+      boothText: "冷链门岗 · 4",
+    },
     // Idle upright booms, cooler tints, fewer gantries — cold quay skyline.
     skyline: {
       craneId: "冷岸 04",
@@ -133,6 +163,21 @@ var LAYOUTS = {
     // Open mid + thinned north stacks (gaps, masts, pipes) — not a dense B8 twin.
     midStyle: "open",
     extras: "maint",
+    // Maint shed shell — orange band, pipe/flood accents; boom cracked open.
+    shedShell: {
+      title: "六号机修库",
+      accent: "paint_orange",
+      wallBand: "paint_grey",
+      labelColor: "yellow",
+      interior: "maint",
+    },
+    gateShell: {
+      boothColor: "grey",
+      boothShift: 0.55,
+      armOpen: 0.42,
+      armYaw: 0.08,
+      boothText: "机修门岗 · 6",
+    },
     // Denser staggered gantries + tall raised boom — maint yard skyline.
     skyline: {
       craneId: "机修 06",

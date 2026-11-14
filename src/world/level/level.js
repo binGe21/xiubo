@@ -105,7 +105,7 @@ async function createLevel(context) {
   ((e.name = "level"), context.scene.add(e));
   let t = ob(context);
   (hR(t, layout), fR(t, layout));
-  let n = ab(t),
+  let n = ab(t, layout),
     s = cb(t, layout),
     o = t.place(
       "relay_node",

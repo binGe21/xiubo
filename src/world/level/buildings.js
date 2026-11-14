@@ -564,7 +564,7 @@ var A1 = [-0.04, 0.25, 0.5, 0.75, 1];
 
 var sv = 20;
 
-function ab(i) {
+function ab(i, layout = null) {
   let {
       M: e,
       MI: t,
@@ -577,6 +577,12 @@ function ab(i) {
       add: c,
       G: u,
     } = i,
+    shell = (layout && layout.shedShell) || {},
+    mid = (layout && layout.midStyle) || "mixed",
+    accentPaint = shell.accent || "paint_yellow",
+    wallBandPaint = shell.wallBand || "paint_grey",
+    shedTitle = shell.title || "八号仓库",
+    shedLabelColor = shell.labelColor || "white",
     { X0: h, X1: f, Z0: p, Z1: d, EAVE: v, RIDGE: g, ZR: x, FLOOR: y } = no,
     b = (d - p) / 2,
     m = g - v,
@@ -746,8 +752,9 @@ function ab(i) {
         G(d, 1, Z + 0.15, J - 0.15, N, Q));
   }
   (D(p, -1, h, f, 0, v),
-    s(t("paint_grey"), 6.2, y, p + T, 7.2, 2.1, p + T + 0.04),
-    s(e("paint_grey"), 6.2, 0, p - 0.09, 7.2, 2.1, p - 0.05),
+    // South wall personnel door — band color marks berth shell.
+    s(t(wallBandPaint), 6.2, y, p + T, 7.2, 2.1, p + T + 0.04),
+    s(e(wallBandPaint), 6.2, 0, p - 0.09, 7.2, 2.1, p - 0.05),
     C(h, -1, p, d, 0, v),
     C(f, 1, p, Yt.z0, 0, N - 0.05));
   let K = {
@@ -1412,10 +1419,10 @@ function ab(i) {
   {
     for (let fe of [-1, 1]) {
       let le = -11.6 + (fe * 2.6) / 2;
-      (r(t("paint_yellow"), [le, y, -17.6 - 0.9], [le, 3.3, -17.6], 0.045),
-        r(t("paint_yellow"), [le, y, -17.6 + 0.9], [le, 3.3, -17.6], 0.045),
+      (r(t(accentPaint), [le, y, -17.6 - 0.9], [le, 3.3, -17.6], 0.045),
+        r(t(accentPaint), [le, y, -17.6 + 0.9], [le, 3.3, -17.6], 0.045),
         r(
-          t("paint_yellow"),
+          t(accentPaint),
           [le, 1, -17.6 - 0.62],
           [le, 1, -17.6 + 0.62],
           0.03,
@@ -1426,7 +1433,7 @@ function ab(i) {
           seg: 8,
         });
     }
-    (a(t("paint_yellow"), "x", 2.6 + 0.5, -11.6, 3.3 + 0.1, -17.6, {
+    (a(t(accentPaint), "x", 2.6 + 0.5, -11.6, 3.3 + 0.1, -17.6, {
       depth: 0.22,
       width: 0.14,
     }),
@@ -1472,6 +1479,43 @@ function ab(i) {
     Y("shelf_rack", L, -23.45, 0, {
       seed: Math.round(L * 5 + 40),
     });
+  // Yard-facing shell identity — title + color band (reads before interior).
+  (s(t(wallBandPaint), h + 1.2, 3.55, d + 0.02, f - 1.2, 4.05, d + 0.09),
+    s(t(accentPaint), h + 1.2, 4.05, d + 0.02, f - 1.2, 4.22, d + 0.09),
+    i.label(shedTitle, 0.4, (h + f) / 2, 4.55, d + 0.08, "z+", {
+      color: shedLabelColor,
+      font: "stencil",
+      distress: 0.22,
+    }),
+    i.decal(
+      (layout && layout.gateDecal) || "berth8",
+      1.6,
+      (h + f) / 2 - 4.2,
+      5.1,
+      d + 0.08,
+      "z+",
+    ));
+  // South eave / apron shell props — cold compressors vs maint pipes vs mixed tires.
+  mid === "reefer"
+    ? (Y("reefer_unit", -14.2, -27.2, 0.15, { seed: 25 }, 0),
+      Y("reefer_unit", -11.8, -26.6, -0.2, { seed: 26 }, 0),
+      Y("cable_reel", -13.4, -24.8, 0.8, { seed: 27 }, 0),
+      Y("generator", -9.8, -27.0, 0.1, { seed: 28 }, 0),
+      Y("barrel", -10.9, -27, 0, { seed: 29, color: "blue" }, 0),
+      Y("crate_wood", -14.7, -24.6, 0.3, { seed: 30 }, 0))
+    : mid === "open"
+      ? (Y("pipe_stack", -14.6, -26.8, 0.2, { seed: 25 }, 0),
+        Y("pipe_stack", -12.2, -27.1, -0.15, { seed: 26 }, 0),
+        Y("toolbox_cart", -13.0, -24.4, 0.4, { seed: 27 }, 0),
+        Y("floodlight_stand", -10.6, -26.6, 0.35, { seed: 28 }, 0),
+        Y("crate_wood", -14.7, -24.6, 0.3, { seed: 30 }, 0),
+        Y("gas_cylinders", -9.4, -26.2, 0, { seed: 29 }, 0))
+      : (Y("tire_stack", -15, -15.6, 0, { seed: 25 }, 0),
+        Y("tire_stack", -14.9, -16.6, 0.4, { seed: 26 }, 0),
+        Y("cardboard_boxes", -14.6, -26.6, 0.2, { seed: 27 }, 0),
+        Y("crate_wood", -12.4, -26.9, -0.1, { seed: 28 }, 0),
+        Y("barrel", -10.9, -27, 0, { seed: 29, color: "green" }, 0),
+        Y("crate_wood", -14.7, -24.6, 0.3, { seed: 30 }, 0));
   return (
     Y("pallet_stack", 0, -26.9, 0.1, {
       seed: 3,
@@ -1503,11 +1547,11 @@ function ab(i) {
     }),
     Y("barrel", 7.9, -18.5, 0, {
       seed: 15,
-      color: "blue",
+      color: mid === "reefer" ? "blue" : "blue",
     }),
     Y("barrel", 6, -18.4, 0.6, {
       seed: 16,
-      color: "red",
+      color: mid === "open" ? "yellow" : "red",
     }),
     Y("ibc_tote", -7.6, -16.4, -0.08, {
       seed: 17,
@@ -1525,34 +1569,17 @@ function ab(i) {
     Y("forklift", 8.3, -13.9, 2.75, {
       seed: 21,
     }),
-    Y("toolbox_cart", 6, -12.2, 0.15, {
-      seed: 22,
-    }),
+    mid === "open"
+      ? Y("pipe_stack", 6.2, -12.4, 0.2, { seed: 22 }, 0)
+      : mid === "reefer"
+        ? Y("cable_reel", 6.1, -12.3, 0.7, { seed: 22 }, 0)
+        : Y("toolbox_cart", 6, -12.2, 0.15, { seed: 22 }, 0),
     Y("gas_cylinders", 10.9, -11.9, 0, {
       seed: 23,
     }),
-    Y("tarp_cargo", -13.2, -13.2, 0.12, {
-      seed: 24,
-    }),
-    Y("tire_stack", -15, -15.6, 0, {
-      seed: 25,
-    }),
-    Y("tire_stack", -14.9, -16.6, 0.4, {
-      seed: 26,
-    }),
-    Y("cardboard_boxes", -14.6, -26.6, 0.2, {
-      seed: 27,
-    }),
-    Y("crate_wood", -12.4, -26.9, -0.1, {
-      seed: 28,
-    }),
-    Y("barrel", -10.9, -27, 0, {
-      seed: 29,
-      color: "green",
-    }),
-    Y("crate_wood", -14.7, -24.6, 0.3, {
-      seed: 30,
-    }),
+    mid === "reefer"
+      ? Y("reefer_unit", -13.0, -13.4, 0.15, { seed: 24 }, 0)
+      : Y("tarp_cargo", -13.2, -13.2, 0.12, { seed: 24 }, 0),
     Y("jerry_can", -9.3, -12, 0.4, {
       seed: 31,
     }),
@@ -1597,7 +1624,14 @@ function ab(i) {
     s(U, 7.2, y, -14.6, 8.4, y + 0.04, -13.6),
     i.decal("oil_stain", 2.2, 7.6, y + 0.004, -15.2, "y+", 0.6),
     i.decal("oil_stain", 1.6, -3.8, y + 0.004, -13.6, "y+", 2.1),
-    i.decal("hazard_voltage", 0.5, -1.25, 1.9, d - T - 0.142, "z-"),
+    i.decal(
+      mid === "reefer" ? "hazard_voltage" : mid === "open" ? "hazard_general" : "hazard_voltage",
+      0.5,
+      -1.25,
+      1.9,
+      d - T - 0.142,
+      "z-",
+    ),
     i.decal("caution_stripes", 2.4, -3.5, y + 0.004, -11.9, "y+", 0),
     {
       fan: ue,
