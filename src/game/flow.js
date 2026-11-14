@@ -30,7 +30,7 @@ var GAME_FLOW = {
     },
   ],
   maxAlive: 10,
-  spawnStagger: 0.78,
+  spawnStagger: 0.92,
   spawnFar: 17,
   pursuitEvery: 6.5,
   pursuitMinAlive: 4,
@@ -550,8 +550,17 @@ function createGameFlow(context) {
         }));
     }),
       (c.waveHot = 30));
-    let J = ((Math.atan2(L, -Z) * 180) / Math.PI + 360) % 360;
-      o.warn && o.warn("接敌 \u2014 " + jC[Math.round(J / 45) % 8], 3.4);
+    let J = ((Math.atan2(L, -Z) * 180) / Math.PI + 360) % 360,
+      parts = [];
+    (V.gull > 0 && parts.push("鸥×" + V.gull),
+      V.hound > 0 && parts.push("獒×" + V.hound),
+      o.warn &&
+        o.warn(
+          "接敌 — " +
+            jC[Math.round(J / 45) % 8] +
+            (parts.length ? " · " + parts.join(" ") : ""),
+          3.8,
+        ));
   }
   function X(P) {
     let V = ne();
@@ -804,7 +813,10 @@ function createGameFlow(context) {
           V === 0 &&
           !c.queue.length &&
           c.waveHot < 24 &&
-          (c.waveHot = 0);
+          ((c.waveHot = 0),
+            !c.allCut &&
+              o.message &&
+              o.message("这波编制散了 — 抓紧切闸口", 2.4));
         let Y =
           c.allCut || c.queue.length || (c.waveHot > 0 && V > 0)
             ? 1

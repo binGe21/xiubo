@@ -37,17 +37,18 @@ var ENEMY_TUNING = {
   searchTime: 9.5,
   hearRadius: 52,
   maxTokens: 2,
-  maxTokensCrowd: 3,
-  tokenGap: 1.15,
-  exposureUp: 0.13,
-  exposureDown: 0.38,
+  // Crowd fire stays scarce so telegraphs stay readable.
+  maxTokensCrowd: 2,
+  tokenGap: 1.4,
+  exposureUp: 0.1,
+  exposureDown: 0.42,
   poolGulls: 10,
   poolHounds: 8,
   maxWrecks: 5,
   maxBolts: 32,
   // Layered reaction: patrol needs longer confirm; investigate snaps faster.
-  engagePatrol: 0.62,
-  engageHunt: 0.24,
+  engagePatrol: 0.85,
+  engageHunt: 0.34,
   rallyNear: 24,
   rallyFar: 30,
 };
@@ -91,6 +92,7 @@ async function createEnemies(context) {
             color: 16752704,
           }),
     c = o && o.toneMapped !== void 0 ? o.toneMapped : !0,
+    // Gull = white shell + sodium cone; hound = orange shell (silhouette split).
     u = {
       shell: context.mats.get("armor_white", {
         triplanar: !0,
@@ -149,6 +151,15 @@ async function createEnemies(context) {
         side: DoubleSide,
         fog: !1,
       }),
+    },
+    houndMats = {
+      shell: context.mats.get("armor_orange", {
+        triplanar: !0,
+        vertexColors: !0,
+      }),
+      metal: u.metal,
+      glow: r,
+      lensBase: l,
     },
     h = {
       G: context,
@@ -311,7 +322,7 @@ async function createEnemies(context) {
     (d.push(D), s.add(D.rig.group));
   }
   for (let T = 0; T < ENEMY_TUNING.poolHounds; T++) {
-    let D = createDrone(h, p, u, T);
+    let D = createDrone(h, p, houndMats, T);
     (v.push(D), s.add(D.rig.group));
   }
   let g = [];
