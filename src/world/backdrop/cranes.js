@@ -819,7 +819,7 @@ function z1(i, e, t = {}) {
         tint: En,
       },
     ));
-  let me = i.mats.label("锈泊 08", {
+  let me = i.mats.label(t.craneId || "锈泊 08", {
       color: "white",
       font: "stencil",
       distress: 0.16,
