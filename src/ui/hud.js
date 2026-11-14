@@ -318,14 +318,23 @@ function createHUD(context) {
         m.classList.toggle("busy", Pe > 0));
     },
     radio(k, ce = 4.5) {
-      k &&
-        me.push({
-          text: k,
-          secs: ce,
-        });
+      if (!k) return;
+      // Hold long enough for typewriter + a beat to read the last glyphs.
+      let ve = String(k),
+        _e = Math.max(ce, ve.length / 46 + 1.55);
+      me.push({
+        text: ve,
+        secs: _e,
+      });
     },
     clearRadio() {
-      ((me.length = 0), (ee = null), j.classList.remove("on"));
+      ((me.length = 0),
+        ee &&
+          context.events.emit("radio:end", {
+            text: ee.text,
+          }),
+        (ee = null),
+        j.classList.remove("on"));
     },
     warn(k, ce = 3) {
       ((d.textContent = k),
@@ -580,16 +589,23 @@ function createHUD(context) {
         j.classList.add("on"),
         context.events.emit("radio:line", {
           text: ee.text,
+          secs: ee.secs,
         }));
     }
     let ce = ee.text;
     if (B < ce.length) {
-      P += k * 58;
+      // Slightly slower typewriter — easier to catch Chinese radio lines.
+      P += k * 46;
       let ve = Math.min(ce.length, Math.floor(P));
       ve !== B && ((B = ve), (N.textContent = ce.slice(0, ve)));
     } else
       ((V -= k),
-        V <= 0 && ((ee = null), me.length || j.classList.remove("on")));
+        V <= 0 &&
+          (context.events.emit("radio:end", {
+            text: ee.text,
+          }),
+          (ee = null),
+          me.length || j.classList.remove("on")));
   }
   return (R(), I);
 }
