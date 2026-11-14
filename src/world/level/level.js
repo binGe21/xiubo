@@ -433,6 +433,10 @@ async function createLevel(context) {
         ((S.objectives.length = 0),
           S.objectives.push(...q),
           (S.extraction.label = H.extractLabel || "趸船"),
+          (S.extraction.radius =
+            (ly.feel && ly.feel.extractRadius) || S.extraction.radius || 2.5),
+          (S.extraction.hold =
+            (ly.feel && ly.feel.extractHold) || S.extraction.hold || 1.35),
           // Soft spawn bias for this berth (geometry layoutId may differ until rebuild).
           (S.enemySpawns = allSpawns
             .slice()

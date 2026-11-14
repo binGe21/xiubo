@@ -163,9 +163,10 @@ body {
   opacity: 1;
 }
 .h-k {
-  font: 600 12px/1.2 var(--f-label);
+  font: 600 11px/1.2 var(--f-label);
   letter-spacing: var(--track-label);
   color: var(--bone-dim);
+  opacity: 0.72;
 }
 
 /* compass */
@@ -263,8 +264,8 @@ body {
   left: 100%;
   top: 9px;
   margin-left: 6px;
-  font: 500 11px/1 var(--f-mono);
-  color: var(--bone-dim);
+  font: 500 10px/1 var(--f-mono);
+  color: rgba(232, 228, 218, 0.42);
   letter-spacing: 0.06em;
 }
 .h-cmarks {
@@ -309,6 +310,10 @@ body {
 }
 .h-cm.extract i {
   background: var(--bone);
+  box-shadow: 0 0 0 1px rgba(232, 228, 218, 0.55);
+}
+.h-wm.extract b {
+  letter-spacing: 0.08em;
 }
 
 /* objective tracker */
@@ -355,10 +360,10 @@ body {
   color: #e08a3c;
 }
 .h-obj-t {
-  font: 600 20px/1.25 var(--f-label);
-  letter-spacing: 0.04em;
-  margin: 6px 0 10px;
-  min-height: 25px;
+  font: 600 18px/1.3 var(--f-label);
+  letter-spacing: 0.03em;
+  margin: 4px 0 8px;
+  min-height: 24px;
 }
 .h-relays {
   display: flex;
@@ -641,10 +646,10 @@ body {
   text-align: right;
 }
 .h-fl {
-  font: 500 14px/1.55 var(--f-label);
-  letter-spacing: 0.06em;
+  font: 500 12px/1.45 var(--f-label);
+  letter-spacing: 0.05em;
   color: var(--bone-dim);
-  transition: opacity 0.5s;
+  transition: opacity 0.45s;
 }
 .h-fl b {
   font-weight: 600;

@@ -32,16 +32,15 @@ function createHUD(context) {
   let n = createElement("div", "h-compass"),
     s = createElement("div", "h-tape"),
     o = "";
+  // Cardinals + major ticks only — drop 15° numeric noise that competed with berth HUD.
   for (let k = nx; k <= WC; k += 5) {
     let ce = (k - nx) * tx,
       ve = ((k % 360) + 360) % 360,
       _e = ve % 45 === 0,
       Te = ve % 15 === 0;
     ((o += `<i class="${_e ? "mj" : Te ? "md" : "mn"}" style="left:${ce}px"></i>`),
-      _e
-        ? (o += `<b class="${ve % 90 === 0 ? "card" : "ic"}" style="left:${ce}px">${GC[ve]}</b>`)
-        : ve % 15 === 0 &&
-          (o += `<b class="num" style="left:${ce}px">${String(ve).padStart(3, "0")}</b>`));
+      _e &&
+        (o += `<b class="${ve % 90 === 0 ? "card" : "ic"}" style="left:${ce}px">${GC[ve]}</b>`));
   }
   s.innerHTML = o;
   let r = createElement("div", "h-tape-wrap");
@@ -368,10 +367,10 @@ function createHUD(context) {
       E.appendChild(ce);
       let ve = {
         el: ce,
-        life: 4.2,
+        life: 2.6,
         weak: !1,
       };
-      for (Z.push(ve); Z.length > 4;) Z.shift().el.remove();
+      for (Z.push(ve); Z.length > 3;) Z.shift().el.remove();
       return ve;
     },
     hitmarker(k = "hit") {
