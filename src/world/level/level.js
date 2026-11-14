@@ -1,6 +1,7 @@
 import { Group, defineModuleExports } from "../../vendor/three-r180.js";
 import { batchStaticMeshes } from "../../core/geometry.js";
 import { ab, no, ob, rb } from "./buildings.js";
+import { resolveLayout } from "./layouts.js";
 import { Lr, cb, fR, hR, lv, mt, ts } from "./placement.js";
 
 var levelShowcaseModule = {};
@@ -11,12 +12,17 @@ defineModuleExports(levelShowcaseModule, {
 });
 
 async function createLevel(context) {
-  let e = new Group();
+  let layout = resolveLayout(
+      (context.mission && (context.mission.layoutId || context.mission.id)) ||
+        (context.params && context.params.mission) ||
+        "b8",
+    ),
+    e = new Group();
   ((e.name = "level"), context.scene.add(e));
   let t = ob(context);
-  (hR(t), fR(t));
+  (hR(t, layout), fR(t));
   let n = ab(t),
-    s = cb(t),
+    s = cb(t, layout),
     o = t.place(
       "relay_node",
       1.5,
@@ -372,11 +378,14 @@ async function createLevel(context) {
       z.type === "ground" && E(z.pos);
     }));
   let w = !1,
+    allSpawns = y.slice(),
     S = {
       root: e,
       playerStart: d,
       objectives: v,
-      missionId: "b8",
+      missionId: layout.id,
+      layoutId: layout.id,
+      layout: layout,
       relayNodes: relayNodes,
       extraction: {
         pos: s.extraction.clone(),
@@ -384,6 +393,7 @@ async function createLevel(context) {
         label: "趸船",
       },
       enemySpawns: y,
+      allSpawns: allSpawns,
       zones: b,
       interiorBoxes: m,
       cinematicPath: A,
@@ -401,13 +411,15 @@ async function createLevel(context) {
         props: t.placed.length,
         tris: Math.round(p),
         meshes: f.children.length + pR(t.dynRoot),
+        layout: layout.id,
       },
       placed: t.placed,
       // Mission object from game/missions.js — keeps world/ free of game imports.
       applyMission(H) {
         if (!H || !H.id) return null;
         S.missionId = H.id;
-        let O = H.playerStart;
+        let O = H.playerStart,
+          ly = resolveLayout(H.layoutId || H.id);
         O &&
           O.pos &&
           (S.playerStart.pos.copy(O.pos), (S.playerStart.yaw = O.yaw || 0));
@@ -420,7 +432,15 @@ async function createLevel(context) {
           });
         ((S.objectives.length = 0),
           S.objectives.push(...q),
-          (S.extraction.label = H.extractLabel || "趸船"));
+          (S.extraction.label = H.extractLabel || "趸船"),
+          // Soft spawn bias for this berth (geometry layoutId may differ until rebuild).
+          (S.enemySpawns = allSpawns
+            .slice()
+            .sort(
+              (U, T) =>
+                (ly.spawnBias.indexOf(U.zone) + 99) -
+                (ly.spawnBias.indexOf(T.zone) + 99),
+            )));
         // Nodes not on this briefing read as already dark — avoids false interactables.
         for (let U of Object.values(relayNodes)) {
           let T = U.object && U.object.userData;
@@ -448,7 +468,7 @@ async function createLevel(context) {
     };
   // Default briefing until flow applies the selected mission.
   return (S.applyMission({
-    id: "b8",
+    id: layout.id,
     playerStart: d,
     objectiveOrder: ["relay_a", "relay_b", "relay_c"],
     labels: {
@@ -459,6 +479,27 @@ async function createLevel(context) {
     extractLabel: "趸船",
   }),
   S);
+}
+
+/** Tear down level colliders/meshes and rebuild for a berth layout. */
+async function rebuildLevel(context, missionId) {
+  let e = context.level;
+  if (e && e.root) {
+    try {
+      context.scene.remove(e.root);
+    } catch {}
+  }
+  (context.physics.clearSource && context.physics.clearSource("level"),
+    (context.mission = {
+      id: missionId,
+      layoutId: missionId,
+    }));
+  let t = await createLevel(context);
+  return (
+    (context.level = t),
+    context.physics.build(),
+    t
+  );
 }
 
 function dR(i, e) {
@@ -488,4 +529,4 @@ async function showcaseLevel(context) {
   };
 }
 
-export { createLevel, levelShowcaseModule, showcaseLevel };
+export { createLevel, rebuildLevel, levelShowcaseModule, showcaseLevel };

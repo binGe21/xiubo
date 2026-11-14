@@ -401,7 +401,7 @@ var lb = {
   Z1: 28,
 };
 
-function cb(i) {
+function cb(i, layout) {
   let {
       M: e,
       box: t,
@@ -414,6 +414,8 @@ function cb(i) {
       place: c,
     } = i,
     { X: u, LADDER_Z: h, Z0: f, Z1: p } = lb,
+    dZ = (layout && layout.extractZ) || 0,
+    hExtract = h + dZ,
     d = e("concrete"),
     v = e("concrete_dirty"),
     g = e("steel_worn"),
@@ -509,11 +511,19 @@ function cb(i) {
             radial: 5,
           },
         );
-    i.label("趸船站 8", 0.2, u - 1.3, 0.006, h - 1.4, "y+", {
-      color: "yellow",
-      font: "stencil",
-      distress: 0.18,
-    });
+    i.label(
+      (layout && layout.quaySign) || "趸船站 8",
+      0.2,
+      u - 1.3,
+      0.006,
+      hExtract - 1.4,
+      "y+",
+      {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.18,
+      },
+    );
   }
   let _ = new TorusGeometry(0.4, 0.16, 8, 16);
   _.rotateY(Math.PI / 2);
@@ -762,7 +772,7 @@ function cb(i) {
     ),
     {
       relayPos: new Vector3(23, 0, 0),
-      extraction: new Vector3(29, 0, h),
+      extraction: new Vector3(29, 0, hExtract),
     }
   );
 }
@@ -775,9 +785,10 @@ var R1 = 0.535;
 
 var mt = (i, e, t) => new Vector3(i, e, t);
 
-function hR(i) {
+function hR(i, layout) {
   let e = i.place,
-    t = i.stack;
+    t = i.stack,
+    mid = (layout && layout.midStyle) || "mixed";
   (t(-19.45, -5.12, [
     [20, "green"],
     [20, "grey"],
@@ -793,38 +804,171 @@ function hR(i) {
         },
       ],
     ]),
-    t(3.7, -5.12, [
-      [
-        20,
-        "blue",
-        {
-          doors: 0.8,
-          flip: !0,
-        },
-      ],
-      [20, "white"],
-    ]),
-    t(13.53, -5.12, [
-      [20, "teal"],
-      [20, "grey"],
-    ]),
+    // Mid-south row — berth variants change cover and sightlines here.
+    mid === "reefer"
+      ? (t(3.7, -5.12, [
+          [
+            20,
+            "white",
+            {
+              reefer: !0,
+            },
+          ],
+          [
+            20,
+            "white",
+            {
+              reefer: !0,
+              flip: !0,
+            },
+          ],
+        ]),
+        t(13.53, -5.12, [
+          [
+            20,
+            "white",
+            {
+              reefer: !0,
+            },
+          ],
+          [20, "teal"],
+        ]),
+        t(18.4, -5.12, [
+          [
+            20,
+            "white",
+            {
+              reefer: !0,
+              flip: !0,
+            },
+          ],
+        ]))
+      : mid === "open"
+        ? (t(3.7, -5.12, [
+            [
+              20,
+              "blue",
+              {
+                doors: 0.8,
+                flip: !0,
+              },
+            ],
+          ]),
+          t(13.53, -5.12, [[20, "grey"]]))
+        : (t(3.7, -5.12, [
+            [
+              20,
+              "blue",
+              {
+                doors: 0.8,
+                flip: !0,
+              },
+            ],
+            [20, "white"],
+          ]),
+          t(13.53, -5.12, [
+            [20, "teal"],
+            [20, "grey"],
+          ])),
     t(-19.45, 2.08, [[20, "blue"]]),
     t(-13.35, 2.08, [[20, "red"]]),
-    t(0.8, 2.08, [
-      [40, "orange"],
-      [40, "teal"],
-      [
-        20,
-        "blue",
-        {
-          dx: 3,
-        },
-      ],
-    ]),
-    t(12.3, 2.08, [
-      [20, "red"],
-      [20, "yellow"],
-    ]),
+    // Mid corridor — B6 opens it; B4 packs reefers; B8 keeps mixed wall.
+    mid === "open"
+      ? (e(
+          "pipe_stack",
+          -1.2,
+          4.4,
+          0.15,
+          {
+            seed: 201,
+          },
+          0,
+        ),
+        e(
+          "toolbox_cart",
+          1.6,
+          3.1,
+          -0.4,
+          {
+            seed: 202,
+          },
+          0,
+        ),
+        e(
+          "tarp_cargo",
+          2.8,
+          5.2,
+          0.6,
+          {
+            seed: 203,
+          },
+          0,
+        ),
+        e(
+          "crate_wood",
+          -2.4,
+          2.6,
+          0.2,
+          {
+            seed: 204,
+          },
+          0,
+        ),
+        t(12.3, 2.08, [
+          [20, "yellow"],
+        ]))
+      : mid === "reefer"
+        ? (t(0.8, 2.08, [
+            [
+              40,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+                flip: !0,
+              },
+            ],
+          ]),
+          t(12.3, 2.08, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+            [20, "yellow"],
+          ]),
+          t(17.8, 2.08, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+          ]))
+        : (t(0.8, 2.08, [
+            [40, "orange"],
+            [40, "teal"],
+            [
+              20,
+              "blue",
+              {
+                dx: 3,
+              },
+            ],
+          ]),
+          t(12.3, 2.08, [
+            [20, "red"],
+            [20, "yellow"],
+          ])),
     t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
     t(
       -13.6,
@@ -1312,14 +1456,150 @@ function hR(i) {
     Sf(i, -22.95, 3.62, "二道", "x-"),
     Sf(i, -25, 14, "三道", "x-"),
     Sf(i, 16.9, 9.5, "二道", "x+"),
-    i.label("八号泊位 · 机修", 0.55, 4.2, 4.3, no.Z1 + 0.064, "z+", {
-      color: "white",
-      font: "stencil",
-      distress: 0.2,
-    }),
-    i.decal("berth4", 3.2, -12, 3.4, no.Z1 + 0.064, "z+"),
+    i.label(
+      (layout && layout.yardTitle) || "八号泊位 · 深水",
+      0.55,
+      4.2,
+      4.3,
+      no.Z1 + 0.064,
+      "z+",
+      {
+        color: "white",
+        font: "stencil",
+        distress: 0.2,
+      },
+    ),
+    i.decal(
+      (layout && layout.gateDecal) || "berth4",
+      3.2,
+      -12,
+      3.4,
+      no.Z1 + 0.064,
+      "z+",
+    ),
     i.decal("rust_run", 1, 9, 3.2, no.Z1 + 0.064, "z+"),
-    i.decal("grime_streak", 1.2, -14, 3.9, no.Z1 + 0.064, "z+"));
+    i.decal("grime_streak", 1.2, -14, 3.9, no.Z1 + 0.064, "z+"),
+    applyLayoutExtras(i, layout));
+}
+
+/** Collision + prop garnish that steers routes per berth. */
+function applyLayoutExtras(i, layout) {
+  let e = (layout && layout.extras) || "none",
+    t = i.place;
+  if (e === "cold")
+    (t(
+      "jersey_barrier",
+      16.2,
+      -2.4,
+      Math.PI / 2,
+      {
+        seed: 301,
+      },
+      0,
+    ),
+      t(
+        "jersey_barrier",
+        16.2,
+        1.1,
+        Math.PI / 2,
+        {
+          seed: 302,
+        },
+        0,
+      ),
+      t(
+        "jersey_barrier",
+        16.25,
+        4.6,
+        Math.PI / 2,
+        {
+          seed: 303,
+        },
+        0,
+      ),
+      t(
+        "reefer_unit",
+        19.6,
+        -1.2,
+        0.2,
+        {
+          seed: 304,
+        },
+        0,
+      ),
+      t(
+        "generator",
+        21.2,
+        -8.4,
+        -0.3,
+        {
+          seed: 305,
+        },
+        0,
+      ),
+      t(
+        "cable_reel",
+        22.1,
+        -6.2,
+        0.5,
+        {
+          seed: 306,
+        },
+        0,
+      ),
+      i.col(15.85, 0, -3.2, 16.55, 1.1, 5.2, "concrete"));
+  else if (e === "maint")
+    (t(
+      "pipe_stack",
+      14.8,
+      -8.6,
+      0.1,
+      {
+        seed: 311,
+      },
+      0,
+    ),
+      t(
+        "pipe_stack",
+        15.1,
+        -14.2,
+        -0.2,
+        {
+          seed: 312,
+        },
+        0,
+      ),
+      t(
+        "toolbox_cart",
+        -8.4,
+        -11.2,
+        0.4,
+        {
+          seed: 313,
+        },
+        0,
+      ),
+      t(
+        "tarp_cargo",
+        -4.2,
+        -12.6,
+        1.1,
+        {
+          seed: 314,
+        },
+        0,
+      ),
+      t(
+        "pallet_stack",
+        2.2,
+        -10.8,
+        0.2,
+        {
+          seed: 315,
+        },
+        0,
+      ),
+      i.col(14.2, 0, -15.4, 16.1, 1.2, -7.2, "metal"));
 }
 
 function fR(i) {
@@ -1480,4 +1760,4 @@ function fR(i) {
     i.decal("arrow", 2.2, -30.5, 0.006, 6, "y+", 0));
 }
 
-export { Lr, lv, cb, ts, mt, hR, fR };
+export { Lr, lv, cb, ts, mt, hR, fR, applyLayoutExtras };

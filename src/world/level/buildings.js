@@ -194,6 +194,7 @@ function ob(i) {
   function A(T, D, C, G, j, N, Q = "concrete", K = {}) {
     return i.physics.addBox([T, D, C], [G, j, N], {
       surface: Q,
+      source: "level",
       ...K,
     });
   }
@@ -239,6 +240,7 @@ function ob(i) {
           }
           i.physics.addBox(_.min, _.max, {
             surface: K.surface || N.surface || "metal",
+            source: "level",
             ...(C.colOpts || {}),
           });
         }
