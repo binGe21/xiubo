@@ -92,7 +92,7 @@ npm run release
 
 触屏：左拇指移动、右半屏视角；屏幕按钮含开火、开镜、换弹、近战、蹲、跳跃与互动。
 
-设置保存在 `localStorage` 键 `xiubo.settings.v1`。
+设置保存在 `localStorage` 键 `xiubo.settings.v1`。各泊位本机最佳通关 / 阵亡次数保存在 `xiubo.scores.v1`（无账号、无后端）。
 
 ## 源码地图
 

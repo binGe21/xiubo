@@ -1195,7 +1195,7 @@ body {
 }
 .m-mission {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto 1fr auto;
   grid-template-rows: auto auto;
   column-gap: 8px;
   row-gap: 2px;
@@ -1225,13 +1225,24 @@ body {
   padding: 5px 6px 4px;
 }
 .m-mission span {
+  grid-column: 2;
   font: 600 14px/1.2 var(--f-label);
   letter-spacing: 0.04em;
 }
 .m-mission i {
+  grid-column: 2;
   font: 500 11px/1.2 var(--f-label);
   letter-spacing: var(--track-label);
   color: var(--steel);
+  font-style: normal;
+}
+.m-mission em {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font: 600 12px/1.2 var(--f-label);
+  letter-spacing: var(--track-label);
+  color: var(--signal);
   font-style: normal;
 }
 .m-mission:hover {
@@ -1244,6 +1255,19 @@ body {
 }
 .m-mission[aria-checked="true"] b {
   background: var(--signal);
+}
+.m-scoreboard {
+  margin: 10px 0 0;
+  max-width: 48em;
+  font: 500 12px/1.45 var(--f-label);
+  letter-spacing: var(--track-ui);
+  color: var(--steel);
+}
+.m-score-note {
+  margin: 14px 0 0;
+  font: 500 13px/1.45 var(--f-label);
+  letter-spacing: var(--track-ui);
+  color: var(--signal);
 }
 .m-actions {
   display: flex;

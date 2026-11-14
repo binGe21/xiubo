@@ -2,6 +2,12 @@
 import { PLAYER_DIMENSIONS, QUALITY_PRESETS } from "../core/config.js";
 import { chooseQuality } from "../core/quality.js";
 import { listMissions, resolveMission } from "../game/missions.js";
+import {
+  formatBestShort,
+  formatScoreLine,
+  getEntry,
+  loadScores,
+} from "../game/scores.js";
 
 var SETTINGS_KEY = "xiubo.settings.v1";
 
@@ -96,16 +102,17 @@ function createMenus(context, e) {
           ${listMissions()
             .map(
               (U) =>
-                `<button type="button" class="m-mission" role="radio" data-mission="${U.id}" aria-checked="false"><b>${U.tag}</b><span>${U.name}</span><i>${U.clock}</i></button>`,
+                `<button type="button" class="m-mission" role="radio" data-mission="${U.id}" aria-checked="false"><b>${U.tag}</b><span>${U.name}</span><i>${U.clock}</i><em data-best="${U.id}">—</em></button>`,
             )
             .join("")}
         </div>
+        <p class="m-scoreboard" data-f="scoreboard" aria-label="本机泊位成绩">本机成绩加载中</p>
         <div class="m-actions">
           <button class="btn primary" data-act="deploy">开始突入</button>
           <button class="btn" data-act="settings">设置</button>
           <button class="btn m-only-narrow" data-act="controls">操作</button>
         </div>
-        <p class="m-note">三泊位短任务 · 共享港区 · 键盘鼠标或触屏均可 · Esc / P 暂停</p>
+        <p class="m-note">三泊位短任务 · 本机成绩存于浏览器 · 键盘鼠标或触屏均可 · Esc / P 暂停</p>
       </div>
       <aside class="m-legend" aria-label="操作速览">
         <div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</span><span><kbd>鼠标</kbd> 视角</span><span><kbd>左键</kbd> 开火</span><span><kbd>右键</kbd> 开镜</span><span><kbd>R</kbd> 换弹</span></div>
@@ -130,7 +137,8 @@ function createMenus(context, e) {
       <div class="m-k">突击手倒地</div>
       <h2 class="m-h">信号中断</h2>
       <p class="m-line">港区未静。重整装具，再次突入切断闸口。</p>
-      <dl class="m-stats"><div><dt>存活时间</dt><dd data-f="dead-time">00:00</dd></div><div><dt>已切闸口</dt><dd data-f="dead-relays">0/3</dd></div></dl>
+      <dl class="m-stats"><div><dt>存活时间</dt><dd data-f="dead-time">00:00</dd></div><div><dt>已切闸口</dt><dd data-f="dead-relays">0/3</dd></div><div><dt>本泊位阵亡</dt><dd data-f="dead-deaths">0</dd></div></dl>
+      <p class="m-score-note" data-f="dead-best">本机尚无通关记录</p>
       <div class="m-actions col"><button class="btn primary" data-act="retry">再次突入</button></div>
     </section>
 
@@ -145,6 +153,7 @@ function createMenus(context, e) {
         <div><dt>击毁机械</dt><dd data-f="kills">0</dd></div>
         <div><dt>重试次数</dt><dd data-f="retries">0</dd></div>
       </dl>
+      <p class="m-score-note" data-f="score-note">本机成绩</p>
       <div class="m-actions col"><button class="btn primary" data-act="redeploy">再度突入</button></div>
     </section>
 
@@ -188,6 +197,27 @@ function createMenus(context, e) {
     f = o("#s-fov"),
     p = "none",
     d = null;
+  function refreshScoreboard(U) {
+    let T = resolveMission(U || n.mission).id,
+      D = loadScores(),
+      C = listMissions()
+        .map((G) => {
+          let j = D[G.id] || getEntry(G.id),
+            N = formatBestShort(j);
+          return `${G.tag} ${N === "—" ? "尚无" : N}`;
+        })
+        .join(" · "),
+      G = D[T] || getEntry(T);
+    for (let j of r("[data-best]"))
+      j.textContent = formatBestShort(D[j.dataset.best] || getEntry(j.dataset.best));
+    let N = c("scoreboard");
+    N &&
+      (N.textContent =
+        `本机 · ${C}` +
+        (G.bestTime || G.deaths
+          ? ` — 当前 ${resolveMission(T).tag}：${formatScoreLine(G)}`
+          : ` — 当前 ${resolveMission(T).tag}：尚无通关`));
+  }
   function setMissionBriefing(U) {
     let T = resolveMission(U && (U.id || U));
     ((n.mission = T.id),
@@ -202,7 +232,7 @@ function createMenus(context, e) {
       (c("debrief-line").textContent = T.debriefLine));
     for (let D of r(".m-mission"))
       D.setAttribute("aria-checked", String(D.dataset.mission === T.id));
-    saveSettings(n);
+    (refreshScoreboard(T.id), saveSettings(n));
   }
   function v(U) {
     if (
@@ -422,7 +452,9 @@ function createMenus(context, e) {
           S(),
           s.classList.toggle("open", U !== "none"),
           U !== "none"
-            ? (g(), setTimeout(H, 30))
+            ? (g(),
+              U === "title" && refreshScoreboard(n.mission),
+              setTimeout(H, 30))
             : document.activeElement &&
               s.contains(document.activeElement) &&
               document.activeElement.blur());
@@ -433,17 +465,30 @@ function createMenus(context, e) {
       setLookMode(U) {
         c("lookmode").textContent = U || "";
       },
-      setDead({ time: U, relays: T, total: D }) {
+      refreshScoreboard,
+      setDead({ time: U, relays: T, total: D, deaths: C, bestLine: G }) {
         ((c("dead-time").textContent = O(U)),
-          (c("dead-relays").textContent = `${T}/${D}`));
+          (c("dead-relays").textContent = `${T}/${D}`),
+          (c("dead-deaths").textContent = String(C ?? 0)),
+          (c("dead-best").textContent =
+            G || "本机尚无通关记录"));
       },
-      setDebrief({ time: U, accuracy: T, kills: D, retries: C, rating: G }) {
+      setDebrief({
+        time: U,
+        accuracy: T,
+        kills: D,
+        retries: C,
+        rating: G,
+        scoreNote: j,
+      }) {
         ((c("time").textContent = O(U)),
           (c("acc").textContent =
             T == null ? "\u2014" : Math.round(T * 100) + "%"),
           (c("kills").textContent = String(D)),
           (c("retries").textContent = String(C)),
-          (c("rating").textContent = G));
+          (c("rating").textContent = G),
+          (c("score-note").textContent = j || "本机成绩已更新"),
+          refreshScoreboard(n.mission));
       },
       applySettings: v,
     };
