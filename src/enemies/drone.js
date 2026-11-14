@@ -1,3 +1,4 @@
+// 獒（type: "hound"）— 地面奔跑扑击。文件名 drone 来自拆分遗留，勿当成空中单位。
 import { Mesh, PlaneGeometry, Vector3 } from "../vendor/three-r180.js";
 import { $v, pm, q_ } from "./models.js";
 

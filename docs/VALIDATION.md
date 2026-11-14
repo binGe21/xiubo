@@ -2,6 +2,9 @@
 
 日期：2026-11-10。来源：[Saltline Artifact](https://claude.ai/artifact/BGY1SztrAYcJQHSsnHHGmp)，公开版本 `1794242702-61c7`。
 
+> **现行差异（2026-11-14 标注，不改正文历史事实）**  
+> 本文是 Saltline 恢复当日的验收快照。当前仓库已国产化为锈泊：开发 / 预览端口为 **8743**（不再是下文的 5173 / 4173）；标题主按钮为中文 **开始突入**（不再是英文 Deploy）。日常请以 `README.md` 与 `package.json` 的 scripts 为准。
+
 ## 完整性
 
 - 公开版本清单只包含一个 `index.html`，1,423,413 字节。

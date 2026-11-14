@@ -1,3 +1,4 @@
+// 鸥（type: "gull"）— 空中盘旋射击。文件名 walker 来自拆分遗留，勿当成地面单位。
 import { Mesh, PlaneGeometry, Vector3 } from "../vendor/three-r180.js";
 import { DRONE_MODEL, pm } from "./models.js";
 

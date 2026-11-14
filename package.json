@@ -13,6 +13,7 @@
     "check": "node scripts/check-source.mjs && node scripts/verify-archive.mjs",
     "format": "prettier --write index.html \"src/**/*.js\" src/*.css vite.config.js scripts/*.mjs scripts/lib/*.mjs",
     "verify:archive": "node scripts/verify-archive.mjs",
+    "verify:refactor": "node scripts/verify-refactor.mjs",
     "playtest:shots": "node scripts/playtest-shots.mjs"
   },
   "engines": {
