@@ -450,6 +450,9 @@ async function createWeapon(context) {
       setWetness(Me) {
         Wv.value = Math.max(0, Math.min(1, +Me || 0));
       },
+      setName(Me) {
+        ve.name = Me || mi.name;
+      },
       snap() {
         k.adsLin = context.input.ads ? 1 : 0;
         for (let Me of [
@@ -751,7 +754,7 @@ async function createWeapon(context) {
     (k.cooldown < 0 && (k.cooldown = Math.max(k.cooldown, -0.001)),
       k.t - k.lastShot > 0.24 &&
         (k.burst > 0 && (k.recPhase = ae() * 6.28), (k.burst = 0)),
-      (k.bloom = Math.max(0, k.bloom - Me * 1.5)),
+      (k.bloom = Math.max(0, k.bloom - Me * 1.85)),
       k.t - k.lastShot > 0.11 &&
         k.t - k.lastShot < 0.11 + Me * 1.5 &&
         k.heat > 0.4 &&
@@ -773,19 +776,19 @@ async function createWeapon(context) {
           }))),
       (k.heat = Math.max(0, k.heat - Me * 0.2)));
     let Os = !!be.ads && !k.reload && k.sprintT < 0.35;
-    // Slightly deliberate ADS in/out so FOV + sway land together.
-    ((k.adsLin = clamp(k.adsLin + (Os ? Me : -Me) / 0.155, 0, 1)),
+    // ADS in deliberate; release snaps a beat faster so hipfire recovers cleanly.
+    ((k.adsLin = clamp(k.adsLin + (Os ? Me : -Me) / (Os ? 0.145 : 0.118), 0, 1)),
       (k.adsE = Yo(k.adsLin)),
       (ve.ads = k.adsE));
     let pn = we.speed || 0,
       Ti = saturate(pn / 6),
       ho =
-        lerp(0.0128, 0.00072, k.adsE) +
-        Ti * lerp(0.013, 0.0028, k.adsE) +
-        k.bloom * lerp(0.0065, 0.0015, k.adsE) +
-        (we.onGround === !1 ? 0.02 : 0) -
-        (we.crouching ? 0.0028 * (1 - k.adsE) : 0);
-    ((k.spreadS = damp(k.spreadS, ho, 20, Me)),
+        lerp(0.0138, 0.00062, k.adsE) +
+        Ti * lerp(0.014, 0.0024, k.adsE) +
+        k.bloom * lerp(0.006, 0.0012, k.adsE) +
+        (we.onGround === !1 ? 0.018 : 0) -
+        (we.crouching ? 0.0032 * (1 - k.adsE) : 0);
+    ((k.spreadS = damp(k.spreadS, ho, 22, Me)),
       (ve.spread = k.spreadS),
       Oe ||
       !!be.ads ||

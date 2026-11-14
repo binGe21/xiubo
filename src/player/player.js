@@ -9,41 +9,41 @@ var PLAYER_MOVEMENT = {
   sprint: 7.05,
   crouch: 2,
   ads: 2.45,
-  accelGround: 32,
-  decelGround: 24,
-  accelAir: 9,
+  accelGround: 34,
+  decelGround: 26,
+  accelAir: 9.5,
   gravity: 21,
   jumpApex: 1.05,
   coyote: 0.14,
   jumpBuffer: 0.14,
   standHeight: PLAYER_DIMENSIONS.height,
   crouchHeight: 1.15,
-  eyeRate: 9,
+  eyeRate: 10,
   stride: {
     walk: 1.58,
-    sprint: 2.22,
+    sprint: 2.28,
     crouch: 1.05,
   },
-  bobY: 0.024,
-  bobX: 0.013,
-  bobSprint: 1.95,
-  bobAds: 0.12,
-  rollStrafe: 0.02,
-  landDip: 0.38,
-  landDipMax: 0.19,
-  fovSprint: 9,
+  bobY: 0.022,
+  bobX: 0.012,
+  bobSprint: 1.85,
+  bobAds: 0.1,
+  rollStrafe: 0.018,
+  landDip: 0.42,
+  landDipMax: 0.21,
+  fovSprint: 8,
   fovAds: 46,
-  adsLook: 0.48,
+  adsLook: 0.46,
   regenDelay: 3.6,
   regenRate: 28,
-  recoilKeep: 0.34,
-  recoilApply: 48,
-  recoilRecover: 10.2,
-  recoilHold: 0.08,
-  shakeDecay: 2.05,
-  shakePitch: 0.03,
-  shakeYaw: 0.028,
-  shakeRoll: 0.042,
+  recoilKeep: 0.3,
+  recoilApply: 52,
+  recoilRecover: 11.5,
+  recoilHold: 0.07,
+  shakeDecay: 2.2,
+  shakePitch: 0.028,
+  shakeYaw: 0.026,
+  shakeRoll: 0.038,
   pitchLimit: 1.5,
 };
 
@@ -85,6 +85,13 @@ function createPlayer(context) {
     H = PLAYER_DIMENSIONS.fov,
     O = 0,
     q = "concrete",
+    // Per-berth locomotion bias (layouts.feel) — never stacks; always from baseline.
+    feelMul = {
+      walk: 1,
+      sprint: 1,
+      accel: 1,
+      landDip: 1,
+    },
     U = new Vector3(),
     T = new Euler(0, 0, 0, "YXZ"),
     D = new Vector3(),
@@ -110,6 +117,15 @@ function createPlayer(context) {
       lookScale: 1,
       lastSafe: D,
       tuning: PLAYER_MOVEMENT,
+      applyFeel(F) {
+        let X = F || {};
+        feelMul = {
+          walk: Number.isFinite(X.walk) ? X.walk : 1,
+          sprint: Number.isFinite(X.sprint) ? X.sprint : 1,
+          accel: Number.isFinite(X.accel) ? X.accel : 1,
+          landDip: Number.isFinite(X.landDip) ? X.landDip : 1,
+        };
+      },
       reset(F) {
         let X = F ||
           (context.level && context.level.playerStart) || {
@@ -290,12 +306,12 @@ function createPlayer(context) {
         C.ads < 0.35 &&
         !X.fire;
     C.sprinting =
-      (B && C.onGround && C.speed > PLAYER_MOVEMENT.walk * 0.6) ||
+      (B && C.onGround && C.speed > PLAYER_MOVEMENT.walk * feelMul.walk * 0.6) ||
       (B && !C.onGround && C.sprinting);
-    let P = PLAYER_MOVEMENT.walk;
+    let P = PLAYER_MOVEMENT.walk * feelMul.walk;
     (C.crouching
       ? (P = PLAYER_MOVEMENT.crouch)
-      : B && (P = PLAYER_MOVEMENT.sprint),
+      : B && (P = PLAYER_MOVEMENT.sprint * feelMul.sprint),
       (P = lerp(P, Math.min(P, PLAYER_MOVEMENT.ads), C.ads)),
       me < 0 && (P *= lerp(1, 0.82, -me)));
     let V = Math.sin(C.yaw),
@@ -303,10 +319,10 @@ function createPlayer(context) {
     U.set(ue * Y - me * V, 0, -ue * V - me * Y).multiplyScalar(P);
     let L = C.onGround
         ? ee
-          ? PLAYER_MOVEMENT.accelGround
-          : PLAYER_MOVEMENT.decelGround
+          ? PLAYER_MOVEMENT.accelGround * feelMul.accel
+          : PLAYER_MOVEMENT.decelGround * feelMul.accel
         : ee
-          ? PLAYER_MOVEMENT.accelAir
+          ? PLAYER_MOVEMENT.accelAir * feelMul.accel
           : 0.6,
       Z = U.x - C.vel.x,
       J = U.z - C.vel.z;
@@ -357,7 +373,7 @@ function createPlayer(context) {
     ) {
       if (!l && c > 0.12) {
         let ce = Math.max(0, -le, u);
-        ((g.v -= Math.min(ce * PLAYER_MOVEMENT.landDip, 3.2)),
+        ((g.v -= Math.min(ce * PLAYER_MOVEMENT.landDip * feelMul.landDip, 3.4)),
           ce > 7.5 && C.addShake(Math.min(0.5, (ce - 7.5) * 0.06)),
           context.events.emit("player:land", {
             speed: ce,

@@ -79,6 +79,7 @@ function createGameFlow(context) {
     let V = resolveLayout((P && (P.layoutId || P.id)) || "b8"),
       Y = V.sense || {},
       L = V.audio || {},
+      feel = V.feel || {},
       Z = (P && P.hud) || {};
     (t = Number.isFinite(Y.saturation) ? Y.saturation : 1),
       e &&
@@ -89,6 +90,16 @@ function createGameFlow(context) {
         Number.isFinite(Y.vignette) && (e.vignette = Y.vignette)),
       a(context.ground, "setRain", Number.isFinite(Y.rain) ? Y.rain : 0.78),
       a(context.audio, "setBerthAmbient", L),
+      a(n, "applyFeel", feel),
+      a(context.weapon, "setName", (P && P.weaponName) || "PAC-9 深水"),
+      s &&
+        s.extraction &&
+        ((s.extraction.radius = Number.isFinite(feel.extractRadius)
+          ? feel.extractRadius
+          : 2.5),
+        (s.extraction.hold = Number.isFinite(feel.extractHold)
+          ? feel.extractHold
+          : 1.35)),
       a(o, "setBerthChrome", {
         channel: Z.channel || "指挥部",
         chip: Z.chip || ((P && P.tag) || "B8") + " · " + ((P && P.name) || ""),
@@ -151,6 +162,7 @@ function createGameFlow(context) {
       lowSaid: !1,
       extractHint: 0,
       extractT: 0,
+      extractNearSaid: !1,
       intensity: 0.15,
       used: new Map(),
     },
@@ -339,6 +351,7 @@ function createGameFlow(context) {
       (c.lowSaid = !1),
       (c.extractHint = 0),
       (c.extractT = 0),
+      (c.extractNearSaid = !1),
       c.used.clear(),
       (c.relays = A().map((P, V) => {
         let Y = (/([a-z0-9])$/i.exec(String(P.id || "")) || [
@@ -743,6 +756,8 @@ function createGameFlow(context) {
                 t: 0,
               }))));
     let Y = s.extraction,
+      hud = (Mi && Mi.hud) || {},
+      hold = (Y && Y.hold) || 1.35,
       L =
         Y && Y.pos
           ? Math.hypot(Y.pos.x - n.pos.x, Y.pos.z - n.pos.z) <
@@ -752,13 +767,17 @@ function createGameFlow(context) {
     if (V && !V.cut)
       o.setPrompt && o.setPrompt("切断闸口 " + V.short, saturate(V.t));
     else if (L && c.allCut && n.alive) {
-      (Z
-        ? ((c.extractT = Math.min(1, c.extractT + P / 1.35)),
-          c.extractT >= 1 && ee())
-        : (c.extractT = Math.max(0, c.extractT - P * 1.5)),
+      (!c.extractNearSaid &&
+        ((c.extractNearSaid = !0),
+        o.radio && _l.extractNear && o.radio(_l.extractNear, 2.6)),
+        Z
+          ? ((c.extractT = Math.min(1, c.extractT + P / hold)),
+            c.extractT >= 1 && ee())
+          : (c.extractT = Math.max(0, c.extractT - P * 1.55)),
         o.setPrompt &&
           o.setPrompt(
-            "登船撤离",
+            hud.extractPrompt ||
+              "登上" + ((Y && Y.label) || "趸船") + "撤离",
             saturate(c.extractT),
           ));
     } else
@@ -768,7 +787,10 @@ function createGameFlow(context) {
           !c.allCut &&
           c.extractHint <= 0 &&
           ((c.extractHint = 8),
-          o.message("闸口仍在线 — 交火中趸船不会等你", 3.5)));
+          o.message(
+            ((Y && Y.label) || "趸船") + "仍在线 — 闸口未切完不会等你",
+            3.2,
+          )));
     c.extractHint = Math.max(0, c.extractHint - P);
   }
   function me(P) {
@@ -787,8 +809,16 @@ function createGameFlow(context) {
         ? ((c.allCut = !0),
           (c.pursuitLeft = GAME_FLOW.pursuitExtra),
           (c.pursuitT = 12),
+          (c.extractNearSaid = !1),
           context.events.emit("objective:all", {}),
-          o.radio && o.radio(_l.all, 4.5))
+          o.radio && o.radio(_l.all, 4.5),
+          o.message &&
+            o.message(
+              ((Mi && Mi.hud && Mi.hud.extractUnlock) ||
+                ((s.extraction && s.extraction.label) || "趸船") +
+                  "已亮 — 前往撤离"),
+              3.4,
+            ))
         : o.radio &&
           o.radio(_l.cut[Math.min(c.cut - 1, _l.cut.length - 1)], 3.6),
       o.setObjective(D()),
@@ -828,7 +858,13 @@ function createGameFlow(context) {
       o.show(!1),
       context.events.emit("extraction:reached", {}),
       o.clearRadio && o.clearRadio(),
-      o.radio && o.radio(_l.done, 2.2));
+      // Landing beat — berth loc-card flashes before debrief so extract feels ritual, not instant.
+      l.setLandingBeat &&
+        l.setLandingBeat(
+          (Mi && Mi.debriefLine) || "趸船撤离成功",
+        ),
+      l.locationCard && l.locationCard(!0),
+      o.radio && o.radio(_l.done, 2.4));
     let P = (context.combat && context.combat.stats) || {
         shots: 0,
         hits: 0,
@@ -939,9 +975,11 @@ function createGameFlow(context) {
         return (
           (e.fade = damp(e.fade || 0, 0.72, 0.9, P)),
           (e.saturation = damp(e.saturation ?? 1, t * 0.7, 1, P)),
-          u > 3.3 &&
+          u > 2.8 &&
             l.screen !== "complete" &&
-            (l.show("complete"), a(context.audio, "setIntensity", 0.15)),
+            (l.locationCard && l.locationCard(!1),
+            l.show("complete"),
+            a(context.audio, "setIntensity", 0.15)),
           !0
         );
     }

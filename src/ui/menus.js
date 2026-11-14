@@ -462,6 +462,12 @@ function createMenus(context, e) {
       locationCard(U) {
         l.classList.toggle("on", !!U);
       },
+      setLandingBeat(U) {
+        let T = resolveMission(n.mission);
+        (c("loc-berth").textContent = T.berthLine),
+          (c("loc-sub").textContent =
+            U || T.debriefLine || "趸船撤离成功");
+      },
       setLookMode(U) {
         c("lookmode").textContent = U || "";
       },

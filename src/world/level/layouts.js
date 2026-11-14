@@ -32,6 +32,15 @@ var LAYOUTS = {
       foghorn: 1,
       windPitch: 1,
     },
+    // Subtle playfeel bias — keeps berth identity without rewriting core locomotion.
+    feel: {
+      walk: 1,
+      sprint: 1,
+      accel: 1,
+      landDip: 1,
+      extractHold: 1.35,
+      extractRadius: 2.5,
+    },
   },
   b4: {
     id: "b4",
@@ -61,6 +70,15 @@ var LAYOUTS = {
       foghorn: 0.4,
       windPitch: 0.84,
     },
+    // Wet quay footing — slightly heavier, deliberate boarding.
+    feel: {
+      walk: 0.94,
+      sprint: 0.91,
+      accel: 0.88,
+      landDip: 1.18,
+      extractHold: 1.55,
+      extractRadius: 2.85,
+    },
   },
   b6: {
     id: "b6",
@@ -89,6 +107,15 @@ var LAYOUTS = {
       sea: 1.18,
       foghorn: 1.6,
       windPitch: 1.14,
+    },
+    // Open mid-yard pursuit — snappier sprint, faster extract board.
+    feel: {
+      walk: 1.03,
+      sprint: 1.09,
+      accel: 1.14,
+      landDip: 0.9,
+      extractHold: 1.05,
+      extractRadius: 2.25,
     },
   },
 };
