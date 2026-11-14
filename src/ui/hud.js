@@ -52,12 +52,14 @@ function createHUD(context) {
   let c = createElement(
       "div",
       "h-obj",
-      '<div class="h-k">任务</div><div class="h-obj-t"></div><div class="h-relays" aria-label="闸口进度"><span>闸口</span><i></i><i></i><i></i><b>0/3</b></div>',
+      '<div class="h-berth" data-berth="b8"><b data-f="berth-chip">B8 · 深水</b></div><div class="h-k">任务</div><div class="h-obj-t"></div><div class="h-relays" aria-label="闸口进度"><span>闸口</span><i></i><i></i><i></i><b>0/3</b></div>',
     ),
     u = c.querySelector(".h-obj-t"),
     h = c.querySelector(".h-relays"),
     f = h.querySelector("b"),
     p = [...h.querySelectorAll("i")],
+    berthChip = c.querySelector("[data-f=\"berth-chip\"]"),
+    berthEl = c.querySelector(".h-berth"),
     d = createElement("div", "h-warn"),
     v = createElement(
       "div",
@@ -120,7 +122,8 @@ function createHUD(context) {
     '<span class="comms-who">指挥部</span><span class="comms-t"></span>',
   );
   (j.setAttribute("role", "status"), j.setAttribute("aria-live", "polite"));
-  let N = j.querySelector(".comms-t");
+  let N = j.querySelector(".comms-t"),
+    commsWho = j.querySelector(".comms-who");
   e.appendChild(j);
   let Q = !1,
     K = 420,
@@ -230,6 +233,17 @@ function createHUD(context) {
     root: t,
     show(k) {
       ((k = !!k), k !== Q && ((Q = k), t.classList.toggle("on", k), k && R()));
+    },
+    setBerthChrome(k) {
+      let ce = k || {},
+        ve = ce.accent || "home",
+        _e = ce.chip || "B8 · 深水",
+        Te = ce.channel || "指挥部";
+      (berthChip && (berthChip.textContent = _e),
+        berthEl && berthEl.setAttribute("data-berth", ve === "home" ? "b8" : ve === "cold" ? "b4" : ve === "maint" ? "b6" : ve),
+        t.setAttribute("data-berth", ve === "home" ? "b8" : ve === "cold" ? "b4" : ve === "maint" ? "b6" : ve),
+        j.setAttribute("data-berth", ve === "home" ? "b8" : ve === "cold" ? "b4" : ve === "maint" ? "b6" : ve),
+        commsWho && (commsWho.textContent = Te));
     },
     setObjective(k) {
       ((k = k || ""),

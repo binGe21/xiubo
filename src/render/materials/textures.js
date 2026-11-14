@@ -601,6 +601,78 @@ function l3(i, e = 4) {
             text: !0,
           },
         ),
+      berth8: () =>
+        r(
+          "berth8",
+          640,
+          224,
+          (v, g, x, y) => {
+            ((v.strokeStyle = An(Ut.yellow)),
+              (v.lineWidth = 12),
+              v.strokeRect(14, 14, g - 28, x - 28),
+              (v.globalCompositeOperation = "destination-out"));
+            for (let b of [g * 0.25, g * 0.75]) v.fillRect(b - 6, 0, 12, x);
+            ((v.globalCompositeOperation = "source-over"),
+              qa(v, "深水八号", g / 2, x * 0.76, x * 0.62, An(Ut.yellow), {
+                align: "center",
+                weight: 900,
+                maxW: g - 70,
+              }),
+              Ks(v, g, x, 0.28, y));
+          },
+          {
+            bleed: Ut.yellow,
+            text: !0,
+          },
+        ),
+      berth4c: () =>
+        r(
+          "berth4c",
+          640,
+          224,
+          (v, g, x, y) => {
+            ((v.strokeStyle = An([120, 190, 210])),
+              (v.lineWidth = 12),
+              v.strokeRect(14, 14, g - 28, x - 28),
+              (v.globalCompositeOperation = "destination-out"));
+            for (let b of [g * 0.25, g * 0.75]) v.fillRect(b - 6, 0, 12, x);
+            ((v.globalCompositeOperation = "source-over"),
+              qa(v, "冷藏四号", g / 2, x * 0.76, x * 0.62, An([160, 210, 220]), {
+                align: "center",
+                weight: 900,
+                maxW: g - 70,
+              }),
+              Ks(v, g, x, 0.34, y));
+          },
+          {
+            bleed: [120, 190, 210],
+            text: !0,
+          },
+        ),
+      berth6: () =>
+        r(
+          "berth6",
+          640,
+          224,
+          (v, g, x, y) => {
+            ((v.strokeStyle = An(Ut.orange)),
+              (v.lineWidth = 12),
+              v.strokeRect(14, 14, g - 28, x - 28),
+              (v.globalCompositeOperation = "destination-out"));
+            for (let b of [g * 0.25, g * 0.75]) v.fillRect(b - 6, 0, 12, x);
+            ((v.globalCompositeOperation = "source-over"),
+              qa(v, "机修六号", g / 2, x * 0.76, x * 0.62, An(Ut.orange), {
+                align: "center",
+                weight: 900,
+                maxW: g - 70,
+              }),
+              Ks(v, g, x, 0.26, y));
+          },
+          {
+            bleed: Ut.orange,
+            text: !0,
+          },
+        ),
       caution_stripes: () =>
         r(
           "caution_stripes",

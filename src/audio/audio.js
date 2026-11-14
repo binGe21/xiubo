@@ -172,6 +172,7 @@ function iC() {
     setInterior: i,
     setVolume: i,
     setPaused: i,
+    setBerthAmbient: i,
     debug: () => ({
       state: "none",
     }),
@@ -771,6 +772,14 @@ function u_(i, e, t) {
     pt = 0.4,
     ut = 0.4,
     nn = 2,
+    // Per-berth ambient bed multipliers (layouts.js → flow.setMission).
+    berthAmb = {
+      rain: 1,
+      wind: 1,
+      sea: 1,
+      foghorn: 1,
+      windPitch: 1,
+    },
     bt = {
       fog: 14 + s() * 14,
       gull: 5 + s() * 8,
@@ -780,12 +789,12 @@ function u_(i, e, t) {
   function Os(te, he) {
     let pe = 1 - 0.7 * P;
     if ((bt.fog -= te) <= 0) {
-      bt.fog = 40 + s() * 30;
+      bt.fog = (40 + s() * 30) / Math.max(0.35, berthAmb.foghorn || 1);
       let ge = re.z + (s() * 2 - 1) * 250;
       ze("foghorn", {
         pos: [re.x + 320, 8, ge],
         ref: 400,
-        gain: 0.34 * he * pe,
+        gain: 0.34 * he * pe * Math.min(1.4, berthAmb.foghorn || 1),
         pitch: s() < 0.3 ? 0.89 : 1,
         jitter: 0.01,
       });
@@ -1417,14 +1426,18 @@ function u_(i, e, t) {
       (w.gain.value = me),
       (nn -= te) <= 0 && ((nn = 3 + s() * 6), (ut = 0.12 + s() * 0.88)),
       (pt += (ut - pt) * ye(0.5)));
-    let ambScale = (1 - 0.58 * radioDuck) * (1 - 0.26 * L);
-    (Oe.rain.setGain(fe * (1 - 0.93 * P) * 0.9 * ambScale),
-      Oe.rainIn.setGain(fe * P * 0.9 * (1 - 0.5 * radioDuck)),
+    let ambScale = (1 - 0.58 * radioDuck) * (1 - 0.26 * L),
+      rainMul = berthAmb.rain || 1,
+      windMul = berthAmb.wind || 1,
+      seaMul = berthAmb.sea || 1,
+      windPitchMul = berthAmb.windPitch || 1;
+    (Oe.rain.setGain(fe * (1 - 0.93 * P) * 0.9 * ambScale * rainMul),
+      Oe.rainIn.setGain(fe * P * 0.9 * (1 - 0.5 * radioDuck) * rainMul),
       Oe.wind.setGain(
-        fe * (0.3 + 0.7 * pt) * (1 - 0.65 * P) * 0.7 * ambScale,
+        fe * (0.3 + 0.7 * pt) * (1 - 0.65 * P) * 0.7 * ambScale * windMul,
       ),
-      Oe.wind.setPitch(0.9 + 0.25 * pt),
-      Oe.sea.setGain(fe * (1 - 0.5 * P) * 0.92 * ambScale),
+      Oe.wind.setPitch((0.9 + 0.25 * pt) * windPitchMul),
+      Oe.sea.setGain(fe * (1 - 0.5 * P) * 0.92 * ambScale * seaMul),
       Oe.sea.setPos([33, -1, pi(re.z, -28, 26)]),
       !ue &&
         (ke || ee === "title" || ee === "complete") &&
@@ -1708,6 +1721,16 @@ function u_(i, e, t) {
       },
       setPaused(te) {
         ue = !!te;
+      },
+      setBerthAmbient(te) {
+        let he = te || {};
+        berthAmb = {
+          rain: pi(+he.rain || 1, 0.35, 1.8),
+          wind: pi(+he.wind || 1, 0.35, 1.8),
+          sea: pi(+he.sea || 1, 0.35, 1.8),
+          foghorn: pi(+he.foghorn || 1, 0.25, 2.2),
+          windPitch: pi(+he.windPitch || 1, 0.7, 1.35),
+        };
       },
       names: Object.keys(Go).filter((te) => !Go[te].ir),
       get intensity() {

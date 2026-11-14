@@ -102,7 +102,7 @@ function createMenus(context, e) {
           ${listMissions()
             .map(
               (U) =>
-                `<button type="button" class="m-mission" role="radio" data-mission="${U.id}" aria-checked="false"><b>${U.tag}</b><span>${U.name}</span><i>${U.clock}</i><em data-best="${U.id}">—</em></button>`,
+                `<button type="button" class="m-mission" role="radio" data-mission="${U.id}" data-berth="${U.id}" aria-checked="false"><b>${U.tag}</b><span>${U.name}</span><i>${U.clock}</i><small>${U.menuDiff || ""}</small><em data-best="${U.id}">—</em></button>`,
             )
             .join("")}
         </div>

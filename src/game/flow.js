@@ -3,6 +3,7 @@ import { Vector3 } from "../vendor/three-r180.js";
 import { clamp, damp, saturate, smoothstep } from "../core/math.js";
 import { createMenus } from "../ui/menus.js";
 import { rebuildLevel } from "../world/level/level.js";
+import { resolveLayout } from "../world/level/layouts.js";
 import { resolveMission } from "./missions.js";
 import {
   formatScoreLine,
@@ -73,8 +74,28 @@ function createGameFlow(context) {
     },
     _l = resolveMission("b8").radio,
     Mi = null,
-    layoutBusy = null,
-    startAfterLayout = (P = {}) => {
+    layoutBusy = null;
+  function applyBerthSense(P) {
+    let V = resolveLayout((P && (P.layoutId || P.id)) || "b8"),
+      Y = V.sense || {},
+      L = V.audio || {},
+      Z = (P && P.hud) || {};
+    (t = Number.isFinite(Y.saturation) ? Y.saturation : 1),
+      e &&
+        ((e.saturation = t),
+        (e.berthSh = Y.gradeSh || [0.84, 0.97, 1.08]),
+        (e.berthHi = Y.gradeHi || [1.14, 0.98, 0.78]),
+        Number.isFinite(Y.grain) && (e.grain = Y.grain),
+        Number.isFinite(Y.vignette) && (e.vignette = Y.vignette)),
+      a(context.ground, "setRain", Number.isFinite(Y.rain) ? Y.rain : 0.78),
+      a(context.audio, "setBerthAmbient", L),
+      a(o, "setBerthChrome", {
+        channel: Z.channel || "指挥部",
+        chip: Z.chip || ((P && P.tag) || "B8") + " · " + ((P && P.name) || ""),
+        accent: Z.accent || V.id || "home",
+      });
+  }
+  let startAfterLayout = (P = {}) => {
       let V = () => {
         (a(context.audio, "resume"), r.requestLock(), U(P));
       };
@@ -192,6 +213,7 @@ function createGameFlow(context) {
       pursuitMinAlive: Y.pursuitMinAlive ?? GAME_FLOW.pursuitMinAlive,
       pursuitExtra: Y.pursuitExtra ?? GAME_FLOW.pursuitExtra,
     }),
+      applyBerthSense(V),
       s && s.applyMission && s.applyMission(V),
       l.setMissionBriefing && l.setMissionBriefing(V),
       // Rebuild procedural berth geometry when the selected layout differs.
@@ -202,6 +224,7 @@ function createGameFlow(context) {
             s = context.level = J;
             _.run && (_.run = c);
             s.applyMission && s.applyMission(V);
+            applyBerthSense(V);
             typeof w == "function" && w();
             layoutBusy = null;
             return J;
@@ -408,13 +431,16 @@ function createGameFlow(context) {
       C(!0));
   }
   function D() {
-    if (c.allCut) return "前往趸船撤离";
+    let hud = (Mi && Mi.hud) || {},
+      extractObj = hud.extractObj || "前往趸船撤离";
+    if (c.allCut) return extractObj;
     let P = c.relays.length - c.cut,
       V = c.relays.length;
     return c.cut === 0
-      ? V === 3
-        ? "切断三处数据闸口"
-        : `切断 ${V} 处数据闸口`
+      ? hud.startObj ||
+          (V === 3
+            ? "切断三处数据闸口"
+            : `切断 ${V} 处数据闸口`)
       : P === 1
         ? "切断最后一处闸口"
         : `切断剩余 ${P} 处闸口`;
