@@ -1,5 +1,5 @@
-// Selectable short missions over the shared 锈泊 berth map.
-// Geometry stays one procedural port; starts, routing, combat, and copy vary.
+// Selectable short missions over the 锈泊 berth map.
+// layoutId drives procedural yard/quay geometry (see world/level/layouts.js).
 
 import { Vector3 } from "../vendor/three-r180.js";
 
@@ -10,6 +10,7 @@ var MISSION_IDS = ["b8", "b4", "b6"];
 var MISSIONS = {
   b8: {
     id: "b8",
+    layoutId: "b8",
     tag: "B8",
     name: "深水八号",
     clock: "05:42",
@@ -63,13 +64,14 @@ var MISSIONS = {
   },
   b4: {
     id: "b4",
+    layoutId: "b4",
     tag: "B4",
     name: "冷藏四号",
     clock: "03:18",
     berthLine: "锈泊港区 · 冷藏四号泊位 · 03:18",
     role: "冷链切断编制",
     premise:
-      "冷藏岸桥被改写。从码头侧楔入，先掐断岸电闸口，再回切堆场与仓库链路，最后沿雨幕撤上趸船。",
+      "冷藏岸桥被改写——堆场东侧冷柜堵死箱巷，只能贴岸推进。先掐断岸电闸口，再回切堆场与仓库链路，最后沿雨幕撤上趸船。",
     locSub: "冷链切断编制 — 侧翼突入，雨更密",
     debriefK: "冷藏四号 · 任务结算",
     debriefH: "冷链已断",
@@ -117,13 +119,14 @@ var MISSIONS = {
   },
   b6: {
     id: "b6",
+    layoutId: "b6",
     tag: "B6",
     name: "机修六号",
     clock: "22:07",
     berthLine: "锈泊港区 · 机修六号泊位 · 22:07",
     role: "机修网突入",
     premise:
-      "夜班机修环被接管。从箱巷中央楔入，优先切断仓库与堆场关键节点，再清码头备份闸口，赶在编制合围前登船。",
+      "夜班机修环被接管——中央箱巷被腾空成机修通道，管材堵向码头。从箱巷中央楔入，优先切断仓库与堆场关键节点，再清码头备份闸口，赶在编制合围前登船。",
     locSub: "机修网突入 — 夜班短环，压迫更快",
     debriefK: "机修六号 · 任务结算",
     debriefH: "机修网已盲",

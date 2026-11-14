@@ -46,6 +46,7 @@ function createPhysics(context) {
             ),
             surface: E.surface || "concrete",
             tag: E.tag || "",
+            source: E.source || "",
             noNav: !!E.noNav,
             bulletOnly: !!E.bulletOnly,
             playerOnly: !!E.playerOnly,
@@ -55,6 +56,13 @@ function createPhysics(context) {
       removeBox(_) {
         let M = e.indexOf(_);
         M >= 0 && (e.splice(M, 1), (t = !0));
+      },
+      clearSource(_) {
+        if (!_) return 0;
+        let M = 0;
+        for (let E = e.length - 1; E >= 0; E--)
+          e[E].source === _ && (e.splice(E, 1), M++, (t = !0));
+        return M;
       },
       build() {
         a();

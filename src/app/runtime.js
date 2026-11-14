@@ -21,6 +21,7 @@ import { createWeapon } from "../weapons/weapon.js";
 import { createEnemies } from "../enemies/enemies.js";
 import { createHUD } from "../ui/hud.js";
 import { createGameFlow } from "../game/flow.js";
+import { resolveMission } from "../game/missions.js";
 import { SHOWCASE_MODULES } from "./showcases.js";
 import { showFatalError } from "./diagnostics.js";
 import { bootElement, setBootProgress } from "./boot-screen.js";
@@ -31,9 +32,20 @@ async function startGame() {
   let params = Object.fromEntries(new URLSearchParams(location.search)),
     benchmark = !!params.bench || location.hash === "#bench";
   benchmark && ((params.noaudio = "1"), (params.autostart = "1"));
-  let context = {
+  let savedMission = "b8";
+  try {
+    let saved = JSON.parse(
+      (typeof localStorage != "undefined" &&
+        localStorage.getItem("xiubo.settings.v1")) ||
+        "null",
+    );
+    saved && saved.mission && (savedMission = saved.mission);
+  } catch {}
+  let bootMission = resolveMission(params.mission || savedMission || "b8"),
+    context = {
     THREE: THREE,
     params: params,
+    mission: bootMission,
     events: createEventBus(),
     rng: createRandom(+(params.seed || 4207)),
     time: {

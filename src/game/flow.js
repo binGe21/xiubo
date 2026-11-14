@@ -2,6 +2,7 @@
 import { Vector3 } from "../vendor/three-r180.js";
 import { clamp, damp, saturate, smoothstep } from "../core/math.js";
 import { createMenus } from "../ui/menus.js";
+import { rebuildLevel } from "../world/level/level.js";
 import { resolveMission } from "./missions.js";
 import {
   formatScoreLine,
@@ -72,37 +73,40 @@ function createGameFlow(context) {
     },
     _l = resolveMission("b8").radio,
     Mi = null,
+    layoutBusy = null,
+    startAfterLayout = (P = {}) => {
+      let V = () => {
+        (a(context.audio, "resume"), r.requestLock(), U(P));
+      };
+      layoutBusy ? layoutBusy.then(V).catch((Y) => {
+        (console.error("[game] layout rebuild failed", Y), V());
+      }) : V();
+    },
     l = createMenus(context, {
       deploy() {
-        (a(context.audio, "resume"), r.requestLock(), U({}));
+        startAfterLayout({});
       },
       resume() {
         j(!0);
       },
       restart() {
-        (a(context.audio, "resume"),
-          r.requestLock(),
-          c.retries++,
-          U({
+        (c.retries++,
+          startAfterLayout({
             quick: !0,
             keepRetries: !0,
           }));
       },
       retry() {
-        (a(context.audio, "resume"),
-          r.requestLock(),
-          c.retries++,
-          U({
+        (c.retries++,
+          startAfterLayout({
             quick: !0,
             keepRetries: !0,
           }));
       },
       redeploy() {
-        (a(context.audio, "resume"),
-          r.requestLock(),
-          U({
-            quick: !0,
-          }));
+        startAfterLayout({
+          quick: !0,
+        });
       },
       selectMission(P) {
         we(P);
@@ -175,7 +179,9 @@ function createGameFlow(context) {
     Mi = V;
     context.mission = V;
     _l = V.radio || _l;
-    let Y = V.combat || {};
+    let Y = V.combat || {},
+      L = V.layoutId || V.id,
+      Z = (s && (s.layoutId || s.missionId)) || "b8";
     (Object.assign(GAME_FLOW, {
       patrol: Y.patrol || GAME_FLOW.patrol,
       waves: Y.waves || GAME_FLOW.waves,
@@ -188,8 +194,25 @@ function createGameFlow(context) {
     }),
       s && s.applyMission && s.applyMission(V),
       l.setMissionBriefing && l.setMissionBriefing(V),
+      // Rebuild procedural berth geometry when the selected layout differs.
+      L !== Z &&
+        _.state === "title" &&
+        ((layoutBusy = rebuildLevel(context, L)
+          .then((J) => {
+            s = context.level = J;
+            _.run && (_.run = c);
+            s.applyMission && s.applyMission(V);
+            typeof w == "function" && w();
+            layoutBusy = null;
+            return J;
+          })
+          .catch((J) => {
+            layoutBusy = null;
+            throw J;
+          })),
+        o.message && o.message("正在重组泊位结构…", 2.2)),
       // Cinematic state is ready after init; title switches call w() safely.
-      typeof w == "function" && w());
+      typeof w == "function" && L === Z && w());
   }
   function M(P) {
     let V = _.state;
@@ -473,11 +496,15 @@ function createGameFlow(context) {
     let Z = N(P),
       J = null,
       oe = -1e9;
+    let bias = (s && s.layout && s.layout.spawnBias) || [];
     for (let le of Z) {
       let R = Math.hypot(le.pos.x - Y.x, le.pos.z - Y.z),
-        I = context.rng() * 1.5;
+        I = context.rng() * 1.5,
+        aeZ = bias.indexOf(le.zone);
       if (
-        ((I += R >= V ? 2 + Math.min(1, (R - V) / 30) * 0.5 : -(V - R) / 4), L)
+        ((I += R >= V ? 2 + Math.min(1, (R - V) / 30) * 0.5 : -(V - R) / 4),
+        aeZ >= 0 && (I += (bias.length - aeZ) * 0.4),
+        L)
       ) {
         (b.copy(le.pos), (b.y += P === "gull" ? 0 : 1));
         let ae = !0;
