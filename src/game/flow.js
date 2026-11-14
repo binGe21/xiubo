@@ -93,6 +93,7 @@ function createGameFlow(context) {
       a(n, "applyFeel", feel),
       a(context.weapon, "setName", (P && P.weaponName) || "PAC-9 深水"),
       a(context.backdrop, "setExtractOffset", V.extractZ || 0),
+      a(context.backdrop, "setSkyline", V.skyline || null),
       s &&
         s.extraction &&
         ((s.extraction.radius = Number.isFinite(feel.extractRadius)

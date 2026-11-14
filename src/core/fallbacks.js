@@ -17,6 +17,7 @@ var FALLBACKS = {
     stub: !0,
     update: noop,
     setExtractOffset: noop,
+    setSkyline: noop,
   }),
   fx: () => ({
     stub: !0,

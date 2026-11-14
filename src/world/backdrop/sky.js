@@ -594,35 +594,8 @@ function Mb(i, e) {
         (Q | 0) % 3 === 0 &&
           N(Q + 2, 0, -16.1, Q + 8, 6.2, 16.1, [0.06, 0.06, 0.07]));
   }
-  (z1(i, e, {
-    into: t,
-    mat: n,
-    dz: 66,
-  }),
-    [
-      [-132, 1.15, !0, [0.14, 0.17, 0.21]],
-      [-186, 1.25, !1, [0.14, 0.17, 0.21]],
-      [-252, 1.35, !0, [0.26, 0.12, 0.06]],
-      [-336, 1.4, !1, [0.26, 0.12, 0.06]],
-      [128, 1.2, !1, [0.14, 0.17, 0.21]],
-      [182, 1.3, !0, [0.24, 0.25, 0.27]],
-      [250, 1.4, !1, [0.24, 0.25, 0.27]],
-      [330, 1.45, !0, [0.26, 0.12, 0.06]],
-    ].forEach(([D, C, G, j], N) => {
-      let Q = mb(t, n, 23.5, D, {
-        s: C,
-        up: G,
-        tint: j,
-      });
-      e.add(
-        Bn(Q[0], Q[1], Q[2], 0.45 * C),
-        r,
-        2.6 + (N % 3) * 0.35,
-        N * 0.37,
-        0.45,
-      );
-    }),
-    c(Ee(-230, -1.6, -384, 30, -0.12, 425), [0.24, 0.24, 0.25]));
+  // Berth gantries + far crane ghost live in buildCraneSkyline (swapped per berth).
+  c(Ee(-230, -1.6, -384, 30, -0.12, 425), [0.24, 0.24, 0.25]);
   function q(D, C, G, j, N, Q, K) {
     (c(Ee(D, -1.6, G, C, N, j), Q),
       c(Ee(D, -1.6, G, C, 0.8, j + 0.2), [0.42, 0.14, 0.1]));
@@ -818,4 +791,44 @@ uniform float uTime;
   );
 }
 
-export { Mb, wb };
+/** Far gantry silhouettes + washed quay-crane ghost — rebuilt per berth skyline. */
+function buildCraneSkyline(i, e, profile = {}) {
+  let t = new io(),
+    n = so(i, "paint_white"),
+    r = [8, 0.45, 0.25],
+    gantries = profile.gantries || [],
+    farDz = Number.isFinite(profile.farDz) ? profile.farDz : 66;
+  (z1(i, e, {
+    into: t,
+    mat: n,
+    dz: farDz,
+    craneId: profile.craneId || "锈泊 08",
+  }),
+    gantries.forEach(([D, C, G, j], N) => {
+      let Q = mb(t, n, 23.5, D, {
+        s: C,
+        up: G,
+        tint: j,
+      });
+      e.add(
+        Bn(Q[0], Q[1], Q[2], 0.45 * C),
+        r,
+        2.6 + (N % 3) * 0.35,
+        N * 0.37,
+        0.45,
+      );
+    }));
+  let root = t.build({
+    cast: !1,
+    recv: !1,
+  });
+  return (
+    (root.name = "crane-skyline"),
+    {
+      root,
+      tris: t.tris,
+    }
+  );
+}
+
+export { Mb, wb, buildCraneSkyline };

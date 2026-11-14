@@ -19,6 +19,23 @@ var LAYOUTS = {
     // Classic dense mixed stacks — the “home” yard→shed→quay read.
     midStyle: "mixed",
     extras: "home",
+    // Far gantry skyline + near quay crane identity (not grade/audio).
+    skyline: {
+      craneId: "锈泊 08",
+      craneZ: 0,
+      craneScale: 1,
+      farDz: 66,
+      gantries: [
+        [-132, 1.15, true, [0.14, 0.17, 0.21]],
+        [-186, 1.25, false, [0.14, 0.17, 0.21]],
+        [-252, 1.35, true, [0.26, 0.12, 0.06]],
+        [-336, 1.4, false, [0.26, 0.12, 0.06]],
+        [128, 1.2, false, [0.14, 0.17, 0.21]],
+        [182, 1.3, true, [0.24, 0.25, 0.27]],
+        [250, 1.4, false, [0.24, 0.25, 0.27]],
+        [330, 1.45, true, [0.26, 0.12, 0.06]],
+      ],
+    },
     sense: {
       saturation: 1,
       rain: 0.78,
@@ -60,6 +77,21 @@ var LAYOUTS = {
     // Cold-chain reefers choke east/south lanes; jersey wall forces quay approaches.
     midStyle: "reefer",
     extras: "cold",
+    // Idle upright booms, cooler tints, fewer gantries — cold quay skyline.
+    skyline: {
+      craneId: "冷岸 04",
+      craneZ: -2.4,
+      craneScale: 0.96,
+      farDz: 78,
+      gantries: [
+        [-108, 1.05, true, [0.1, 0.16, 0.24]],
+        [-198, 1.12, true, [0.1, 0.18, 0.26]],
+        [-278, 1.22, false, [0.12, 0.2, 0.28]],
+        [96, 1.08, true, [0.1, 0.16, 0.24]],
+        [188, 1.18, true, [0.14, 0.22, 0.3]],
+        [292, 1.28, false, [0.1, 0.17, 0.25]],
+      ],
+    },
     sense: {
       saturation: 0.78,
       rain: 0.97,
@@ -101,6 +133,24 @@ var LAYOUTS = {
     // Open mid + thinned north stacks (gaps, masts, pipes) — not a dense B8 twin.
     midStyle: "open",
     extras: "maint",
+    // Denser staggered gantries + tall raised boom — maint yard skyline.
+    skyline: {
+      craneId: "机修 06",
+      craneZ: 1.6,
+      craneScale: 1.05,
+      farDz: 52,
+      gantries: [
+        [-88, 1.0, false, [0.22, 0.16, 0.08]],
+        [-148, 1.38, true, [0.28, 0.2, 0.08]],
+        [-218, 0.94, false, [0.26, 0.12, 0.06]],
+        [-298, 1.18, true, [0.22, 0.16, 0.08]],
+        [86, 1.02, false, [0.24, 0.18, 0.1]],
+        [158, 1.48, true, [0.32, 0.24, 0.1]],
+        [236, 1.08, false, [0.22, 0.16, 0.08]],
+        [308, 1.22, true, [0.26, 0.12, 0.06]],
+        [372, 0.9, false, [0.2, 0.15, 0.08]],
+      ],
+    },
     sense: {
       saturation: 1.1,
       rain: 0.56,
