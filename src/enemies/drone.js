@@ -6,22 +6,24 @@ var DRONE_TUNING = {
   hp: 135,
   shotDamage: 5,
   burst: 4,
-  burstGap: 0.1,
-  telegraph: 0.6,
-  cooldown: [1.75, 2.95],
-  runSpeed: 4.75,
-  stalkSpeed: 2.15,
+  burstGap: 0.11,
+  // Longer muzzle + lunge wind so orange silhouette / beacon read first.
+  telegraph: 0.78,
+  cooldown: [2.0, 3.25],
+  runSpeed: 4.55,
+  stalkSpeed: 2.05,
   patrolSpeed: 1.55,
   accel: 7.5,
-  turnRate: 2.7,
+  turnRate: 2.55,
   rangeMin: 7.5,
   rangeMax: 17.5,
-  spreadFar: 0.11,
-  spreadNear: 0.04,
-  lungeRange: 3.15,
+  spreadFar: 0.12,
+  spreadNear: 0.045,
+  lungeRange: 3.05,
   lungeDamage: 16,
-  lungeCooldown: 3.55,
-  lungeSpeed: 10,
+  lungeCooldown: 4.2,
+  lungeSpeed: 9.4,
+  lungeWind: 0.58,
   replan: 0.55,
   smokeBelow: 0.4,
 };
@@ -51,9 +53,10 @@ var bm = {
   reach: 0,
 };
 
-var _m = [8, 4, 0.7];
+// Cool idle cyan-steel vs engage crimson — distinct from gull amber.
+var _m = [3.2, 5.4, 8.2];
 
-var NC = [14, 1, 0.35];
+var NC = [18, 2.2, 1.0];
 
 var Mm = (i, e) => {
   let t = (i - e) % (Math.PI * 2);
@@ -500,12 +503,12 @@ function createDrone(i, e, t, n) {
           m.lungeCd <= 0 &&
           D.alive &&
           ((m.es = "wind"),
-          (m.esT = 0.42),
+          (m.esT = Gt.lungeWind),
           i.releaseToken(m),
           s.events.emit("enemy:telegraph", {
             enemy: m,
             type: "hound",
-            time: 0.42,
+            time: Gt.lungeWind,
             pos: m.pos,
             melee: !0,
           })),
@@ -545,8 +548,8 @@ function createDrone(i, e, t, n) {
         case "tele": {
           ((m.wantYaw = I),
             (m.esT -= T),
-            (m.flare = Math.min(1, m.flare + T * 5)),
-            (N = 0.05),
+            (m.flare = Math.min(1, m.flare + T * 6)),
+            (N = 0.1),
             m.esT <= 0 &&
               ((m.es = "burst"), (m.shots = Gt.burst), (m.esT = 0)));
           break;
@@ -570,8 +573,9 @@ function createDrone(i, e, t, n) {
         case "wind": {
           ((m.wantYaw = I),
             (m.esT -= T),
-            (N = 0.16),
-            (m.sP.v += 3 * T),
+            (N = 0.28),
+            (m.flare = Math.min(1, m.flare + T * 4)),
+            (m.sP.v += 4.2 * T),
             m.esT <= 0 &&
               ((m.es = "lunge"),
               (m.esT = 0.36),
@@ -697,10 +701,16 @@ function createDrone(i, e, t, n) {
       (m.tpitch += (V - m.tpitch) * (1 - Math.exp(-10 * T))));
     let oe = 1 - Math.exp(-7 * T);
     ((m.hyaw += (Y - m.hyaw) * oe), (m.hpitch += (L - m.hpitch) * oe), O(T));
-    let fe = (i.t * (m.mode === "patrol" ? 0.8 : 2.2) + m.phase) % 1;
-    l.beacon.scale.setScalar(fe < 0.12 || (fe > 0.22 && fe < 0.3) ? 1 : 1e-4);
-    let le = m.mode === "engage" ? NC : _m,
-      R = 1 + m.flare * 3.5;
+    let fe = (i.t * (m.mode === "patrol" ? 0.8 : 2.2) + m.phase) % 1,
+      Me = m.es === "wind" || m.es === "tele" || m.es === "burst" || m.es === "lunge",
+      be =
+        Me ||
+        (m.mode === "engage"
+          ? fe < 0.18 || (fe > 0.28 && fe < 0.42)
+          : fe < 0.12 || (fe > 0.22 && fe < 0.3));
+    l.beacon.scale.setScalar(be ? 1 : 1e-4);
+    let le = m.mode === "engage" || Me ? NC : _m,
+      R = 1 + m.flare * (Me ? 4.4 : 3.5);
     for (let I = 0; I < 3; I++)
       m.lensC[I] += (le[I] - m.lensC[I]) * (1 - Math.exp(-8 * T));
     (r.color.setRGB(m.lensC[0] * R, m.lensC[1] * R, m.lensC[2] * R),

@@ -7,9 +7,10 @@ var WALKER_TUNING = {
   boltDamage: 7,
   boltSpeed: 74,
   burst: 3,
-  burstGap: 0.11,
-  telegraph: 0.64,
-  cooldown: [1.85, 3.15],
+  burstGap: 0.12,
+  // Longer wind-up so sodium lamp + strobes read before bolts.
+  telegraph: 0.82,
+  cooldown: [2.05, 3.45],
   rangeMin: 11,
   rangeMax: 26,
   altMin: 3.8,
@@ -17,8 +18,8 @@ var WALKER_TUNING = {
   maxSpeed: 8.4,
   patrolSpeed: 3.15,
   accel: 12,
-  spreadFar: 0.06,
-  spreadNear: 0.016,
+  spreadFar: 0.068,
+  spreadNear: 0.02,
   fireRange: 44,
   explodeRadius: 3.1,
   explodeDamage: 28,
@@ -42,9 +43,10 @@ var Hf = new Vector3(0, 1, 0);
 
 var J_ = new Vector3(0, -1, 0);
 
-var ym = [8, 4, 0.7];
+// Idle warm sodium vs engage amber-red — distinct from hound crimson.
+var ym = [7.2, 5.1, 1.4];
 
-var UC = [14, 1, 0.35];
+var UC = [16, 7.5, 1.1];
 
 var K_ = (i, e) => {
   let t = (i - e) % (Math.PI * 2);
@@ -473,11 +475,25 @@ function createWalker(i, e, t, n) {
       (l.rotor2.rotation.y -= K * 0.98),
       (l.rotor3.rotation.y += K * 1.01));
     let ie = (m * 0.9 + d.phase * 0.1) % 1,
-      F = ie < 0.05 || (ie > 0.13 && ie < 0.18) ? 1 : 1e-4;
+      pe = d.atk === "tele" || d.atk === "burst",
+      F = pe
+        ? 1
+        : A
+          ? ie < 0.08 || (ie > 0.16 && ie < 0.24)
+            ? 1
+            : 1e-4
+          : ie < 0.05 || (ie > 0.13 && ie < 0.18)
+            ? 1
+            : 1e-4,
+      // Searchlight intensity: dim patrol → hunt → hard telegraph.
+      We = pe ? 1.22 : A ? 0.82 : d.mode === "patrol" ? 0.32 : 0.58;
     if (
       (l.strobeR.scale.setScalar(F),
       l.strobeG.scale.setScalar(F),
-      l.strobeW.scale.setScalar(ie > 0.5 && ie < 0.56 ? 1 : 1e-4),
+      l.strobeW.scale.setScalar(
+        pe || (ie > 0.5 && ie < 0.56) ? 1 : 1e-4,
+      ),
+      l.lamp.scale.setScalar(We),
       A && b)
     )
       ou.set(b.pos.x, b.pos.y + 1.1, b.pos.z);
@@ -538,13 +554,13 @@ function createWalker(i, e, t, n) {
         }));
     else if (d.atk === "tele")
       ((d.atkT -= y),
-        (d.flare = Math.min(1, d.flare + y * 4.5)),
+        (d.flare = Math.min(1, d.flare + y * 5.5)),
         A
           ? d.atkT <= 0 &&
             ((d.atk = "burst"),
             (d.shots = Pn.burst),
             (d.atkT = 0),
-            (d.lead = 0.2 + o() * 0.65))
+            (d.lead = 0.15 + o() * 0.55))
           : ((d.atk = "idle"), i.releaseToken(d)));
     else if (d.atk === "burst" && ((d.atkT -= y), (d.flare = 1), d.atkT <= 0)) {
       if (((d.atkT = Pn.burstGap), d.shots--, b)) {

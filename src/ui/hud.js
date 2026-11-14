@@ -217,13 +217,14 @@ function createHUD(context) {
       (ce.src.copy(k.fromPos), (ce.life = 1.5), (ce.max = 1.5));
     }),
     context.events.on("enemy:telegraph", (k) => {
-      let ce = (k && k.time) || 0.55;
-      (v.classList.add("tele"),
+      let ce = (k && k.time) || 0.55,
+        ve = !!(k && k.melee);
+      (v.classList.remove("tele", "tele-melee"),
+        v.classList.add(ve ? "tele-melee" : "tele"),
         clearTimeout(telegrafTimer),
-        (telegrafTimer = setTimeout(
-          () => v.classList.remove("tele"),
-          Math.max(220, ce * 900),
-        )));
+        (telegrafTimer = setTimeout(() => {
+          (v.classList.remove("tele"), v.classList.remove("tele-melee"));
+        }, Math.max(280, ce * 1100))));
     }));
   let I = {
     root: t,

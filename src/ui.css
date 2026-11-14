@@ -428,6 +428,21 @@ body {
   box-shadow: 0 0 0 3px rgba(255, 120, 48, 0.55);
   opacity: 1;
 }
+/* Hound lunge telegraph — crimson vs gull amber */
+.h-cross.tele-melee .c-dot {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  background: #ff4a3a;
+  box-shadow: 0 0 0 4px rgba(220, 48, 36, 0.6);
+  opacity: 1;
+}
+.h-cross.tele-melee .c-t,
+.h-cross.tele-melee .c-b,
+.h-cross.tele-melee .c-l,
+.h-cross.tele-melee .c-r {
+  background: #ff6a55;
+}
 .h-cross.off {
   opacity: 0;
 }
