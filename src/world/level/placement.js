@@ -894,8 +894,31 @@ function hR(i, layout) {
             [20, "teal"],
             [20, "grey"],
           ])),
-    t(-19.45, 2.08, [[20, "blue"]]),
-    t(-13.35, 2.08, [[20, "red"]]),
+    // West mid framing — B6 drops the paired wall so north sightline opens earlier.
+    mid === "open"
+      ? (t(-19.8, 2.2, [[20, "blue"]]),
+        e(
+          "pipe_stack",
+          -14.2,
+          1.6,
+          0.2,
+          {
+            seed: 207,
+          },
+          0,
+        ),
+        e(
+          "light_mast",
+          -13.6,
+          3.4,
+          0,
+          {
+            seed: 208,
+          },
+          0,
+        ))
+      : (t(-19.45, 2.08, [[20, "blue"]]),
+        t(-13.35, 2.08, [[20, "red"]])),
     // Mid corridor — B6 opens it; B4 packs reefers; B8 keeps mixed wall.
     mid === "open"
       ? (e(
@@ -1038,118 +1061,334 @@ function hR(i, layout) {
           t(12.3, 2.08, [
             [20, "red"],
             [20, "yellow"],
-          ])),
-    t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
-    t(
-      -13.6,
-      9.92,
-      [
-        [20, "green"],
-        [20, "blue"],
-        [20, "orange"],
-      ],
-      0,
-      0.3,
-    ),
-    t(
-      -21.6,
-      12.42,
-      [
-        [20, "red"],
-        [20, "white"],
-        [20, "teal"],
-      ],
-      0,
-      0.3,
-    ),
-    t(
-      -15.4,
-      12.42,
-      [
+          ])));
+  // Mid-north + far-north silhouette — B6 thins stacks into open maint yard.
+  if (mid === "open") {
+    // Sparse singles + gaps; roof line broken; masts/pipes own the skyline.
+    (t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
+      t(-12.4, 10.4, [[20, "grey"]], 0, 0.15),
+      t(-21.8, 13.1, [[20, "teal"]], 0, 0.2),
+      // Gap where B8's triple green/blue/orange wall used to sit.
+      e(
+        "pipe_stack",
+        -15.8,
+        10.2,
+        0.15,
+        {
+          seed: 241,
+        },
+        0,
+      ),
+      e(
+        "pipe_stack",
+        -14.2,
+        12.8,
+        -0.25,
+        {
+          seed: 242,
+        },
+        0,
+      ),
+      e(
+        "toolbox_cart",
+        -16.6,
+        11.4,
+        0.4,
+        {
+          seed: 243,
+        },
+        0,
+      ),
+      e(
+        "gas_cylinders",
+        -13.1,
+        11.9,
+        0.2,
+        {
+          seed: 244,
+        },
+        0,
+      ),
+      // East mid-north: one low unit + mast instead of paired blues/greens.
+      t(5.1, 12.6, [[20, "blue"]], 0, 0),
+      e(
+        "light_mast",
+        13.2,
+        11.8,
+        0,
+        {
+          seed: 245,
+        },
+        0,
+      ),
+      e(
+        "floodlight_stand",
+        14.6,
+        13.4,
+        0.5,
+        {
+          seed: 246,
+        },
+        0,
+      ),
+      e(
+        "tarp_cargo",
+        12.4,
+        13.1,
+        0.3,
+        {
+          seed: 247,
+        },
+        0,
+      ),
+      i.stairs(-0.1, 12.42, 0, 0, {
+        seed: 9,
+      }),
+      i.catwalk(8.98, 12.42, 0, 2.54, {
+        seed: 10,
+      }),
+      // Far north — staggered singles with corridor gaps (no 40ft double walls).
+      t(-18.2, 20.4, [[20, "grey"]]),
+      t(-8.6, 19.8, [[20, "orange"]]),
+      t(6.4, 20.6, [[20, "yellow"]]),
+      t(14.8, 19.9, [[20, "teal"]]),
+      t(-15.1, 23.1, [[20, "blue"]]),
+      t(2.2, 22.9, [[20, "green"]]),
+      t(12.1, 23.4, [
         [
           20,
           "grey",
           {
-            doors: 0.6,
+            doors: 0.4,
           },
         ],
-      ],
-      0,
-      0.3,
-    ),
-    t(4.43, 12.42, [[20, "blue"]], 0, 0),
-    t(13.53, 12.42, [[20, "green"]], 0, 0),
-    i.stairs(-0.1, 12.42, 0, 0, {
-      seed: 9,
-    }),
-    i.catwalk(8.98, 12.42, 0, 2.54, {
-      seed: 10,
-    }));
+      ]),
+      e(
+        "pipe_stack",
+        -12.4,
+        21.2,
+        0.1,
+        {
+          seed: 251,
+        },
+        0,
+      ),
+      e(
+        "pipe_stack",
+        -1.4,
+        21.6,
+        -0.2,
+        {
+          seed: 252,
+        },
+        0,
+      ),
+      e(
+        "pipe_stack",
+        9.6,
+        21.1,
+        0.35,
+        {
+          seed: 253,
+        },
+        0,
+      ),
+      e(
+        "crate_stack",
+        -4.8,
+        22.4,
+        0.1,
+        {
+          seed: 254,
+        },
+        0,
+      ),
+      e(
+        "pallet_stack",
+        10.8,
+        22.8,
+        0.2,
+        {
+          seed: 255,
+        },
+        0,
+      ),
+      e(
+        "toolbox_cart",
+        0.6,
+        20.2,
+        -0.4,
+        {
+          seed: 256,
+        },
+        0,
+      ),
+      // NW corner: single low instead of teal/orange 40ft wall.
+      t(-31.8, 24.2, [[20, "orange"]]),
+      e(
+        "light_mast",
+        -28.4,
+        22.6,
+        0,
+        {
+          seed: 257,
+        },
+        0,
+      ),
+      e(
+        "light_mast",
+        -6.2,
+        21.4,
+        0,
+        {
+          seed: 258,
+        },
+        0,
+      ),
+      e(
+        "light_mast",
+        4.2,
+        24.1,
+        0,
+        {
+          seed: 259,
+        },
+        0,
+      ),
+      e(
+        "floodlight_stand",
+        -10.2,
+        23.6,
+        0.45,
+        {
+          seed: 260,
+        },
+        0,
+      ),
+      i.label("机修北场", 0.28, -10.4, 0.02, 21.4, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.2,
+      }));
+  } else {
+    (t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
+      t(
+        -13.6,
+        9.92,
+        [
+          [20, "green"],
+          [20, "blue"],
+          [20, "orange"],
+        ],
+        0,
+        0.3,
+      ),
+      t(
+        -21.6,
+        12.42,
+        [
+          [20, "red"],
+          [20, "white"],
+          [20, "teal"],
+        ],
+        0,
+        0.3,
+      ),
+      t(
+        -15.4,
+        12.42,
+        [
+          [
+            20,
+            "grey",
+            {
+              doors: 0.6,
+            },
+          ],
+        ],
+        0,
+        0.3,
+      ),
+      t(4.43, 12.42, [[20, "blue"]], 0, 0),
+      t(13.53, 12.42, [[20, "green"]], 0, 0),
+      i.stairs(-0.1, 12.42, 0, 0, {
+        seed: 9,
+      }),
+      i.catwalk(8.98, 12.42, 0, 2.54, {
+        seed: 10,
+      }),
+      t(-16.4, 20.12, [
+        [40, "grey"],
+        [40, "green"],
+      ]),
+      t(-2.25, 20.12, [[20, "red"]]),
+      t(3.85, 20.12, [
+        [20, "white"],
+        [20, "blue"],
+      ]),
+      t(13.53, 20.12, [
+        [20, "orange"],
+        [20, "teal"],
+        [20, "red"],
+      ]),
+      t(-16.4, 22.62, [
+        ["hc", "teal"],
+        [40, "yellow"],
+        [40, "blue"],
+      ]),
+      t(0.8, 22.62, [
+        [40, "green"],
+        ["hc", "orange"],
+      ]),
+      t(13.53, 22.62, [
+        [
+          20,
+          "grey",
+          {
+            doors: 0.4,
+          },
+        ],
+      ]),
+      t(-31.2, 24.7, [
+        [40, "teal"],
+        [40, "orange"],
+      ]));
+  }
   for (let s of [7.6, 10.36])
     for (let o of [11.86, 12.98])
       i.rod("steel_galv", [s, 0, o], [s, 2.5, o], 0.035);
+  // Roof props sit on B8/B4 east stacks; B6 dropped those stacks — keep clutter on deck.
+  mid !== "open" &&
+    (e(
+      "sandbags",
+      15.95,
+      12.42,
+      ts,
+      {
+        seed: 61,
+      },
+      2.59,
+    ),
+      e(
+        "crate_wood",
+        14.3,
+        11.75,
+        0.1,
+        {
+          seed: 62,
+        },
+        2.59,
+      ));
   (e(
     "sandbags",
-    15.95,
-    12.42,
-    ts,
+    2.3,
+    11.75,
+    0,
     {
-      seed: 61,
+      seed: 63,
     },
     2.59,
   ),
-    e(
-      "crate_wood",
-      14.3,
-      11.75,
-      0.1,
-      {
-        seed: 62,
-      },
-      2.59,
-    ),
-    e(
-      "sandbags",
-      2.3,
-      11.75,
-      0,
-      {
-        seed: 63,
-      },
-      2.59,
-    ),
-    t(-16.4, 20.12, [
-      [40, "grey"],
-      [40, "green"],
-    ]),
-    t(-2.25, 20.12, [[20, "red"]]),
-    t(3.85, 20.12, [
-      [20, "white"],
-      [20, "blue"],
-    ]),
-    t(13.53, 20.12, [
-      [20, "orange"],
-      [20, "teal"],
-      [20, "red"],
-    ]),
-    t(-16.4, 22.62, [
-      ["hc", "teal"],
-      [40, "yellow"],
-      [40, "blue"],
-    ]),
-    t(0.8, 22.62, [
-      [40, "green"],
-      ["hc", "orange"],
-    ]),
-    t(13.53, 22.62, [
-      [
-        20,
-        "grey",
-        {
-          doors: 0.4,
-        },
-      ],
-    ]),
     t(
       -22.6,
       -19.2,
@@ -1173,11 +1412,8 @@ function hR(i, layout) {
       ],
       0.35,
       0,
-    ),
-    t(-31.2, 24.7, [
-      [40, "teal"],
-      [40, "orange"],
-    ]));
+    ));
+  // Shared perimeter masts; B6 adds denser north mast ring above.
   for (let [s, o] of [
     [-23.4, 0.5],
     [-23.4, 21.4],
@@ -1188,6 +1424,18 @@ function hR(i, layout) {
     e("light_mast", s, o, 0, {
       seed: Math.round(s * 3 + o),
     });
+  mid === "open" &&
+    [
+      [-18.6, 16.4],
+      [1.2, 17.8],
+      [11.4, 16.2],
+      [-12.8, 24.6],
+      [8.2, 25.2],
+    ].forEach(([s, o]) =>
+      e("light_mast", s, o, 0, {
+        seed: Math.round(s * 5 + o * 3 + 400),
+      }),
+    );
   let n = (s, o, r, a = 0.018) => {
     let l = [];
     for (let c = 0; c <= 8; c++) {
@@ -1440,9 +1688,11 @@ function hR(i, layout) {
     e("tarp_cargo", -20.5, 18.05, 0.03, {
       seed: 48,
     }),
-    e("jersey_barrier", 0.6, 15.5, 0.12, {
-      seed: 49,
-    }),
+    // B8/B4 keep a mid-north jersey choke; B6 leaves the lane open.
+    mid !== "open" &&
+      e("jersey_barrier", 0.6, 15.5, 0.12, {
+        seed: 49,
+      }),
     e("tire_stack", -8, 26.9, 0, {
       seed: 51,
     }),
@@ -2228,7 +2478,102 @@ function applyLayoutExtras(i, layout) {
         color: "white",
         font: "stencil",
         distress: 0.25,
-      }));
+      }),
+      // North yard — low clutter fills stack gaps without rebuilding a dense skyline.
+      t(
+        "pipe_stack",
+        -20.4,
+        18.6,
+        0.2,
+        {
+          seed: 331,
+        },
+        0,
+      ),
+      t(
+        "pipe_stack",
+        3.4,
+        18.8,
+        -0.15,
+        {
+          seed: 332,
+        },
+        0,
+      ),
+      t(
+        "toolbox_cart",
+        -14.6,
+        19.4,
+        0.5,
+        {
+          seed: 333,
+        },
+        0,
+      ),
+      t(
+        "gas_cylinders",
+        7.8,
+        19.2,
+        0.2,
+        {
+          seed: 334,
+        },
+        0,
+      ),
+      t(
+        "tarp_cargo",
+        -3.2,
+        24.2,
+        0.8,
+        {
+          seed: 335,
+        },
+        0,
+      ),
+      t(
+        "crate_wood",
+        15.6,
+        22.2,
+        0.25,
+        {
+          seed: 336,
+        },
+        0,
+      ),
+      t(
+        "traffic_cone",
+        -9.4,
+        20.6,
+        0,
+        {
+          seed: 337,
+        },
+        0,
+      ),
+      t(
+        "traffic_cone",
+        -8.6,
+        21.4,
+        0,
+        {
+          seed: 338,
+        },
+        0,
+      ),
+      t(
+        "sign_post",
+        -17.2,
+        19.6,
+        ts,
+        {
+          seed: 339,
+          sign: "arrow",
+          text: "机修北场 · 开敞",
+        },
+        0,
+      ),
+      Ka(i, -22.4, 20.8, 0.1, "paint_orange", 14),
+      Ka(i, 11.2, 23.6, -0.12, "paint_blue", 15));
 }
 
 function fR(i, layout) {

@@ -98,7 +98,7 @@ var LAYOUTS = {
     laneMarks: ["机一", "机二", "通道", "备份"],
     extractZ: 1.6,
     spawnBias: ["shed", "yard", "gate", "quay"],
-    // Open mid corridor + maintenance clutter; pipe wall steers shed-first routes.
+    // Open mid + thinned north stacks (gaps, masts, pipes) — not a dense B8 twin.
     midStyle: "open",
     extras: "maint",
     sense: {
