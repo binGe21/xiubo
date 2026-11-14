@@ -1389,30 +1389,160 @@ function hR(i, layout) {
     },
     2.59,
   ),
-    t(
-      -22.6,
-      -19.2,
-      [
-        [40, "red"],
-        [40, "white"],
-      ],
-      ts,
-    ),
-    t(
-      -30.2,
-      -18.4,
-      [
-        [
-          20,
-          "yellow",
+    // Shed-west approach stacks — berth silhouettes diverge here (not B8 twin walls).
+    mid === "open"
+      ? // B6 — single-high + pipes; open lane into the shed door.
+        (t(-23.4, -18.6, [[20, "orange"]], ts * 0.15),
+        t(-29.6, -20.2, [[20, "grey"]], 0.2),
+        e(
+          "pipe_stack",
+          -26.2,
+          -17.4,
+          0.15,
           {
-            doors: 0.5,
+            seed: 261,
           },
-        ],
-      ],
-      0.35,
-      0,
-    ));
+          0,
+        ),
+        e(
+          "pipe_stack",
+          -21.8,
+          -21.2,
+          -0.25,
+          {
+            seed: 262,
+          },
+          0,
+        ),
+        e(
+          "toolbox_cart",
+          -24.6,
+          -16.2,
+          0.4,
+          {
+            seed: 263,
+          },
+          0,
+        ),
+        e(
+          "light_mast",
+          -27.8,
+          -15.4,
+          0,
+          {
+            seed: 264,
+          },
+          0,
+        ),
+        i.label("机修入库", 0.24, -25.2, 0.02, -16.8, "y+", {
+          color: "yellow",
+          font: "stencil",
+          distress: 0.2,
+        }))
+      : mid === "reefer"
+        ? // B4 — reefer wall + jersey choke toward shed compressors.
+          (t(-22.8, -19.4, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+                flip: !0,
+              },
+            ],
+          ],
+            ts * 0.08,
+          ),
+          t(-30.4, -17.8, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+                doors: 0.4,
+              },
+            ],
+          ],
+            0.25,
+          ),
+          e(
+            "jersey_barrier",
+            -26.4,
+            -15.8,
+            Math.PI / 2 + 0.1,
+            {
+              seed: 271,
+            },
+            0,
+          ),
+          e(
+            "jersey_barrier",
+            -26.35,
+            -13.2,
+            Math.PI / 2 - 0.06,
+            {
+              seed: 272,
+            },
+            0,
+          ),
+          e(
+            "reefer_unit",
+            -28.8,
+            -14.6,
+            0.3,
+            {
+              seed: 273,
+            },
+            0,
+          ),
+          e(
+            "cable_reel",
+            -24.2,
+            -14.1,
+            0.8,
+            {
+              seed: 274,
+            },
+            0,
+          ),
+          i.col(-26.7, 0, -16.2, -26.0, 1.1, -12.6, "concrete"),
+          i.label("冷库入口", 0.24, -25.6, 0.02, -15.4, "y+", {
+            color: "white",
+            font: "stencil",
+            distress: 0.26,
+          }))
+        : // B8 — classic dense red/white wall beside the shed.
+          (t(
+            -22.6,
+            -19.2,
+            [
+              [40, "red"],
+              [40, "white"],
+            ],
+            ts,
+          ),
+          t(
+            -30.2,
+            -18.4,
+            [
+              [
+                20,
+                "yellow",
+                {
+                  doors: 0.5,
+                },
+              ],
+            ],
+            0.35,
+            0,
+          )));
   // Shared perimeter masts; B6 adds denser north mast ring above.
   for (let [s, o] of [
     [-23.4, 0.5],
@@ -1709,76 +1839,79 @@ function hR(i, layout) {
       seed: 55,
     }),
     Qa(i, 16, 26.9, 0.1),
-    e("pipe_stack", -30.5, -27, 0.03, {
-      seed: 56,
-    }),
-    e("pipe_stack", -30.2, -25.4, -0.02, {
-      seed: 57,
-    }),
-    e("dumpster", -17, -14, ts, {
-      seed: 58,
-    }),
-    e("tarp_cargo", -27.5, -11.6, 0.3, {
-      seed: 59,
-    }),
-    e("tarp_cargo", -29.9, -11, -0.2, {
-      seed: 60,
-    }),
-    e("cable_reel", -34.6, -22.5, 1, {
-      seed: 64,
-    }),
-    e("tire_stack", -25.4, -26.9, 0, {
-      seed: 65,
-    }),
-    e("gas_cylinders", -16.9, -20.4, ts, {
-      seed: 66,
-    }),
-    e("crate_stack", -34.8, -13.5, 0.2, {
-      seed: 67,
-    }),
-    e("barrel", -33.6, -13, 0, {
-      seed: 68,
-    }),
-    Ka(i, -36.6, -26, ts, "paint_blue", 4),
-    e("generator", -34.2, 14.2, 0.15, {
-      seed: 71,
-    }),
-    e("floodlight_stand", -31.4, 12.7, 0.55, {
-      seed: 72,
-    }),
-    Lr(
-      i,
-      [
-        [-33.2, 14],
-        [-32.4, 13.2],
-        [-31.6, 12.9],
-      ],
-      0.02,
-    ),
-    e("tire_stack", -36.6, 17.2, 0, {
-      seed: 73,
-    }),
-    e("tire_stack", -36.5, 18.3, 0.6, {
-      seed: 74,
-    }),
-    e("dumpster", -36.4, 21, ts, {
-      seed: 75,
-    }),
-    e("pallet_stack", -27.8, 16.6, 0.4, {
-      seed: 76,
-    }),
-    e("jerry_can", -33, 15.2, 0.4, {
-      seed: 77,
-    }),
-    e("jerry_can", -33.3, 15.35, 1.9, {
-      seed: 78,
-    }),
-    e("crate_wood", -28.6, 20.6, 0.1, {
-      seed: 79,
-    }),
-    e("ibc_tote", -26.6, 21.2, 0, {
-      seed: 80,
-    }),
+    // Shed apron + SW clutter — density/props follow berth (gate flank continues in fR).
+    mid === "open"
+      ? (e("pipe_stack", -31.2, -26.4, 0.2, { seed: 56 }, 0),
+        e("pipe_stack", -28.4, -24.8, -0.15, { seed: 57 }, 0),
+        e("pipe_stack", -24.8, -27.2, 0.35, { seed: 281 }, 0),
+        e("toolbox_cart", -18.6, -13.4, 0.5, { seed: 58 }, 0),
+        e("gas_cylinders", -16.9, -20.4, ts, { seed: 66 }, 0),
+        e("crate_wood", -33.8, -14.2, 0.2, { seed: 67 }, 0),
+        e("floodlight_stand", -32.4, -22.1, 0.4, { seed: 64 }, 0),
+        e("traffic_cone", -27.2, -23.6, 0, { seed: 65 }, 0),
+        e("traffic_cone", -26.4, -24.2, 0, { seed: 282 }, 0),
+        Ka(i, -35.8, -25.2, ts * 0.4, "paint_orange", 4))
+      : mid === "reefer"
+        ? (e("reefer_unit", -31.4, -25.6, 0.2, { seed: 56 }, 0),
+          e("reefer_unit", -28.6, -27.1, -0.25, { seed: 57 }, 0),
+          e("cable_reel", -34.2, -22.8, 1.1, { seed: 64 }, 0),
+          e("cable_reel", -25.8, -24.4, 0.6, { seed: 65 }, 0),
+          e("generator", -33.6, -14.8, 0.2, { seed: 67 }, 0),
+          e("dumpster", -17.4, -13.6, ts, { seed: 58 }, 0),
+          e("tarp_cargo", -27.2, -12.2, 0.4, { seed: 59 }, 0),
+          e("gas_cylinders", -16.4, -19.8, ts, { seed: 66 }, 0),
+          e("barrel", -32.8, -13.4, 0, { seed: 68, color: "blue" }, 0),
+          Ka(i, -36.2, -25.6, ts, "paint_blue", 4))
+        : (e("pipe_stack", -30.5, -27, 0.03, { seed: 56 }, 0),
+          e("pipe_stack", -30.2, -25.4, -0.02, { seed: 57 }, 0),
+          e("dumpster", -17, -14, ts, { seed: 58 }, 0),
+          e("tarp_cargo", -27.5, -11.6, 0.3, { seed: 59 }, 0),
+          e("tarp_cargo", -29.9, -11, -0.2, { seed: 60 }, 0),
+          e("cable_reel", -34.6, -22.5, 1, { seed: 64 }, 0),
+          e("tire_stack", -25.4, -26.9, 0, { seed: 65 }, 0),
+          e("gas_cylinders", -16.9, -20.4, ts, { seed: 66 }, 0),
+          e("crate_stack", -34.8, -13.5, 0.2, { seed: 67 }, 0),
+          e("barrel", -33.6, -13, 0, { seed: 68 }, 0),
+          Ka(i, -36.6, -26, ts, "paint_blue", 4)),
+    // West gate-north clutter — B8 tires, B6 pipes/toolbox, B4 reefer/cables.
+    mid === "open"
+      ? (e("pipe_stack", -34.0, 14.4, 0.2, { seed: 71 }, 0),
+        e("toolbox_cart", -31.6, 13.0, -0.35, { seed: 72 }, 0),
+        e("pipe_stack", -36.2, 17.6, 0.2, { seed: 73 }, 0),
+        e("crate_wood", -35.4, 19.2, 0.15, { seed: 74 }, 0),
+        e("floodlight_stand", -33.2, 15.8, 0.4, { seed: 75 }, 0),
+        e("jerry_can", -32.6, 14.8, 0.5, { seed: 77 }, 0),
+        e("pallet_stack", -28.2, 17.2, 0.25, { seed: 76 }, 0),
+        e("crate_wood", -27.4, 20.2, 0.1, { seed: 79 }, 0))
+      : mid === "reefer"
+        ? (e("reefer_unit", -34.4, 14.0, 0.2, { seed: 71 }, 0),
+          e("cable_reel", -31.8, 12.6, 0.9, { seed: 72 }, 0),
+          e("cable_reel", -36.0, 17.4, 1.2, { seed: 73 }, 0),
+          e("generator", -35.6, 19.0, -0.2, { seed: 74 }, 0),
+          e("floodlight_stand", -32.8, 15.6, 0.5, { seed: 75 }, 0),
+          e("barrel", -33.2, 14.6, 0, { seed: 77, color: "blue" }, 0),
+          e("ibc_tote", -28.4, 17.0, 0, { seed: 76 }, 0),
+          e("reefer_unit", -27.2, 20.4, 0.15, { seed: 79 }, 0),
+          Lr(i, [[-33.0, 13.8], [-32.2, 13.0], [-31.4, 12.6]], 0.02))
+        : (e("generator", -34.2, 14.2, 0.15, { seed: 71 }, 0),
+          e("floodlight_stand", -31.4, 12.7, 0.55, { seed: 72 }, 0),
+          Lr(
+            i,
+            [
+              [-33.2, 14],
+              [-32.4, 13.2],
+              [-31.6, 12.9],
+            ],
+            0.02,
+          ),
+          e("tire_stack", -36.6, 17.2, 0, { seed: 73 }, 0),
+          e("tire_stack", -36.5, 18.3, 0.6, { seed: 74 }, 0),
+          e("dumpster", -36.4, 21, ts, { seed: 75 }, 0),
+          e("pallet_stack", -27.8, 16.6, 0.4, { seed: 76 }, 0),
+          e("jerry_can", -33, 15.2, 0.4, { seed: 77 }, 0),
+          e("jerry_can", -33.3, 15.35, 1.9, { seed: 78 }, 0),
+          e("crate_wood", -28.6, 20.6, 0.1, { seed: 79 }, 0),
+          e("ibc_tote", -26.6, 21.2, 0, { seed: 80 }, 0)),
     (() => {
       let marks = (layout && layout.laneMarks) || ["一道", "二道", "三道", "主道"];
       Sf(i, -22.9, -3.62, marks[0] || "一道", "x-");
@@ -2584,6 +2717,7 @@ function fR(i, layout) {
     o = 28,
     r = 2,
     a = 8,
+    mid = (layout && layout.midStyle) || "mixed",
     gateSign = (layout && layout.gateSignText) || "深水八号泊位",
     gateDecal = (layout && layout.gateDecal) || "berth8";
   function l(c, u, h, f, p) {
@@ -2682,60 +2816,135 @@ function fR(i, layout) {
     e("bollard_post", c, u, 0, {
       seed: Math.round(c * 11 + u * 7),
     });
-  (e("jersey_barrier", -34.7, 3.75, ts + 0.08, {
-    seed: 3,
-  }),
-    e("jersey_barrier", -33.3, 8.3, ts - 0.06, {
-      seed: 4,
+  // Gate flank jersey / clutter — denser classic choke on B8; cold wall on B4; open lane on B6.
+  if (mid === "open") {
+    (e("jersey_barrier", -34.8, 4.1, ts + 0.05, { seed: 3 }, 0),
+      e("jersey_barrier", -27.8, 1.6, 0.08, { seed: 6 }, 0),
+      e("pipe_stack", -32.6, 8.6, 0.2, { seed: 4 }, 0),
+      e("pipe_stack", -30.2, 10.8, -0.15, { seed: 5 }, 0),
+      e("toolbox_cart", -33.4, 7.2, -0.4, { seed: 7 }, 0),
+      e("sign_post", -33.2, 9.6, ts, {
+        seed: 8,
+        sign: "hazard_general",
+        text: "机修门岗 · 快进",
+      }, 0),
+      e("sign_post", -25.3, 1.1, ts, {
+        seed: 9,
+        sign: gateDecal,
+        text: gateSign,
+      }, 0),
+      e("sign_post", -36.6, -1.6, ts, {
+        seed: 10,
+        sign: "arrow",
+        text: gateSign,
+      }, 0),
+      e("light_mast", -28.8, 9.4, 0, { seed: 11 }, 0),
+      e("light_mast", -36.3, 12.4, 0, { seed: 12 }, 0),
+      e("traffic_cone", -34.2, 5.4, 0, { seed: 291 }, 0),
+      e("traffic_cone", -33.4, 6.1, 0, { seed: 292 }, 0),
+      e("traffic_cone", -26.8, 2.2, 0, { seed: 293 }, 0),
+      e("crate_wood", -35.8, 10.6, 0.2, { seed: 14 }, 0),
+      i.label("机修突入口", 0.26, -31.4, 0.02, 5.4, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.18,
+      }),
+      i.decal("arrow", 2.4, -31.2, 0.006, 5.6, "y+", 0),
+      i.decal("arrow", 2.0, -29.4, 0.006, 6.4, "y+", 0));
+  } else if (mid === "reefer") {
+    (e("jersey_barrier", -34.6, 3.4, ts + 0.1, { seed: 3 }, 0),
+      e("jersey_barrier", -34.55, 6.8, ts - 0.05, { seed: 4 }, 0),
+      e("jersey_barrier", -34.5, 9.6, ts + 0.04, { seed: 5 }, 0),
+      e("jersey_barrier", -31.2, 1.55, -0.05, { seed: 6 }, 0),
+      e("jersey_barrier", -28.4, 1.5, 0.06, { seed: 7 }, 0),
+      e("reefer_unit", -32.8, 11.2, 0.25, { seed: 294 }, 0),
+      e("generator", -36.0, 11.4, -0.2, { seed: 14 }, 0),
+      e("cable_reel", -30.8, 9.2, 0.7, { seed: 295 }, 0),
+      e("sign_post", -33.2, 9.6, ts, {
+        seed: 8,
+        sign: "hazard_voltage",
+        text: "冷链门岗 · 禁停",
+      }, 0),
+      e("sign_post", -25.3, 1.1, ts, {
+        seed: 9,
+        sign: gateDecal,
+        text: gateSign,
+      }, 0),
+      e("sign_post", -36.6, -1.6, ts, {
+        seed: 10,
+        sign: "hazard_voltage",
+        text: gateSign,
+      }, 0),
+      e("light_mast", -27.6, -0.9, 0, { seed: 11 }, 0),
+      e("floodlight_stand", -35.2, 12.2, 0.5, { seed: 12 }, 0),
+      e("barrel", -33.6, 2.2, 0, { seed: 13, color: "blue" }, 0),
+      e("traffic_cone", -34.2, 5.0, 0, { seed: 296 }, 0),
+      e("traffic_cone", -33.8, 7.4, 0, { seed: 297 }, 0),
+      e("traffic_cone", -29.6, 2.0, 0, { seed: 298 }, 0),
+      i.col(-34.9, 0, 2.8, -34.2, 1.15, 10.2, "concrete"),
+      i.label("冷链门岗", 0.26, -31.6, 0.02, 5.2, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.24,
+      }),
+      i.decal("no_entry", 0.7, t + 0.34, 1.5, a + 3.3, "x+"),
+      i.decal("arrow", 2.0, -30.8, 0.006, 4.8, "y+", 0));
+  } else {
+    (e("jersey_barrier", -34.7, 3.75, ts + 0.08, {
+      seed: 3,
     }),
-    e("jersey_barrier", -30.6, 10.4, 0.03, {
-      seed: 5,
+      e("jersey_barrier", -33.3, 8.3, ts - 0.06, {
+        seed: 4,
+      }),
+      e("jersey_barrier", -30.6, 10.4, 0.03, {
+        seed: 5,
+      }),
+      e("jersey_barrier", -27.3, 1.45, 0.05, {
+        seed: 6,
+      }),
+      e("jersey_barrier", -32.2, 1.45, -0.04, {
+        seed: 7,
+      }),
+      e("sign_post", -33.2, 9.6, ts, {
+        seed: 8,
+        sign: "no_entry",
+      }),
+      e("sign_post", -25.3, 1.1, ts, {
+        seed: 9,
+        sign: gateDecal,
+        text: gateSign,
+      }),
+      e("sign_post", -36.6, -1.6, ts, {
+        seed: 10,
+        sign: "hazard_general",
+        text: gateSign,
+      }));
+    for (let [c, u] of [
+      [-34.6, 5.6],
+      [-28.3, 2],
+      [-33.2, 6.5],
+      [-26.6, 9.8],
+      [-31.8, 9.9],
+    ])
+      e("traffic_cone", c, u, 0, {
+        seed: Math.round(c * 5 + u * 3),
+      });
+    (e("light_mast", -27.6, -0.9, 0, {
+      seed: 11,
     }),
-    e("jersey_barrier", -27.3, 1.45, 0.05, {
-      seed: 6,
-    }),
-    e("jersey_barrier", -32.2, 1.45, -0.04, {
-      seed: 7,
-    }),
-    e("sign_post", -33.2, 9.6, ts, {
-      seed: 8,
-      sign: "no_entry",
-    }),
-    e("sign_post", -25.3, 1.1, ts, {
-      seed: 9,
-      sign: gateDecal,
-      text: gateSign,
-    }),
-    e("sign_post", -36.6, -1.6, ts, {
-      seed: 10,
-      sign: "hazard_general",
-      text: gateSign,
-    }));
-  for (let [c, u] of [
-    [-34.6, 5.6],
-    [-28.3, 2],
-    [-33.2, 6.5],
-    [-26.6, 9.8],
-    [-31.8, 9.9],
-  ])
-    e("traffic_cone", c, u, 0, {
-      seed: Math.round(c * 5 + u * 3),
-    });
-  (e("light_mast", -27.6, -0.9, 0, {
-    seed: 11,
-  }),
-    e("light_mast", -36.3, 12.4, 0, {
-      seed: 12,
-    }),
-    e("barrel", -33.9, 2, 0, {
-      seed: 13,
-      color: "yellow",
-    }),
-    e("pallet_stack", -36.4, 10.3, 0.2, {
-      seed: 14,
-    }),
-    i.decal("no_entry", 0.7, t + 0.34, 1.5, a + 3.3, "x+"),
-    i.decal("arrow", 2.2, -30.5, 0.006, 6, "y+", 0));
+      e("light_mast", -36.3, 12.4, 0, {
+        seed: 12,
+      }),
+      e("barrel", -33.9, 2, 0, {
+        seed: 13,
+        color: "yellow",
+      }),
+      e("pallet_stack", -36.4, 10.3, 0.2, {
+        seed: 14,
+      }),
+      i.decal("no_entry", 0.7, t + 0.34, 1.5, a + 3.3, "x+"),
+      i.decal("arrow", 2.2, -30.5, 0.006, 6, "y+", 0));
+  }
 }
 
 export { Lr, lv, cb, ts, mt, hR, fR, applyLayoutExtras, applyExtractPlaza };
