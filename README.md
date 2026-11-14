@@ -53,3 +53,5 @@ npm run preview
 | `/?bench=1` | 基准巡游 |
 
 浏览器控制台：`window.__G`、`window.__stats()`。
+
+PR 审阅用的固定种子截图约定与脚本见 [`docs/PLAYTEST.md`](docs/PLAYTEST.md)（`npm run playtest:shots`，非日常门禁）。
