@@ -107,11 +107,11 @@ function createInput(context) {
       },
       describeMode() {
         return f.mode === "touch"
-          ? "触屏操控已启用"
+          ? "触屏操控已启用 \u2014 左拇指移动，右半屏视角，屏幕按钮开火与互动"
           : f.mode === "drag"
             ? "无法锁定鼠标 \u2014 移动鼠标转向，停在屏幕边缘可持续转动 \xB7 点击开火 \xB7 方向键或 IJKL 也可转向"
             : f.locked
-              ? "鼠标已锁定 \u2014 Esc 释放"
+              ? "鼠标已锁定 \u2014 Esc 或 P 暂停"
               : "点击画面以锁定鼠标";
       },
     };
@@ -272,7 +272,7 @@ function createInput(context) {
     let P = document.createElement("div");
     ((P.className = "touch"),
       (P.innerHTML =
-        '<div class="t-stick"><i class="t-ring"></i><i class="t-nub"></i></div><button class="t-btn t-fire" data-a="fire" aria-label="开火"><span>开火</span></button><button class="t-btn t-ads" data-a="ads" aria-label="开镜"><span>开镜</span></button><button class="t-btn t-reload" data-a="reload" aria-label="换弹"><span>换弹</span></button><button class="t-btn t-jump" data-a="jump" aria-label="跳跃"><span>跳跃</span></button><button class="t-btn t-crouch" data-a="crouch" aria-label="蹲下"><span>蹲</span></button><button class="t-btn t-melee" data-a="melee" aria-label="近战"><span>近战</span></button><button class="t-btn t-interact" data-a="interact" aria-label="互动"><span>互动</span></button><button class="t-btn t-pause" data-a="pause" aria-label="暂停"><span>II</span></button>'),
+        '<div class="t-stick"><i class="t-ring"></i><i class="t-nub"></i></div><button type="button" class="t-btn t-fire" data-a="fire" aria-label="开火"><span>开火</span></button><button type="button" class="t-btn t-ads" data-a="ads" aria-label="开镜" aria-pressed="false"><span>开镜</span></button><button type="button" class="t-btn t-reload" data-a="reload" aria-label="换弹"><span>换弹</span></button><button type="button" class="t-btn t-jump" data-a="jump" aria-label="跳跃"><span>跳跃</span></button><button type="button" class="t-btn t-crouch" data-a="crouch" aria-label="蹲下"><span>蹲</span></button><button type="button" class="t-btn t-melee" data-a="melee" aria-label="近战"><span>近战</span></button><button type="button" class="t-btn t-interact" data-a="interact" aria-label="互动"><span>互动</span></button><button type="button" class="t-btn t-pause" data-a="pause" aria-label="暂停"><span>暂停</span></button>'),
       t.appendChild(P));
     let V = (L) => P.querySelector(L),
       Y = {
@@ -298,7 +298,9 @@ function createInput(context) {
           (oe.preventDefault(), oe.stopPropagation(), (E = performance.now()));
           let fe = oe.changedTouches[0];
           if (L === "ads") {
-            ((j = !j), Z.classList.toggle("active", j));
+            ((j = !j),
+              Z.classList.toggle("active", j),
+              Z.setAttribute("aria-pressed", String(j)));
             return;
           }
           (L === "fire" &&
