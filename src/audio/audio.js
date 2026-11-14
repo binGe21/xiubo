@@ -301,11 +301,12 @@ function u_(i, e, t) {
     M = m(0.45),
     E = e.createWaveShaper(),
     w = m(0.9);
-  ((_.threshold.value = -10),
-    (_.knee.value = 6),
-    (_.ratio.value = 6),
-    (_.attack.value = 0.002),
-    (_.release.value = 0.14));
+  // Slightly softer bus compressor — more headroom for rain + combat stacks.
+  ((_.threshold.value = -12),
+    (_.knee.value = 8),
+    (_.ratio.value = 5),
+    (_.attack.value = 0.003),
+    (_.release.value = 0.18));
   {
     let he = new Float32Array(2049);
     for (let pe = 0; pe < 2049; pe++) {
@@ -331,10 +332,10 @@ function u_(i, e, t) {
   (S.connect(z), z.connect(A));
   let H = {
     world: m(1),
-    near: m(0.95),
-    amb: m(0.55),
+    near: m(0.92),
+    amb: m(0.5),
     dry: m(1),
-    music: m(0.62),
+    music: m(0.58),
   };
   (H.world.connect(S), H.near.connect(S), H.amb.connect(S), H.dry.connect(A));
   let O = m(1);
@@ -431,6 +432,9 @@ function u_(i, e, t) {
     J = 1,
     oe = 1,
     fe = 0,
+    // 0..1 — dips amb/music while HUD radio text is on screen.
+    radioDuck = 0,
+    radioUntil = -9,
     le = -9,
     R = -9,
     I = 0,
@@ -445,6 +449,45 @@ function u_(i, e, t) {
     Re = {
       autoIntensity: !0,
     };
+  function radioChirp() {
+    if (!o()) return;
+    try {
+      let te = e.currentTime,
+        he = e.createOscillator(),
+        pe = e.createOscillator(),
+        ge = e.createGain(),
+        ye = e.createGain();
+      ((he.type = "sine"),
+        (pe.type = "triangle"),
+        he.frequency.setValueAtTime(1680, te),
+        he.frequency.exponentialRampToValueAtTime(920, te + 0.09),
+        pe.frequency.setValueAtTime(840, te),
+        pe.frequency.exponentialRampToValueAtTime(460, te + 0.1),
+        ge.gain.setValueAtTime(1e-4, te),
+        ge.gain.exponentialRampToValueAtTime(0.07, te + 0.012),
+        ge.gain.exponentialRampToValueAtTime(1e-4, te + 0.13),
+        ye.gain.value = 0.55,
+        he.connect(ge),
+        pe.connect(ye),
+        ye.connect(ge),
+        ge.connect(H.dry),
+        he.start(te),
+        pe.start(te),
+        he.stop(te + 0.15),
+        pe.stop(te + 0.15));
+    } catch (te) {
+      console.error("[audio] radio chirp", te);
+    }
+  }
+  function armRadioDuck(te) {
+    let he = (te && te.text && String(te.text).length) || 48,
+      // Prefer HUD-provided hold; else cover typewriter + read beat.
+      pe =
+        Number.isFinite(te && te.secs) && te.secs > 0
+          ? te.secs + 0.45
+          : Math.max(2.8, Math.min(9.5, he / 46 + 1.6));
+    ((radioUntil = Math.max(radioUntil, e.currentTime + pe)), radioChirp());
+  }
   function Fe(te, he, pe, ge) {
     let ye = null,
       Le = 0,
@@ -686,18 +729,19 @@ function u_(i, e, t) {
   }
   function we(te) {
     return ee === "title"
-      ? [0.85, 0, 0, 0, 0.9]
+      ? [0.72, 0, 0, 0, 0.78]
       : ee === "intro"
-        ? [0.8, 0, 0, 0, 0.6]
+        ? // Quieter beds under intro radio readability.
+          [0.55, 0, 0, 0, 0.35]
         : ee === "dead"
-          ? [0.75, 0, 0, 0, 0]
+          ? [0.7, 0, 0, 0, 0]
           : ee === "complete"
-            ? [0.6, 0, 0, 0, 0.7]
+            ? [0.55, 0, 0, 0, 0.62]
             : [
-                0.6 + 0.3 * te,
-                Pv(0.05, 0.5, te) * 0.85,
-                Pv(0.4, 0.8, te) * 0.95,
-                Pv(0.62, 1, te) * 0.8,
+                0.55 + 0.28 * te,
+                Pv(0.05, 0.5, te) * 0.78,
+                Pv(0.4, 0.8, te) * 0.88,
+                Pv(0.62, 1, te) * 0.72,
                 0,
               ];
   }
@@ -941,19 +985,23 @@ function u_(i, e, t) {
         }
       });
   };
-  (ln("weapon:fire", () => {
-    ((I = (I + 1) & 3),
-      ze("rifle_shot", {
-        variant: I,
-        gain: 1,
-        jitter: 0.012,
-      }));
-    let te = e.currentTime;
-    ((le = te),
-      te - R > 0.28 && fo(1),
-      (J = Math.min(J, 0.55)),
-      Y > 0.3 && (Y = Math.min(1, Y + 0.015)));
-  }),
+  (ln("radio:line", (te) => armRadioDuck(te)),
+    ln("radio:end", () => {
+      radioUntil = Math.min(radioUntil, e.currentTime + 0.35);
+    }),
+    ln("weapon:fire", () => {
+      ((I = (I + 1) & 3),
+        ze("rifle_shot", {
+          variant: I,
+          gain: 0.86,
+          jitter: 0.012,
+        }));
+      let te = e.currentTime;
+      ((le = te),
+        te - R > 0.28 && fo(0.9),
+        (J = Math.min(J, 0.5)),
+        Y > 0.3 && (Y = Math.min(1, Y + 0.012)));
+    }),
     ln("weapon:dry", () =>
       ze("rifle_dry", {
         gain: 0.9,
@@ -1124,15 +1172,15 @@ function u_(i, e, t) {
     }),
     ln("enemy:spawn", (te) => ho(te.enemy)),
     ln("enemy:alert", (te) => {
-      Y = Math.max(Y, 0.6);
+      Y = Math.max(Y, 0.55);
       let he = e.currentTime;
-      if (he - ve < 0.12) return;
+      if (he - ve < 0.14) return;
       ve = he;
       let pe = te.enemy || {};
       ze("alert", {
         pos: Hn(pe.pos) || Hn(te.pos),
         variant: pe.type === "hound" ? 1 : 0,
-        gain: 0.9,
+        gain: 0.78,
       });
     }),
     ln("enemy:fire", (te) => {
@@ -1140,10 +1188,10 @@ function u_(i, e, t) {
         pe = Hn(te.pos) || (te.enemy && Hn(te.enemy.pos));
       (ze(he === "hound" ? "hound_fire" : "gull_fire", {
         pos: pe,
-        gain: 1,
+        gain: 0.88,
         jitter: 0.04,
       }),
-        (Y = Math.min(1, Math.max(Y, 0.6) + 0.05)));
+        (Y = Math.min(1, Math.max(Y, 0.55) + 0.04)));
     }),
     ln("enemy:step", (te) => {
       if (te.crash) {
@@ -1212,16 +1260,16 @@ function u_(i, e, t) {
       if (
         (ze("explosion", {
           pos: pe,
-          gain: pi(0.6 + 0.25 * he, 0.5, 1.1),
+          gain: pi(0.5 + 0.22 * he, 0.45, 0.95),
           pitch: pi(1.12 - 0.1 * he, 0.8, 1.15),
           jitter: 0.04,
         }),
         pe)
       ) {
         let ge = Math.hypot(pe.x - re.x, pe.y - re.y, pe.z - re.z);
-        Z = Math.max(Z, pi(1 - (ge - 5) / 10, 0, 0.8));
+        Z = Math.max(Z, pi(1 - (ge - 5) / 10, 0, 0.75));
       }
-      ((Y = Math.max(Y, 0.6)), (J = Math.min(J, 0.4)));
+      ((Y = Math.max(Y, 0.55)), (J = Math.min(J, 0.36)));
     }),
     ln("objective:done", (te) => {
       (ba(te),
@@ -1355,34 +1403,41 @@ function u_(i, e, t) {
     Me();
     let Le = e.currentTime;
     le > R + 0.02 && Le - le > 0.1 && fo(0.9);
-    let ke = ee === "playing" || ee === "intro";
-    ((fe +=
-      ((ue ? 0 : ee === "title" ? 0.6 : ee === "dead" ? 0.7 : 1) - fe) *
-      ye(1.2)),
+    let ke = ee === "playing" || ee === "intro",
+      // Smooth radio duck while 指挥部 text is up.
+      ctRadio = e.currentTime < radioUntil ? 1 : 0;
+    ((radioDuck += (ctRadio - radioDuck) * ye(ctRadio ? 9 : 2.4)),
+      (fe +=
+        ((ue ? 0 : ee === "title" ? 0.58 : ee === "dead" ? 0.7 : 1) - fe) *
+        ye(1.2)),
       (oe += ((ue ? 0 : 1) - oe) * ye(12)),
       (z.gain.value = oe),
       (Z += ((ee === "dead" ? 0.85 : 0) - Z) * ye(ee === "dead" ? 3 : 0.9)),
       (S.frequency.value = 2e4 * Math.pow(0.03, pi(Z, 0, 1))),
       (w.gain.value = me),
       (nn -= te) <= 0 && ((nn = 3 + s() * 6), (ut = 0.12 + s() * 0.88)),
-      (pt += (ut - pt) * ye(0.5)),
-      Oe.rain.setGain(fe * (1 - 0.93 * P) * 0.95),
-      Oe.rainIn.setGain(fe * P * 0.95),
-      Oe.wind.setGain(fe * (0.3 + 0.7 * pt) * (1 - 0.65 * P) * 0.75),
+      (pt += (ut - pt) * ye(0.5)));
+    let ambScale = (1 - 0.58 * radioDuck) * (1 - 0.26 * L);
+    (Oe.rain.setGain(fe * (1 - 0.93 * P) * 0.9 * ambScale),
+      Oe.rainIn.setGain(fe * P * 0.9 * (1 - 0.5 * radioDuck)),
+      Oe.wind.setGain(
+        fe * (0.3 + 0.7 * pt) * (1 - 0.65 * P) * 0.7 * ambScale,
+      ),
       Oe.wind.setPitch(0.9 + 0.25 * pt),
-      Oe.sea.setGain(fe * (1 - 0.5 * P) * 1),
+      Oe.sea.setGain(fe * (1 - 0.5 * P) * 0.92 * ambScale),
       Oe.sea.setPos([33, -1, pi(re.z, -28, 26)]),
       !ue &&
         (ke || ee === "title" || ee === "complete") &&
-        Os(te, ee === "title" ? 0.7 : 1),
+        Os(te, (ee === "title" ? 0.65 : 1) * (1 - 0.45 * radioDuck)),
       ue || zo(te),
-      (Y = Math.max(0, Y - te * (pn.size ? 0.045 : 0.14))));
-    let ct =
-      ke || ue ? Math.max(V, Re.autoIntensity ? Math.max(0.15, Y) : 0) : 0;
+      (Y = Math.max(0, Y - te * (pn.size ? 0.06 : 0.16))));
+    // Auto intensity may lift beds a little, but not bury calm mission V.
+    let autoLift = Re.autoIntensity ? Math.min(Math.max(0.12, Y), V + 0.3) : 0,
+      ct = ke || ue ? Math.max(V, autoLift) : 0;
     if (
       ((L += (ct - L) * ye(2.65)),
       (J += (1 - J) * ye(3.8)),
-      (O.gain.value = J * (ue ? 0.45 : 1)),
+      (O.gain.value = J * (ue ? 0.42 : 1) * (1 - 0.58 * radioDuck)),
       Xe.on)
     ) {
       let De = we(L),
