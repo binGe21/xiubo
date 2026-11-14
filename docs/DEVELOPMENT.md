@@ -105,11 +105,15 @@ window.__G;        // 运行中的游戏上下文
 
 ## 构建说明
 
-Vite 将当前入口、ES 模块、CSS 和字体输出到 `dist/`。源文件已经模块化，生产构建仍由 Vite 合并优化；完整引擎会使输出 chunk 超过默认提示大小，这不影响构建成功。
+Vite 将当前入口、ES 模块、CSS 和字体输出到 `dist/`。源文件已经模块化，生产构建仍由 Vite 合并优化；完整引擎会使输出 chunk 超过默认提示大小，这不影响构建成功。单文件交付见 `vite.single.config.js` → `dist-single/`，并用 `npm run release` 同步到仓库发版工件 `release/xiubo.html`。托管说明见根目录 `README.md`「部署 / 上线」。
 
 ```sh
 npm run check            # 检查所有模块的语法、导入/导出、循环依赖和归档完整性
-npm run build            # 构建生产版本
+npm run build            # 常规静态站点 → dist/（含 .nojekyll 与本地字体）
+npm run build:single     # 单文件 HTML → dist-single/index.html
+npm run release          # 单文件构建并写入 release/xiubo.html
+npm run preview          # 预览 dist/
+npm run preview:single   # 预览 dist-single/
 npm run verify:refactor  # 可选考古：核对拆分与原始归档的语句等价性（非日常门禁）
 ```
 
