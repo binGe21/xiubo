@@ -26,10 +26,10 @@
     <div id="app">
       <canvas id="view" tabindex="0"></canvas>
       <div id="ui"></div>
-      <div id="boot">
+      <div id="boot" role="status" aria-live="polite" aria-busy="true">
         <div class="boot-mark">锈泊</div>
         <div class="boot-sub" id="boot-msg">拉起港区终端</div>
-        <div class="boot-bar"><i id="boot-fill"></i></div>
+        <div class="boot-bar" aria-hidden="true"><i id="boot-fill"></i></div>
       </div>
     </div>
     <script type="module" src="./src/game.js"></script>
