@@ -96,7 +96,9 @@ function createInput(context) {
         ((P = !!P),
           P !== r &&
             ((r = P),
-            P || v(),
+            // Pause/menus: drop pointer/touch combat, but keep held keyboard actions.
+            // Browsers do not re-fire keydown for keys still down after resume.
+            P || W(),
             M && M.root.classList.toggle("on", P && f.touch)));
       },
       setPrompt(P) {
@@ -146,7 +148,31 @@ function createInput(context) {
     (n.clear(),
       (u = 0),
       (j = !1),
-      M && (M.btn.ads.classList.remove("active"), ie(), (q = -1), (D = -1)));
+      M &&
+        (M.btn.ads.classList.remove("active"),
+        M.btn.ads.hasAttribute("aria-pressed") &&
+          M.btn.ads.setAttribute("aria-pressed", "false"),
+        ie(),
+        (q = -1),
+        (D = -1)));
+  }
+  /** Clear non-keyboard sources on gameplay off; preserve held keys across pause. */
+  function W() {
+    for (let P of o.mouse) n.delete(P);
+    for (let P of o.touch) n.delete(P);
+    for (let P of o.pad) n.delete(P);
+    (o.mouse.clear(),
+      o.touch.clear(),
+      o.pad.clear(),
+      (u = 0),
+      (j = !1),
+      M &&
+        (M.btn.ads.classList.remove("active"),
+        M.btn.ads.hasAttribute("aria-pressed") &&
+          M.btn.ads.setAttribute("aria-pressed", "false"),
+        ie(),
+        (q = -1),
+        (D = -1)));
   }
   (addEventListener("keydown", (P) => {
     let V = KEY_BINDINGS[P.code];
@@ -522,7 +548,10 @@ function createInput(context) {
       Z > 1 && ((V /= Z), (Y /= Z));
       let J = (n.has("turnR") ? 1 : 0) - (n.has("turnL") ? 1 : 0),
         oe = (n.has("turnD") ? 1 : 0) - (n.has("turnU") ? 1 : 0);
-      (J && (f.look.dx += J * p_ * P), oe && (f.look.dy += oe * p_ * 0.6 * P));
+      (J && (f.look.dx += J * p_ * P * f.sensitivity),
+        oe &&
+          (f.look.dy +=
+            oe * p_ * 0.6 * P * f.sensitivity * (f.invertY ? -1 : 1)));
     }
     ((f.move.x = V),
       (f.move.y = Y),

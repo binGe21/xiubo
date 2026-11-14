@@ -342,6 +342,8 @@ function createGameFlow(context) {
       (f = V),
       (p = V),
       (n.enabled = !1),
+      // Patrol already spawned; keep player safe until intro hands off to playing.
+      (n.invulnerable = !0),
       r.setGameplay && r.setGameplay(!1),
       o.show(!1),
       (e.fade = 1),
@@ -349,7 +351,8 @@ function createGameFlow(context) {
       M("intro"));
   }
   function T() {
-    ((n.enabled = !0),
+    ((n.invulnerable = !1),
+      (n.enabled = !0),
       o.show(!0),
       r.setGameplay && r.setGameplay(!0),
       o.setObjective(D()),
@@ -698,12 +701,14 @@ function createGameFlow(context) {
       q());
   }
   context.events.on("player:dead", () => {
-    (_.state !== "playing" && _.state !== "paused") ||
+    // Intro can still sim enemies; if invuln is bypassed, avoid softlock without a death UI.
+    (_.state !== "playing" && _.state !== "paused" && _.state !== "intro") ||
       (r.setGameplay && r.setGameplay(!1),
       r.exitLock(),
       o.setPrompt && o.setPrompt(null),
       o.show(!1),
       o.clearRadio && o.clearRadio(),
+      l.locationCard && l.locationCard(!1),
       l.setDead({
         time: c.time,
         relays: c.cut,
