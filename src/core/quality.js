@@ -1,17 +1,41 @@
 import { QUALITY_PRESETS } from "./config.js";
 
+function leanMobilePreset() {
+  try {
+    let coarse =
+        typeof matchMedia == "function" &&
+        matchMedia("(pointer: coarse)").matches,
+      narrow =
+        typeof matchMedia == "function" &&
+        matchMedia("(max-width: 900px)").matches,
+      short =
+        typeof matchMedia == "function" &&
+        matchMedia("(max-height: 520px)").matches,
+      tiny = Math.min(screen.width || 0, screen.height || 0) < 700,
+      uaMobile = /Android|iPhone|iPad|iPod|Mobile|Opera Mini|IEMobile/i.test(
+        navigator.userAgent || "",
+      ),
+      multiTouchPad =
+        (navigator.maxTouchPoints || 0) > 1 &&
+        Math.min(screen.width || 0, screen.height || 0) < 900;
+    // Phones / short landscape: lean low so dynres has headroom.
+    if (uaMobile || multiTouchPad || ((coarse || tiny) && (narrow || short)))
+      return QUALITY_PRESETS.low;
+    // Large coarse tablets: medium keeps identity without desktop high cost.
+    if (coarse) return QUALITY_PRESETS.medium;
+  } catch {}
+  return null;
+}
+
 function chooseQuality(i) {
   if (i && QUALITY_PRESETS[i])
     return {
       ...QUALITY_PRESETS[i],
     };
-  if (
-    /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ||
-    (navigator.maxTouchPoints > 1 &&
-      Math.min(screen.width, screen.height) < 900)
-  )
+  let lean = leanMobilePreset();
+  if (lean)
     return {
-      ...QUALITY_PRESETS.low,
+      ...lean,
     };
   let t = "";
   try {
@@ -38,4 +62,4 @@ function chooseQuality(i) {
   return { ...QUALITY_PRESETS.high };
 }
 
-export { chooseQuality };
+export { chooseQuality, leanMobilePreset };
