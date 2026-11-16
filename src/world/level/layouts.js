@@ -27,6 +27,8 @@ var LAYOUTS = {
       labelColor: "white",
       interior: "mixed",
     },
+    // Classic berth — no annex masses (B4/B6 add distinct footprints).
+    sceneMass: "home",
     gateShell: {
       boothColor: "white",
       boothShift: 0,
@@ -100,6 +102,8 @@ var LAYOUTS = {
       labelColor: "white",
       interior: "cold",
     },
+    // East insulated plant wing + vapor stacks — not a tinted B8 shed footprint.
+    sceneMass: "cold_plant",
     gateShell: {
       boothColor: "teal",
       boothShift: -0.45,
@@ -107,36 +111,35 @@ var LAYOUTS = {
       armYaw: -0.06,
       boothText: "冷链门岗 · 4",
     },
-    // Idle upright booms, cooler tints, fewer gantries — cold quay skyline.
+    // Idle upright booms, cooler tints, fewer / farther gantries — cold quay skyline.
     skyline: {
       craneId: "冷岸 04",
       craneZ: -2.4,
-      craneScale: 0.96,
-      farDz: 78,
+      craneScale: 0.92,
+      farDz: 88,
       gantries: [
-        [-108, 1.05, true, [0.1, 0.16, 0.24]],
-        [-198, 1.12, true, [0.1, 0.18, 0.26]],
-        [-278, 1.22, false, [0.12, 0.2, 0.28]],
-        [96, 1.08, true, [0.1, 0.16, 0.24]],
-        [188, 1.18, true, [0.14, 0.22, 0.3]],
-        [292, 1.28, false, [0.1, 0.17, 0.25]],
+        [-96, 0.92, true, [0.08, 0.15, 0.26]],
+        [-210, 1.0, true, [0.09, 0.18, 0.28]],
+        [-320, 1.08, false, [0.1, 0.2, 0.3]],
+        [118, 0.94, true, [0.08, 0.16, 0.26]],
+        [248, 1.05, true, [0.12, 0.22, 0.32]],
       ],
     },
     sense: {
-      saturation: 0.78,
-      rain: 0.97,
-      grain: 0.055,
-      vignette: 0.54,
-      // Colder shadows + teal-bias fog grade; mute the sodium punch.
-      gradeSh: [0.7, 0.9, 1.2],
-      gradeHi: [0.92, 1.02, 1.14],
+      saturation: 0.72,
+      rain: 1.05,
+      grain: 0.062,
+      vignette: 0.58,
+      // Deep cold shadows + teal fog; kill sodium warmth.
+      gradeSh: [0.62, 0.88, 1.28],
+      gradeHi: [0.86, 1.04, 1.2],
     },
     audio: {
-      rain: 1.32,
-      wind: 0.68,
-      sea: 0.48,
-      foghorn: 0.4,
-      windPitch: 0.84,
+      rain: 1.42,
+      wind: 0.55,
+      sea: 0.38,
+      foghorn: 0.28,
+      windPitch: 0.78,
     },
     // Wet quay footing — slightly heavier, deliberate boarding.
     feel: {
@@ -171,6 +174,8 @@ var LAYOUTS = {
       labelColor: "yellow",
       interior: "maint",
     },
+    // South open canopy + scaffold towers — repair apron, not thinned B8 boxes.
+    sceneMass: "maint_apron",
     gateShell: {
       boothColor: "grey",
       boothShift: 0.55,
@@ -178,39 +183,40 @@ var LAYOUTS = {
       armYaw: 0.08,
       boothText: "机修门岗 · 6",
     },
-    // Denser staggered gantries + tall raised boom — maint yard skyline.
+    // Close staggered gantries + tall raised boom — sodium grit skyline.
     skyline: {
       craneId: "机修 06",
       craneZ: 1.6,
-      craneScale: 1.05,
-      farDz: 52,
+      craneScale: 1.12,
+      farDz: 44,
       gantries: [
-        [-88, 1.0, false, [0.22, 0.16, 0.08]],
-        [-148, 1.38, true, [0.28, 0.2, 0.08]],
-        [-218, 0.94, false, [0.26, 0.12, 0.06]],
-        [-298, 1.18, true, [0.22, 0.16, 0.08]],
-        [86, 1.02, false, [0.24, 0.18, 0.1]],
-        [158, 1.48, true, [0.32, 0.24, 0.1]],
-        [236, 1.08, false, [0.22, 0.16, 0.08]],
-        [308, 1.22, true, [0.26, 0.12, 0.06]],
-        [372, 0.9, false, [0.2, 0.15, 0.08]],
+        [-72, 1.08, false, [0.28, 0.18, 0.06]],
+        [-128, 1.52, true, [0.34, 0.22, 0.08]],
+        [-188, 0.88, false, [0.3, 0.14, 0.05]],
+        [-268, 1.28, true, [0.26, 0.16, 0.07]],
+        [64, 1.1, false, [0.28, 0.2, 0.08]],
+        [132, 1.62, true, [0.36, 0.26, 0.1]],
+        [210, 1.0, false, [0.24, 0.16, 0.07]],
+        [288, 1.34, true, [0.3, 0.14, 0.05]],
+        [360, 0.86, false, [0.22, 0.15, 0.06]],
+        [420, 1.18, true, [0.28, 0.18, 0.07]],
       ],
     },
     sense: {
-      saturation: 1.1,
-      rain: 0.56,
-      grain: 0.026,
-      vignette: 0.32,
-      // Harder night sodium, less teal — open yard reads sharper.
-      gradeSh: [0.9, 0.92, 0.98],
-      gradeHi: [1.2, 0.94, 0.68],
+      saturation: 1.18,
+      rain: 0.48,
+      grain: 0.022,
+      vignette: 0.28,
+      // Hard sodium night, warm grit — open apron reads sharper than B8 dusk.
+      gradeSh: [0.96, 0.9, 0.88],
+      gradeHi: [1.28, 0.92, 0.58],
     },
     audio: {
-      rain: 0.72,
-      wind: 1.38,
-      sea: 1.18,
-      foghorn: 1.6,
-      windPitch: 1.14,
+      rain: 0.58,
+      wind: 1.55,
+      sea: 1.28,
+      foghorn: 1.85,
+      windPitch: 1.22,
     },
     // Open mid-yard pursuit — snappier sprint, faster extract board.
     feel: {

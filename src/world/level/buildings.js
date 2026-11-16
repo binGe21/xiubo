@@ -564,6 +564,167 @@ var A1 = [-0.04, 0.25, 0.5, 0.75, 1];
 
 var sv = 20;
 
+/** Extra building masses that break the shared B8 shed silhouette. */
+function buildSceneMasses(i, layout) {
+  let mass = (layout && layout.sceneMass) || "home",
+    { M: e, MI: t, box: n, slab: s, cyl: o, rod: r, ibeam: a, col: l } = i,
+    extras = [];
+  if (mass === "cold_plant") {
+    // East insulated plant wing — lower roof, white/teal shell, vapor stacks.
+    let x0 = 12.4,
+      x1 = 24.6,
+      z0 = -26.8,
+      z1 = -13.6,
+      eave = 4.35,
+      ridge = 5.55,
+      midZ = (z0 + z1) / 2;
+    (s(t("floor_epoxy"), x0, -0.2, z0, x1, 0.03, z1, { cast: !1 }),
+      l(x0, -0.4, z0, x1, 0.03, z1, "concrete"),
+      // Long walls
+      s(t("paint_white"), x0, 0, z0, x0 + 0.22, eave, z1),
+      s(t("paint_white"), x1 - 0.22, 0, z0, x1, eave, z1),
+      s(t("paint_white"), x0, 0, z0, x1, eave, z0 + 0.22),
+      s(t("paint_white"), x0, 0, z1 - 0.22, x1, eave, z1),
+      // Teal identity band + title face toward yard.
+      s(t("paint_blue"), x0 + 0.4, 2.55, z1, x1 - 0.4, 3.05, z1 + 0.08),
+      s(e("paint_blue"), x0 + 0.4, 3.05, z1, x1 - 0.4, 3.2, z1 + 0.08),
+      i.label("冷链机组", 0.32, (x0 + x1) / 2, 3.55, z1 + 0.06, "z+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.2,
+      }),
+      // Low pitched roof planes.
+      n(e("corrugated_roof"), x1 - x0 + 0.4, 0.08, (z1 - z0) * 0.52, (x0 + x1) / 2, (eave + ridge) / 2, midZ - (z1 - z0) * 0.22, {
+        r: [0.18, 0, 0],
+      }),
+      n(e("corrugated_roof"), x1 - x0 + 0.4, 0.08, (z1 - z0) * 0.52, (x0 + x1) / 2, (eave + ridge) / 2, midZ + (z1 - z0) * 0.22, {
+        r: [-0.18, 0, 0],
+      }),
+      l(x0, 0, z0, x1, eave, z0 + 0.22, "metal"),
+      l(x0, 0, z1 - 0.22, x1, eave, z1, "metal"),
+      l(x0, 0, z0, x0 + 0.22, eave, z1, "metal"),
+      l(x1 - 0.22, 0, z0, x1, eave, z1, "metal"));
+    // Vapor / exhaust stacks — cold-plant skyline breaker.
+    for (let [cx, cz, h] of [
+      [14.2, -24.8, 9.2],
+      [18.6, -22.4, 11.4],
+      [22.4, -25.2, 8.6],
+    ]) {
+      (o(e("steel_galv"), 0.42, h, cx, h / 2, cz, { seg: 10 }),
+        o(e("paint_white"), 0.52, 0.35, cx, h + 0.1, cz, { seg: 10 }),
+        o(e("steel_dark"), 0.28, 0.8, cx, h + 0.55, cz, { seg: 8 }),
+        l(cx - 0.5, 0, cz - 0.5, cx + 0.5, h + 0.6, cz + 0.5, "metal", {
+          noNav: !0,
+        }));
+    }
+    // Cable bridge into main shed eave.
+    (a(t("steel_galv"), "x", 11.2, 11.8, 4.1, -19.2, {
+      depth: 0.18,
+      width: 0.12,
+      depthAxis: "z",
+    }),
+      r(e("steel_galv"), [12.4, 4.2, -19.2], [11.9, 6.4, -19.4], 0.04),
+      i.place("reefer_unit", 13.6, -14.8, 0.2, { seed: 701 }, 0),
+      i.place("reefer_unit", 16.8, -14.4, -0.15, { seed: 702 }, 0),
+      i.place("generator", 21.2, -15.2, 0.1, { seed: 703 }, 0),
+      i.place("cable_reel", 19.4, -16.8, 0.6, { seed: 704 }, 0),
+      i.decal("hazard_voltage", 0.55, 13.2, 1.6, z1 + 0.05, "z+"),
+      i.label("岸电接入", 0.22, 20.4, 0.02, -14.2, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.24,
+      }));
+    extras.push({
+      min: { x: x0, y: 0, z: z0 },
+      max: { x: x1, y: ridge, z: z1 },
+    });
+  } else if (mass === "maint_apron") {
+    // Open steel canopy south of shed — repair apron under cover, not a closed warehouse twin.
+    let posts = [
+        [-9.6, -10.6],
+        [2.4, -10.6],
+        [9.2, -10.6],
+        [-9.6, -5.4],
+        [2.4, -5.4],
+        [9.2, -5.4],
+      ],
+      beamY = 6.4;
+    for (let [px, pz] of posts) {
+      (n(e("steel_galv"), 0.22, beamY, 0.22, px, beamY / 2, pz, { bevel: 0.02 }),
+        n(e("paint_orange"), 0.28, 0.55, 0.28, px, 0.28, pz, { bevel: 0.02 }),
+        l(px - 0.14, 0, pz - 0.14, px + 0.14, beamY, pz + 0.14, "metal", {
+          noNav: !0,
+        }));
+    }
+    // Longitudinal beams + cross ties.
+    for (let z of [-10.6, -5.4])
+      n(e("steel_dark"), 19.2, 0.18, 0.2, -0.2, beamY + 0.12, z, { bevel: 0.01 });
+    for (let x of [-9.6, 2.4, 9.2])
+      n(e("steel_dark"), 0.18, 0.16, 5.4, x, beamY + 0.12, -8.0, { bevel: 0.01 });
+    // Corrugated canopy sheets (partial — open sides).
+    for (let [cx, cz, w, d] of [
+      [-3.6, -8.0, 12.2, 5.6],
+      [5.8, -8.0, 7.4, 5.6],
+    ])
+      n(e("corrugated_roof"), w, 0.06, d, cx, beamY + 0.28, cz, {
+        r: [0.02, 0, 0],
+      });
+    // Scaffold towers — tall repair silhouettes (kept clear of B6 mid spawn).
+    for (let [tx, tz, h, yaw] of [
+      [5.4, -3.6, 8.6, 0.08],
+      [10.2, 5.2, 10.2, -0.12],
+      [-12.6, 9.8, 7.8, 0.2],
+    ]) {
+      let rootX = tx,
+        rootZ = tz,
+        w = 2.4,
+        d = 2.0;
+      for (let [sx, sz] of [
+        [-1, -1],
+        [1, -1],
+        [-1, 1],
+        [1, 1],
+      ]) {
+        let px = rootX + sx * (w / 2),
+          pz = rootZ + sz * (d / 2);
+        (n(e("steel_galv"), 0.12, h, 0.12, px, h / 2, pz),
+          l(px - 0.08, 0, pz - 0.08, px + 0.08, h, pz + 0.08, "metal", {
+            noNav: !0,
+          }));
+      }
+      for (let ly = 1.6; ly < h; ly += 1.55) {
+        (n(e("steel_worn"), w + 0.1, 0.08, 0.08, rootX, ly, rootZ - d / 2),
+          n(e("steel_worn"), w + 0.1, 0.08, 0.08, rootX, ly, rootZ + d / 2),
+          n(e("steel_worn"), 0.08, 0.08, d + 0.1, rootX - w / 2, ly, rootZ),
+          n(e("steel_worn"), 0.08, 0.08, d + 0.1, rootX + w / 2, ly, rootZ));
+      }
+      (n(e("paint_orange"), w + 0.2, 0.12, d + 0.2, rootX, h + 0.06, rootZ),
+        n(e("steel_dark"), 0.8, 0.5, 0.8, rootX, h + 0.4, rootZ),
+        i.place(
+          "floodlight_stand",
+          rootX + 0.9,
+          rootZ + 1.3,
+          yaw,
+          { seed: Math.round(tx * 9 + tz) },
+          0,
+        ));
+    }
+    // Pipe runs + work benches under canopy.
+    (i.place("pipe_stack", -7.2, -8.8, 0.2, { seed: 711 }, 0),
+      i.place("pipe_stack", -5.4, -7.2, -0.25, { seed: 712 }, 0),
+      i.place("toolbox_cart", 0.6, -9.2, 0.4, { seed: 713 }, 0),
+      i.place("gas_cylinders", 4.8, -6.4, 0.1, { seed: 714 }, 0),
+      i.place("crate_stack", 7.6, -9.0, 0.15, { seed: 715 }, 0),
+      i.label("机修雨棚", 0.28, -2.4, 0.02, -7.6, "y+", {
+        color: "yellow",
+        font: "stencil",
+        distress: 0.18,
+      }),
+      i.decal("hazard_general", 0.6, 8.4, 1.4, -5.2, "z+"));
+  }
+  return extras;
+}
+
 function ab(i, layout = null) {
   let {
       M: e,
@@ -1638,6 +1799,7 @@ function ab(i, layout = null) {
       lights: P,
       skylights: X,
       relayPos: new Vector3(-2, y, -19.5),
+      interiorExtras: buildSceneMasses(i, layout),
       update(L) {
         ue.rotation.x += L * 1.7;
       },

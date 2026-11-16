@@ -802,23 +802,78 @@ function hR(i, layout) {
   let e = i.place,
     t = i.stack,
     mid = (layout && layout.midStyle) || "mixed";
-  (t(-19.45, -5.12, [
-    [20, "green"],
-    [20, "grey"],
-    [20, "orange"],
-  ]),
-    t(-13.3, -5.12, [
-      [
-        20,
-        "white",
-        {
-          reefer: !0,
-          flip: !0,
-        },
-      ],
-    ]),
-    // Mid-south row — berth variants change cover and sightlines here.
-    mid === "reefer"
+  // West entry stacks — first 10s silhouette; must diverge per berth (not shared B8 wall).
+  mid === "reefer"
+    ? (t(-20.2, -5.4, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+      ]),
+      t(-13.6, -4.8, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+        [
+          20,
+          "teal",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      e("jersey_barrier", -16.6, -3.2, Math.PI / 2, { seed: 4101 }, 0),
+      e("reefer_unit", -17.4, -2.4, 0.2, { seed: 4102 }, 0),
+      i.label("冷柜南巷", 0.22, -16.8, 0.02, -3.8, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.26,
+      }))
+    : mid === "open"
+      ? (t(-20.6, -5.6, [[20, "orange"]]),
+        e("pipe_stack", -15.8, -4.2, 0.2, { seed: 4111 }, 0),
+        e("pipe_stack", -14.2, -6.2, -0.2, { seed: 4112 }, 0),
+        e("toolbox_cart", -17.2, -3.4, 0.35, { seed: 4113 }, 0),
+        e("light_mast", -12.8, -3.8, 0, { seed: 4114 }, 0),
+        e("gas_cylinders", -13.4, -5.8, 0.1, { seed: 4115 }, 0),
+        i.label("机修南口", 0.22, -16.2, 0.02, -4.2, "y+", {
+          color: "yellow",
+          font: "stencil",
+          distress: 0.18,
+        }))
+      : (t(-19.45, -5.12, [
+          [20, "green"],
+          [20, "grey"],
+          [20, "orange"],
+        ]),
+        t(-13.3, -5.12, [
+          [
+            20,
+            "white",
+            {
+              reefer: !0,
+              flip: !0,
+            },
+          ],
+        ]));
+  // Mid-south row — berth variants change cover and sightlines here.
+  (mid === "reefer"
       ? (t(3.7, -5.12, [
           [
             20,
@@ -894,7 +949,7 @@ function hR(i, layout) {
             [20, "teal"],
             [20, "grey"],
           ])),
-    // West mid framing — B6 drops the paired wall so north sightline opens earlier.
+    // West mid framing — each berth owns this skyline slice from the gate.
     mid === "open"
       ? (t(-19.8, 2.2, [[20, "blue"]]),
         e(
@@ -917,8 +972,38 @@ function hR(i, layout) {
           },
           0,
         ))
-      : (t(-19.45, 2.08, [[20, "blue"]]),
-        t(-13.35, 2.08, [[20, "red"]])),
+      : mid === "reefer"
+        ? (t(-20.1, 1.9, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+                flip: !0,
+              },
+            ],
+          ]),
+          t(-13.1, 2.4, [
+            [
+              20,
+              "white",
+              {
+                reefer: !0,
+              },
+            ],
+          ]),
+          e("jersey_barrier", -16.4, 2.8, Math.PI / 2 + 0.06, { seed: 4121 }, 0),
+          e("cable_reel", -15.6, 1.4, 0.7, { seed: 4122 }, 0),
+          i.col(-16.75, 0, 2.2, -16.05, 1.05, 3.6, "concrete"))
+        : (t(-19.45, 2.08, [[20, "blue"]]),
+          t(-13.35, 2.08, [[20, "red"]])),
     // Mid corridor — B6 opens it; B4 packs reefers; B8 keeps mixed wall.
     mid === "open"
       ? (e(
@@ -1270,7 +1355,317 @@ function hR(i, layout) {
         font: "stencil",
         distress: 0.2,
       }));
+  } else if (mid === "reefer") {
+    // B4 cold corridors — parallel low white reefers, narrow ambush lanes (not B8 triple walls).
+    (t(-22.4, 9.6, [
+      [
+        20,
+        "white",
+        {
+          reefer: !0,
+        },
+      ],
+      [
+        20,
+        "white",
+        {
+          reefer: !0,
+          flip: !0,
+        },
+      ],
+    ],
+      0.12,
+    ),
+      t(-14.8, 9.6, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ],
+        0.18,
+      ),
+      t(-22.8, 12.1, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+        [
+          20,
+          "teal",
+          {
+            reefer: !0,
+          },
+        ],
+      ],
+        0.1,
+      ),
+      // Gap corridor between west reefer walls — short ambush lane.
+      e(
+        "jersey_barrier",
+        -18.4,
+        10.7,
+        Math.PI / 2 + 0.05,
+        {
+          seed: 4011,
+        },
+        0,
+      ),
+      e(
+        "reefer_unit",
+        -17.2,
+        11.4,
+        0.25,
+        {
+          seed: 4012,
+        },
+        0,
+      ),
+      e(
+        "cable_reel",
+        -16.6,
+        13.0,
+        0.7,
+        {
+          seed: 4013,
+        },
+        0,
+      ),
+      // East mid-north: low insulated rows instead of blue/green pair.
+      t(3.2, 11.8, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ],
+        0.05,
+      ),
+      t(12.6, 11.6, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+        [
+          20,
+          "grey",
+          {
+            reefer: !0,
+          },
+        ],
+      ],
+        0.08,
+      ),
+      e(
+        "jersey_barrier",
+        7.8,
+        11.2,
+        0.1,
+        {
+          seed: 4014,
+        },
+        0,
+      ),
+      e(
+        "floodlight_stand",
+        8.6,
+        13.4,
+        0.4,
+        {
+          seed: 4015,
+        },
+        0,
+      ),
+      i.stairs(-0.1, 12.42, 0, 0, {
+        seed: 9,
+      }),
+      // Far north — dense low reefer grid with choke gaps (reads cold-chain, not classic yard).
+      t(-20.2, 18.8, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+      ]),
+      t(-11.4, 18.6, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      t(-20.6, 21.4, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+        [
+          20,
+          "teal",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      t(-8.8, 21.2, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      t(2.4, 19.0, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+      ]),
+      t(11.8, 18.8, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      t(2.1, 21.6, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+      ]),
+      t(12.4, 21.8, [
+        [
+          20,
+          "grey",
+          {
+            reefer: !0,
+          },
+        ],
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      // NW cold choke instead of teal/orange 40ft wall.
+      t(-32.4, 22.8, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+          },
+        ],
+      ]),
+      t(-32.1, 25.2, [
+        [
+          20,
+          "white",
+          {
+            reefer: !0,
+            flip: !0,
+          },
+        ],
+      ]),
+      e(
+        "jersey_barrier",
+        -28.6,
+        23.6,
+        Math.PI / 2,
+        {
+          seed: 4016,
+        },
+        0,
+      ),
+      e(
+        "reefer_unit",
+        -29.8,
+        24.4,
+        0.2,
+        {
+          seed: 4017,
+        },
+        0,
+      ),
+      e(
+        "generator",
+        -26.4,
+        24.8,
+        -0.1,
+        {
+          seed: 4018,
+        },
+        0,
+      ),
+      e(
+        "sign_post",
+        -15.2,
+        19.4,
+        ts,
+        {
+          seed: 4019,
+          sign: "hazard_voltage",
+          text: "冷柜巷 · 禁停",
+        },
+        0,
+      ),
+      i.label("冷柜北巷", 0.26, -10.8, 0.02, 19.6, "y+", {
+        color: "white",
+        font: "stencil",
+        distress: 0.26,
+      }),
+      i.col(-18.8, 0, 10.2, -18.1, 1.05, 12.0, "concrete"));
   } else {
+    // B8 classic dense mixed mid-north + far-north walls.
     (t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
       t(
         -13.6,
@@ -1652,55 +2047,84 @@ function hR(i, layout) {
       e0(i, -8.6 - 1, 4.5 + 0.78, 0.2),
       e0(i, -11.9, 3.6, 2.4));
   }
-  // Mid clutter — B6 keeps the corridor open; B8/B4 keep denser cover.
-  mid !== "open" &&
-    (e("jersey_barrier", -2.9, 5.3, 0.12, {
-      seed: 11,
-    }),
-    e("jersey_barrier", 5.6, 5, -0.1, {
-      seed: 12,
-    }),
-    e("jersey_barrier", 11.6, 3.95, 0.03, {
-      seed: 81,
-    }),
-    e("jersey_barrier", 12.2, 0.4, 0.03, {
-      seed: 28,
-    }),
-    e("jersey_barrier", -0.9, -7.5, 0.1, {
-      seed: 31,
-    }));
-  (e("sandbags", -1.7, 9.7, 0.5, {
-    seed: 13,
-  }),
-    e("ibc_tote", 5.9, 8.9, 0.1, {
-      seed: 14,
-    }),
-    e("ibc_tote", 5.95, 10.05, -0.05, {
-      seed: 15,
-    }),
-    e("barrel", 4.9, 9.7, 0, {
-      seed: 16,
-      color: "red",
-    }),
-    e("crate_stack", -3.9, 10.5, 0.1, {
-      seed: 17,
-    }),
-    e("crate_wood", -3.8, 9.35, -0.2, {
-      seed: 18,
-    }),
-    e("pallet_stack", -4.4, 11.8, 0.02, {
-      seed: 19,
-    }),
-    e("cable_reel", 4.2, 10.5, 0.3, {
-      seed: 20,
-    }),
-    e("tarp_cargo", 12.9, 10, 0.04, {
-      seed: 21,
-    }),
-    e("ibc_tote", 15.2, 10.2, 0.1, {
-      seed: 82,
-    }));
-  mid !== "open" &&
+  // Mid clutter — B6 open; B4 cold chokes; B8 classic jersey cover.
+  mid === "open"
+    ? null
+    : mid === "reefer"
+      ? (e("jersey_barrier", -3.4, 4.6, Math.PI / 2 + 0.08, { seed: 11 }, 0),
+        e("jersey_barrier", -3.35, 7.2, Math.PI / 2 - 0.05, { seed: 12 }, 0),
+        e("jersey_barrier", 10.8, 2.8, Math.PI / 2, { seed: 81 }, 0),
+        e("jersey_barrier", 10.85, 5.6, Math.PI / 2 + 0.04, { seed: 28 }, 0),
+        e("reefer_unit", 6.2, 4.4, 0.2, { seed: 4021 }, 0),
+        e("cable_reel", 5.4, 6.8, 0.6, { seed: 4022 }, 0),
+        e("generator", 14.6, 3.2, 0.1, { seed: 4023 }, 0),
+        i.col(-3.7, 0, 4.2, -3.0, 1.05, 7.6, "concrete"),
+        i.col(10.5, 0, 2.4, 11.2, 1.05, 6.0, "concrete"))
+      : (e("jersey_barrier", -2.9, 5.3, 0.12, {
+          seed: 11,
+        }),
+        e("jersey_barrier", 5.6, 5, -0.1, {
+          seed: 12,
+        }),
+        e("jersey_barrier", 11.6, 3.95, 0.03, {
+          seed: 81,
+        }),
+        e("jersey_barrier", 12.2, 0.4, 0.03, {
+          seed: 28,
+        }),
+        e("jersey_barrier", -0.9, -7.5, 0.1, {
+          seed: 31,
+        }));
+  mid === "open"
+    ? (e("pipe_stack", -2.2, 9.4, 0.15, { seed: 4031 }, 0),
+      e("toolbox_cart", 4.6, 9.8, 0.3, { seed: 4032 }, 0),
+      e("gas_cylinders", 12.4, 9.6, 0.1, { seed: 4033 }, 0),
+      e("crate_wood", -4.2, 10.8, 0.2, { seed: 4034 }, 0))
+    : mid === "reefer"
+      ? (e("reefer_unit", -2.4, 9.4, 0.15, { seed: 13 }, 0),
+        e("cable_reel", 4.8, 9.6, 0.5, { seed: 14 }, 0),
+        e("cable_reel", 5.6, 10.4, 1.1, { seed: 15 }, 0),
+        e("barrel", 3.9, 9.2, 0, { seed: 16, color: "blue" }, 0),
+        e("crate_wood", -4.6, 10.8, 0.2, { seed: 17 }, 0),
+        e("generator", 14.2, 9.4, -0.1, { seed: 21 }, 0),
+        e("ibc_tote", 15.6, 10.6, 0.1, { seed: 82 }, 0),
+        i.label("冷链中巷", 0.24, 1.2, 0.02, 5.8, "y+", {
+          color: "white",
+          font: "stencil",
+          distress: 0.24,
+        }))
+      : (e("sandbags", -1.7, 9.7, 0.5, {
+          seed: 13,
+        }),
+        e("ibc_tote", 5.9, 8.9, 0.1, {
+          seed: 14,
+        }),
+        e("ibc_tote", 5.95, 10.05, -0.05, {
+          seed: 15,
+        }),
+        e("barrel", 4.9, 9.7, 0, {
+          seed: 16,
+          color: "red",
+        }),
+        e("crate_stack", -3.9, 10.5, 0.1, {
+          seed: 17,
+        }),
+        e("crate_wood", -3.8, 9.35, -0.2, {
+          seed: 18,
+        }),
+        e("pallet_stack", -4.4, 11.8, 0.02, {
+          seed: 19,
+        }),
+        e("cable_reel", 4.2, 10.5, 0.3, {
+          seed: 20,
+        }),
+        e("tarp_cargo", 12.9, 10, 0.04, {
+          seed: 21,
+        }),
+        e("ibc_tote", 15.2, 10.2, 0.1, {
+          seed: 82,
+        }));
+  mid === "mixed" &&
     [
       [0.2, 6.3],
       [2.9, 6.4],
@@ -1709,6 +2133,17 @@ function hR(i, layout) {
     ].forEach(([s, o]) =>
       e("traffic_cone", s, o, 0, {
         seed: Math.round(s * 9 + o * 5),
+      }),
+    );
+  mid === "reefer" &&
+    [
+      [-2.6, 5.6],
+      [-2.4, 6.8],
+      [11.4, 3.6],
+      [11.6, 4.8],
+    ].forEach(([s, o]) =>
+      e("traffic_cone", s, o, 0, {
+        seed: Math.round(s * 9 + o * 5 + 90),
       }),
     );
   (Qa(i, -9.55, 9.3, 0.04),
