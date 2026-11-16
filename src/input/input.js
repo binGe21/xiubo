@@ -44,6 +44,31 @@ var g_ = {
   pause: 1,
 };
 
+function detectCoarsePointer() {
+  try {
+    if (
+      typeof matchMedia == "function" &&
+      matchMedia("(pointer: coarse)").matches
+    )
+      return !0;
+  } catch {}
+  return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+}
+
+function likelyPhoneShell() {
+  if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""))
+    return !0;
+  try {
+    return (
+      detectCoarsePointer() &&
+      (matchMedia("(max-width: 900px)").matches ||
+        Math.min(screen.width || 0, screen.height || 0) < 900)
+    );
+  } catch {
+    return detectCoarsePointer();
+  }
+}
+
 function createInput(context) {
   let e =
       (context.renderer && context.renderer.domElement) ||
@@ -408,8 +433,53 @@ function createInput(context) {
       M || (M = N()),
       M.root.classList.toggle("on", r),
       document.documentElement.classList.add("is-touch"),
+      document.documentElement.classList.add("is-coarse"),
+      // Slightly larger virtual stick on phones / coarse pointers.
+      (If =
+        Math.min(innerWidth, innerHeight) < 700 || detectCoarsePointer()
+          ? 66
+          : 58),
       p("touch"));
   }
+  // Mark phone/coarse shell early so title + HUD CSS apply before first touch.
+  if (likelyPhoneShell()) {
+    (document.documentElement.classList.add("is-coarse"),
+      document.documentElement.classList.add("is-touch"));
+  } else if (detectCoarsePointer()) {
+    document.documentElement.classList.add("is-coarse");
+  }
+  // Block browser navigation gestures while gameplay chrome is active.
+  (addEventListener(
+    "gesturestart",
+    (P) => {
+      P.preventDefault();
+    },
+    { passive: !1 },
+  ),
+    addEventListener(
+      "gesturechange",
+      (P) => {
+        P.preventDefault();
+      },
+      { passive: !1 },
+    ),
+    addEventListener(
+      "touchmove",
+      (P) => {
+        if (!r) return;
+        let V = P.target;
+        if (
+          V &&
+          (V.closest &&
+            (V.closest(".panel-b") ||
+              V.closest(".m-card") ||
+              V.closest(".panel")))
+        )
+          return;
+        P.cancelable && P.preventDefault();
+      },
+      { passive: !1, capture: !0 },
+    ));
   function ie() {
     ((w = -1), (H = O = 0), M && M.stick.classList.remove("on"));
   }

@@ -1333,12 +1333,18 @@ function u_(i, e, t) {
       } catch {}
   }
   if (typeof window < "u" && !t) {
-    let te = () => {
-      if ((yr(), o()))
-        for (let he of ["pointerdown", "keydown", "touchend", "mousedown"])
-          window.removeEventListener(he, te, !0);
-    };
-    for (let he of ["pointerdown", "keydown", "touchend", "mousedown"])
+    let unlockEvents = [
+        "pointerdown",
+        "touchstart",
+        "touchend",
+        "keydown",
+        "mousedown",
+      ],
+      te = () => {
+        if ((yr(), o()))
+          for (let he of unlockEvents) window.removeEventListener(he, te, !0);
+      };
+    for (let he of unlockEvents)
       window.addEventListener(he, te, {
         capture: !0,
         passive: !0,

@@ -112,7 +112,8 @@ function createMenus(context, e) {
           <button class="btn" data-act="settings">设置</button>
           <button class="btn m-only-narrow" data-act="controls">操作</button>
         </div>
-        <p class="m-note">三泊位短任务 · 本机成绩存于浏览器 · 键盘鼠标或触屏均可 · Esc / P 暂停</p>
+        <p class="m-note m-note-desk">三泊位短任务 · 本机成绩存于浏览器 · 键盘鼠标或触屏均可 · Esc / P 暂停</p>
+        <p class="m-note m-note-touch">三泊位短任务 · 推荐横屏双拇指 · 左移右看 · 点「开始突入」解锁音频并进入</p>
       </div>
       <aside class="m-legend" aria-label="操作速览">
         <div><span><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> 移动</span><span><kbd>鼠标</kbd> 视角</span><span><kbd>左键</kbd> 开火</span><span><kbd>右键</kbd> 开镜</span><span><kbd>R</kbd> 换弹</span></div>
