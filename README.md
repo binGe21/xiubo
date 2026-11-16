@@ -1,8 +1,42 @@
 # 锈泊 · XIUBO
 
-港区短任务 FPS。雨夜集装箱场，三泊位可选短任务（深水八号 / 冷藏四号 / 机修六号），切断数据闸口，对抗空中「鸥」与地面「獒」，登趸船撤离。
+雨夜集装箱场，三泊位短任务 FPS。切断数据闸口，对抗空中「鸥」与地面「獒」，登趸船撤离。
 
-Three.js r180、程序化材质 / 关卡 / 武器 / 敌人 / Web Audio；全中文菜单、HUD 与港区标识。提供模块化源码与单文件 HTML 双交付。
+纯静态 · 无账号 · 成绩仅存本机浏览器。Three.js r180，模块化源码与单文件 HTML 双交付。
+
+![锈泊标题屏 · 三泊位选择](docs/shots/hero-title.jpg)
+
+## 三泊位
+
+同一港区，三条体验不同的突入线——不是换皮，是起点、闸序、堆场几何、光声与战斗节奏都分开。
+
+### B8 · 深水八号
+
+经典箱巷：堆场 → 仓库 → 码头。钠黄暖色、密排龙门，均衡压迫下的「家场」节奏。
+
+![B8 深水八号 · 门吊天际线](docs/shots/b8-skyline.jpg)
+
+### B4 · 冷藏四号
+
+冷柜堵巷，岸电先切。更密的雨、偏冷色调，獒多鸥少——贴湿岸推进再回切冷链。
+
+![B4 冷藏四号 · 门吊天际线](docs/shots/b4-skyline.jpg)
+
+### B6 · 机修六号
+
+开敞北场，仓库先切。夜班钠橙、追击更快；管材与开敞视线逼你换掩体，别恋战。
+
+![B6 机修六号 · 门吊天际线](docs/shots/b6-skyline.jpg)
+
+### 门亭与撤离
+
+闸口门亭招牌、色带与栏杆开合按泊位分开——深水黄、冷链青、机修橙。切完三闸，趸船亮灯，按住登船。
+
+| 深水八号 | 冷藏四号 | 机修六号 |
+| --- | --- | --- |
+| ![B8 门亭](docs/shots/b8-gate.jpg) | ![B4 门亭](docs/shots/b4-gate.jpg) | ![B6 门亭](docs/shots/b6-gate.jpg) |
+
+![登船撤离广场](docs/shots/extract-plaza.jpg)
 
 ## 本地开发
 
@@ -13,17 +47,17 @@ npm install
 npm run dev
 ```
 
-打开 `http://127.0.0.1:8743`，在标题屏选择泊位任务，再点 **开始突入**。
+打开 `http://127.0.0.1:8743`，在标题屏选择泊位，再点 **开始突入**。
 
 ```bash
 npm run build          # 常规静态站点 → dist/（含本地字体）
 npm run build:single   # 单文件 HTML → dist-single/index.html
-npm run release        # 单文件构建并同步到 release/xiubo.html（发版工件）
+npm run release        # 单文件构建并同步到 release/xiubo.html
 npm run preview        # 预览 dist/（先 build）
 npm run preview:single # 预览 dist-single/（先 build:single）
 ```
 
-单文件版在联网时可拉中文字体（Google Fonts CDN）；断网仍可玩，仅显示回退。常规 `dist/` 打进了 `public/fonts/`，离线字体更完整。
+单文件版联网时可拉中文字体（Google Fonts CDN）；断网仍可玩，仅字体回退。常规 `dist/` 打进了 `public/fonts/`，离线字体更完整。
 
 ## 部署 / 上线
 
@@ -44,8 +78,8 @@ npm run build
 **GitHub Pages（示例）**
 
 1. `npm run build`
-2. 将 `dist/` 内容推到 `gh-pages` 分支，或在仓库 Settings → Pages 选择 GitHub Actions / 部署该目录
-3. 项目页（`https://<user>.github.io/xiubo/`）与用户页均可；`dist/` 内含空文件 `.nojekyll`，避免 Jekyll 干扰
+2. 将 `dist/` 内容推到 `gh-pages` 分支，或在 Settings → Pages 选择 GitHub Actions / 部署该目录
+3. 项目页（`https://<user>.github.io/xiubo/`）与用户页均可；`dist/` 含 `.nojekyll`，避免 Jekyll 干扰
 4. 本地核对：`npm run preview` → `http://127.0.0.1:8743`
 
 **任意静态主机**
@@ -59,7 +93,7 @@ npm run build
 ```bash
 npm run release
 # → dist-single/index.html
-# → release/xiubo.html   ← 仓库内已提交的可玩快照，随版本刷新
+# → release/xiubo.html   ← 仓库内已提交的可玩快照
 ```
 
 用浏览器直接打开 `release/xiubo.html`，或放到任意静态目录。本地冒烟：`npm run preview:single` → `http://127.0.0.1:8744`。
@@ -75,9 +109,9 @@ npm run release
 | `npm run release` | 更新 `release/xiubo.html` |
 | 标题屏 | 品牌「锈泊」、泊位可选、**开始突入** |
 | 音频 | 首次手势后有雨/电台；`/?noaudio=1` 可静音排障 |
-| 设置 | 存在本机 `localStorage` 键 `xiubo.settings.v1` |
+| 设置 | 本机 `localStorage` 键 `xiubo.settings.v1` |
 
-不做：服务端存档、账号、实时联机。成绩仅局内结算；持久排行榜属后续可选增强。
+不做：服务端存档、账号、实时联机。成绩仅局内结算；本机最佳通关 / 阵亡次数见下方。
 
 ## 操作
 
@@ -92,19 +126,19 @@ npm run release
 
 触屏：左拇指移动、右半屏视角；屏幕按钮含开火、开镜、换弹、近战、蹲、跳跃与互动。
 
-设置保存在 `localStorage` 键 `xiubo.settings.v1`。各泊位本机最佳通关 / 阵亡次数保存在 `xiubo.scores.v1`（无账号、无后端）。
+设置：`localStorage` 键 `xiubo.settings.v1`。各泊位本机最佳通关 / 阵亡：`xiubo.scores.v1`（无账号、无后端）。
 
 ## 源码地图
 
-见 `docs/DEVELOPMENT.md`。入口 `src/game.js` → `app/runtime.js`。
+见 [`docs/DEVELOPMENT.md`](docs/DEVELOPMENT.md)。入口 `src/game.js` → `app/runtime.js`。
 
 ## 调试
 
 | URL | 作用 |
 | --- | --- |
-| `/?q=low` / `/?q=medium` / `/?q=high` / `/?q=ultra` | 画质 |
+| `/?q=low` / `medium` / `high` / `ultra` | 画质 |
 | `/?seed=4207` | 固定随机种子 |
-| `/?mission=b8` / `b4` / `b6` | 选择泊位任务（深水八号 / 冷藏四号 / 机修六号） |
+| `/?mission=b8` / `b4` / `b6` | 选择泊位（深水八号 / 冷藏四号 / 机修六号） |
 | `/?autostart=1` | 跳过标题直接开局 |
 | `/?noaudio=1` | 静音模块 |
 | `/?bench=1` | 基准巡游 |
