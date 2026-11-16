@@ -258,6 +258,50 @@ function e0(i, e, t, n = 0) {
   );
 }
 
+/** Low insulated cold-chain wall — corridor language for B4 (not TEU canyon). */
+function coldWall(i, x0, z0, x1, z1, h = 3.35) {
+  let e = i.M("paint_white"),
+    n = i.M("paint_blue"),
+    s = i.M("corrugated_roof"),
+    o = Math.min(x0, x1),
+    r = Math.max(x0, x1),
+    a = Math.min(z0, z1),
+    l = Math.max(z0, z1),
+    c = (o + r) / 2,
+    u = (a + l) / 2,
+    alongX = r - o > l - a;
+  (i.slab(e, o, 0, a, r, h, l),
+    // Teal identity band on the longer face.
+    alongX
+      ? i.slab(n, o, h * 0.62, l, r, h * 0.74, l + 0.06)
+      : i.slab(n, r, h * 0.62, a, r + 0.06, h * 0.74, l),
+    alongX
+      ? i.box(s, r - o + 0.2, 0.08, l - a + 0.35, c, h + 0.06, u, {
+          bevel: 0.01,
+        })
+      : i.box(s, r - o + 0.35, 0.08, l - a + 0.2, c, h + 0.06, u, {
+          bevel: 0.01,
+        }),
+    i.col(o, 0, a, r, h, l, "metal"));
+}
+
+/** Pipe gantry truss — B6 vertical language without TEU walls. */
+function pipeGantry(i, x, z, h = 7.2, w = 3.6) {
+  let e = i.M("steel_galv"),
+    t = i.M("steel_dark"),
+    n = i.M("paint_orange");
+  for (let s of [-1, 1]) {
+    let o = x + s * (w / 2);
+    (i.box(e, 0.14, h, 0.14, o, h / 2, z, { bevel: 0.01 }),
+      i.box(n, 0.2, 0.4, 0.2, o, 0.22, z, { bevel: 0.01 }),
+      i.col(o - 0.1, 0, z - 0.1, o + 0.1, h, z + 0.1, "metal", { noNav: !0 }));
+  }
+  (i.box(t, w + 0.2, 0.12, 0.12, x, h + 0.05, z),
+    i.box(t, w + 0.2, 0.1, 0.1, x, h * 0.55, z),
+    i.cyl(e, 0.08, w - 0.2, x, h * 0.78, z, { axis: "x", seg: 8 }),
+    i.cyl(e, 0.06, w - 0.3, x, h * 0.35, z + 0.35, { axis: "x", seg: 6 }));
+}
+
 function Sf(i, e, t, n, s = "x-", o = 3.2) {
   let r = s[0] === "x";
   (i.cyl("steel_galv", 0.045, o, e, o / 2, t, {
@@ -804,54 +848,36 @@ function hR(i, layout) {
     mid = (layout && layout.midStyle) || "mixed";
   // West entry stacks — first 10s silhouette; must diverge per berth (not shared B8 wall).
   mid === "reefer"
-    ? (t(-20.2, -5.4, [
+    ? // Insulated entry walls — white/blue band language, not TEU canyon.
+      (coldWall(i, -21.6, -6.4, -18.4, -4.0, 3.4),
+      coldWall(i, -15.2, -6.0, -12.0, -3.6, 3.25),
+      t(-16.8, -5.6, [
         [
           20,
           "white",
-          {
-            reefer: !0,
-          },
-        ],
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-      ]),
-      t(-13.6, -4.8, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-        [
-          20,
-          "teal",
           {
             reefer: !0,
           },
         ],
       ]),
       e("jersey_barrier", -16.6, -3.2, Math.PI / 2, { seed: 4101 }, 0),
+      e("jersey_barrier", -16.55, -1.6, Math.PI / 2 + 0.05, { seed: 4103 }, 0),
       e("reefer_unit", -17.4, -2.4, 0.2, { seed: 4102 }, 0),
+      e("generator", -14.4, -2.8, 0.1, { seed: 4104 }, 0),
       i.label("冷柜南巷", 0.22, -16.8, 0.02, -3.8, "y+", {
         color: "white",
         font: "stencil",
         distress: 0.26,
       }))
     : mid === "open"
-      ? (t(-20.6, -5.6, [[20, "orange"]]),
+      ? // No TEU at west entry — pipe gantry + clutter only.
+        (pipeGantry(i, -17.4, -5.2, 7.8, 3.6),
         e("pipe_stack", -15.8, -4.2, 0.2, { seed: 4111 }, 0),
         e("pipe_stack", -14.2, -6.2, -0.2, { seed: 4112 }, 0),
         e("toolbox_cart", -17.2, -3.4, 0.35, { seed: 4113 }, 0),
         e("light_mast", -12.8, -3.8, 0, { seed: 4114 }, 0),
         e("gas_cylinders", -13.4, -5.8, 0.1, { seed: 4115 }, 0),
+        e("floodlight_stand", -19.2, -6.4, 0.45, { seed: 4116 }, 0),
         i.label("机修南口", 0.22, -16.2, 0.02, -4.2, "y+", {
           color: "yellow",
           font: "stencil",
@@ -874,47 +900,24 @@ function hR(i, layout) {
         ]));
   // Mid-south row — berth variants change cover and sightlines here.
   (mid === "reefer"
-      ? (t(3.7, -5.12, [
+      ? // Mid-south — insulated walls + single reefers (no teal/yellow TEU street).
+        (coldWall(i, 2.2, -6.2, 6.4, -4.2, 3.3),
+        coldWall(i, 12.0, -6.4, 16.2, -4.0, 3.45),
+        t(8.4, -5.4, [
           [
             20,
             "white",
             {
               reefer: !0,
-            },
-          ],
-          [
-            20,
-            "white",
-            {
-              reefer: !0,
-              flip: !0,
             },
           ],
         ]),
-        t(13.53, -5.12, [
-          [
-            20,
-            "white",
-            {
-              reefer: !0,
-            },
-          ],
-          [20, "teal"],
-        ]),
-        t(18.4, -5.12, [
-          [
-            20,
-            "white",
-            {
-              reefer: !0,
-              flip: !0,
-            },
-          ],
-        ]))
+        e("reefer_unit", 7.2, -3.8, 0.2, { seed: 4131 }, 0),
+        e("jersey_barrier", 10.2, -5.0, Math.PI / 2, { seed: 4132 }, 0),
+        e("cable_reel", 17.4, -4.6, 0.55, { seed: 4133 }, 0))
       : mid === "open"
-        ? // B6 — clear south sightline; single low stack only.
-          (t(13.53, -5.12, [[20, "grey"]]),
-          e(
+        ? // B6 — clear south apron; no TEU stack.
+          (e(
             "pipe_stack",
             4.1,
             -6.4,
@@ -933,7 +936,10 @@ function hR(i, layout) {
               seed: 212,
             },
             0,
-          ))
+          ),
+          e("pipe_stack", 12.6, -5.2, 0.15, { seed: 218 }, 0),
+          e("floodlight_stand", 14.2, -4.4, 0.4, { seed: 219 }, 0),
+          pipeGantry(i, 11.4, -3.2, 6.8, 3.2))
         : (t(3.7, -5.12, [
             [
               20,
@@ -951,46 +957,18 @@ function hR(i, layout) {
           ])),
     // West mid framing — each berth owns this skyline slice from the gate.
     mid === "open"
-      ? (t(-19.8, 2.2, [[20, "blue"]]),
-        e(
-          "pipe_stack",
-          -14.2,
-          1.6,
-          0.2,
-          {
-            seed: 207,
-          },
-          0,
-        ),
-        e(
-          "light_mast",
-          -13.6,
-          3.4,
-          0,
-          {
-            seed: 208,
-          },
-          0,
-        ))
+      ? // B6 — no TEU flank; pipes + gantry own the west mid.
+        (pipeGantry(i, -16.8, 2.4, 8.4, 4.2),
+        e("pipe_stack", -14.2, 1.6, 0.2, { seed: 207 }, 0),
+        e("pipe_stack", -13.4, 3.8, -0.2, { seed: 209 }, 0),
+        e("light_mast", -13.6, 3.4, 0, { seed: 208 }, 0),
+        e("toolbox_cart", -18.2, 1.2, 0.4, { seed: 210 }, 0),
+        e("gas_cylinders", -15.2, 4.6, 0.1, { seed: 213 }, 0))
       : mid === "reefer"
-        ? (t(-20.1, 1.9, [
-            [
-              20,
-              "white",
-              {
-                reefer: !0,
-              },
-            ],
-            [
-              20,
-              "white",
-              {
-                reefer: !0,
-                flip: !0,
-              },
-            ],
-          ]),
-          t(-13.1, 2.4, [
+        ? // B4 — insulated wall + single reefer accents (not double TEU canyon).
+          (coldWall(i, -21.4, 1.1, -18.6, 3.4, 3.5),
+          coldWall(i, -14.8, 1.4, -12.2, 3.6, 3.2),
+          t(-16.8, 0.6, [
             [
               20,
               "white",
@@ -999,84 +977,49 @@ function hR(i, layout) {
               },
             ],
           ]),
-          e("jersey_barrier", -16.4, 2.8, Math.PI / 2 + 0.06, { seed: 4121 }, 0),
+          e("jersey_barrier", -17.2, 2.8, Math.PI / 2 + 0.06, { seed: 4121 }, 0),
+          e("jersey_barrier", -17.15, 4.4, Math.PI / 2 - 0.04, { seed: 4123 }, 0),
+          e("reefer_unit", -15.2, 2.2, 0.2, { seed: 4124 }, 0),
           e("cable_reel", -15.6, 1.4, 0.7, { seed: 4122 }, 0),
-          i.col(-16.75, 0, 2.2, -16.05, 1.05, 3.6, "concrete"))
+          i.col(-17.5, 0, 2.4, -16.85, 1.05, 4.8, "concrete"))
         : (t(-19.45, 2.08, [[20, "blue"]]),
           t(-13.35, 2.08, [[20, "red"]])),
-    // Mid corridor — B6 opens it; B4 packs reefers; B8 keeps mixed wall.
+    // Mid corridor — B8 canyon; B4 cold walls; B6 open apron (no TEU street).
     mid === "open"
-      ? (e(
-          "pipe_stack",
-          -1.2,
-          4.4,
-          0.15,
-          {
-            seed: 201,
-          },
-          0,
-        ),
-        e(
-          "toolbox_cart",
-          1.6,
-          3.1,
-          -0.4,
-          {
-            seed: 202,
-          },
-          0,
-        ),
-        e(
-          "tarp_cargo",
-          2.8,
-          5.2,
-          0.6,
-          {
-            seed: 203,
-          },
-          0,
-        ),
-        e(
-          "crate_wood",
-          -2.4,
-          2.6,
-          0.2,
-          {
-            seed: 204,
-          },
-          0,
-        ),
-        e(
-          "gas_cylinders",
-          0.4,
-          5.8,
-          0.1,
-          {
-            seed: 205,
-          },
-          0,
-        ),
-        e(
-          "floodlight_stand",
-          -3.6,
-          6.8,
-          0.4,
-          {
-            seed: 206,
-          },
-          0,
-        ),
-        // Far mid kept thin so north–south sightlines stay readable.
-        t(12.3, 2.08, [[20, "yellow"]]))
+      ? (pipeGantry(i, -0.4, 4.8, 9.2, 5.2),
+        pipeGantry(i, 8.6, 3.2, 7.6, 3.8),
+        e("pipe_stack", -1.2, 4.4, 0.15, { seed: 201 }, 0),
+        e("pipe_stack", 3.4, 2.2, -0.2, { seed: 214 }, 0),
+        e("toolbox_cart", 1.6, 3.1, -0.4, { seed: 202 }, 0),
+        e("tarp_cargo", 2.8, 5.2, 0.6, { seed: 203 }, 0),
+        e("crate_wood", -2.4, 2.6, 0.2, { seed: 204 }, 0),
+        e("gas_cylinders", 0.4, 5.8, 0.1, { seed: 205 }, 0),
+        e("floodlight_stand", -3.6, 6.8, 0.4, { seed: 206 }, 0),
+        e("floodlight_stand", 11.2, 1.6, 0.5, { seed: 215 }, 0),
+        e("light_mast", 12.8, 4.2, 0, { seed: 216 }, 0),
+        e("crate_stack", 10.4, 5.6, 0.15, { seed: 217 }, 0),
+        i.label("开敞机坪", 0.3, 4.2, 0.02, 3.4, "y+", {
+          color: "yellow",
+          font: "stencil",
+          distress: 0.18,
+        }))
       : mid === "reefer"
-        ? (t(0.8, 2.08, [
+        ? // Broken insulated corridor — white walls + choke gaps, not 40ft TEU street.
+          (coldWall(i, -2.4, 0.6, 2.8, 2.0, 3.4),
+          coldWall(i, -1.6, 3.6, 3.2, 5.0, 3.55),
+          coldWall(i, 10.2, 0.4, 14.4, 1.8, 3.25),
+          coldWall(i, 11.0, 3.8, 15.2, 5.2, 3.4),
+          // Single-high white reefers as accents in the gaps (not continuous canyon).
+          t(5.6, 1.2, [
             [
-              40,
+              20,
               "white",
               {
                 reefer: !0,
               },
             ],
+          ]),
+          t(6.2, 4.4, [
             [
               20,
               "white",
@@ -1086,17 +1029,7 @@ function hR(i, layout) {
               },
             ],
           ]),
-          t(12.3, 2.08, [
-            [
-              20,
-              "white",
-              {
-                reefer: !0,
-              },
-            ],
-            [20, "yellow"],
-          ]),
-          t(17.8, 2.08, [
+          t(17.2, 2.4, [
             [
               20,
               "white",
@@ -1105,33 +1038,21 @@ function hR(i, layout) {
               },
             ],
           ]),
-          // Extra east choke — cold cabinets seal the quay approach.
-          t(18.6, -1.4, [
-            [
-              20,
-              "white",
-              {
-                reefer: !0,
-                flip: !0,
-              },
-            ],
-          ]),
-          t(18.9, 6.2, [
-            [
-              20,
-              "white",
-              {
-                reefer: !0,
-              },
-            ],
-            [
-              20,
-              "grey",
-              {
-                reefer: !0,
-              },
-            ],
-          ]))
+          e("jersey_barrier", 3.6, 2.4, Math.PI / 2, { seed: 4201 }, 0),
+          e("jersey_barrier", 3.65, 3.8, Math.PI / 2 + 0.05, { seed: 4202 }, 0),
+          e("jersey_barrier", 9.2, 2.2, Math.PI / 2 - 0.04, { seed: 4203 }, 0),
+          e("reefer_unit", 4.4, 3.0, 0.25, { seed: 4204 }, 0),
+          e("reefer_unit", 8.4, 1.6, -0.15, { seed: 4205 }, 0),
+          e("generator", 16.4, 4.2, 0.1, { seed: 4206 }, 0),
+          e("cable_reel", 15.6, 1.2, 0.6, { seed: 4207 }, 0),
+          e("floodlight_stand", 7.2, 5.6, 0.4, { seed: 4208 }, 0),
+          i.col(3.3, 0, 2.0, 4.0, 1.05, 4.2, "concrete"),
+          i.col(8.9, 0, 1.8, 9.55, 1.05, 3.2, "concrete"),
+          i.label("冷链中巷", 0.26, 6.4, 0.02, 2.8, "y+", {
+            color: "white",
+            font: "stencil",
+            distress: 0.24,
+          }))
         : (t(0.8, 2.08, [
             [40, "orange"],
             [40, "teal"],
@@ -1147,236 +1068,52 @@ function hR(i, layout) {
             [20, "red"],
             [20, "yellow"],
           ])));
-  // Mid-north + far-north silhouette — B6 thins stacks into open maint yard.
+  // Mid-north + far-north silhouette — B6 open apron (no TEU field).
   if (mid === "open") {
-    // Sparse singles + gaps; roof line broken; masts/pipes own the skyline.
-    (t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
-      t(-12.4, 10.4, [[20, "grey"]], 0, 0.15),
-      t(-21.8, 13.1, [[20, "teal"]], 0, 0.2),
-      // Gap where B8's triple green/blue/orange wall used to sit.
-      e(
-        "pipe_stack",
-        -15.8,
-        10.2,
-        0.15,
-        {
-          seed: 241,
-        },
-        0,
-      ),
-      e(
-        "pipe_stack",
-        -14.2,
-        12.8,
-        -0.25,
-        {
-          seed: 242,
-        },
-        0,
-      ),
-      e(
-        "toolbox_cart",
-        -16.6,
-        11.4,
-        0.4,
-        {
-          seed: 243,
-        },
-        0,
-      ),
-      e(
-        "gas_cylinders",
-        -13.1,
-        11.9,
-        0.2,
-        {
-          seed: 244,
-        },
-        0,
-      ),
-      // East mid-north: one low unit + mast instead of paired blues/greens.
-      t(5.1, 12.6, [[20, "blue"]], 0, 0),
-      e(
-        "light_mast",
-        13.2,
-        11.8,
-        0,
-        {
-          seed: 245,
-        },
-        0,
-      ),
-      e(
-        "floodlight_stand",
-        14.6,
-        13.4,
-        0.5,
-        {
-          seed: 246,
-        },
-        0,
-      ),
-      e(
-        "tarp_cargo",
-        12.4,
-        13.1,
-        0.3,
-        {
-          seed: 247,
-        },
-        0,
-      ),
-      i.stairs(-0.1, 12.42, 0, 0, {
-        seed: 9,
-      }),
-      i.catwalk(8.98, 12.42, 0, 2.54, {
-        seed: 10,
-      }),
-      // Far north — staggered singles with corridor gaps (no 40ft double walls).
-      t(-18.2, 20.4, [[20, "grey"]]),
-      t(-8.6, 19.8, [[20, "orange"]]),
-      t(6.4, 20.6, [[20, "yellow"]]),
-      t(14.8, 19.9, [[20, "teal"]]),
-      t(-15.1, 23.1, [[20, "blue"]]),
-      t(2.2, 22.9, [[20, "green"]]),
-      t(12.1, 23.4, [
-        [
-          20,
-          "grey",
-          {
-            doors: 0.4,
-          },
-        ],
-      ]),
-      e(
-        "pipe_stack",
-        -12.4,
-        21.2,
-        0.1,
-        {
-          seed: 251,
-        },
-        0,
-      ),
-      e(
-        "pipe_stack",
-        -1.4,
-        21.6,
-        -0.2,
-        {
-          seed: 252,
-        },
-        0,
-      ),
-      e(
-        "pipe_stack",
-        9.6,
-        21.1,
-        0.35,
-        {
-          seed: 253,
-        },
-        0,
-      ),
-      e(
-        "crate_stack",
-        -4.8,
-        22.4,
-        0.1,
-        {
-          seed: 254,
-        },
-        0,
-      ),
-      e(
-        "pallet_stack",
-        10.8,
-        22.8,
-        0.2,
-        {
-          seed: 255,
-        },
-        0,
-      ),
-      e(
-        "toolbox_cart",
-        0.6,
-        20.2,
-        -0.4,
-        {
-          seed: 256,
-        },
-        0,
-      ),
-      // NW corner: single low instead of teal/orange 40ft wall.
-      t(-31.8, 24.2, [[20, "orange"]]),
-      e(
-        "light_mast",
-        -28.4,
-        22.6,
-        0,
-        {
-          seed: 257,
-        },
-        0,
-      ),
-      e(
-        "light_mast",
-        -6.2,
-        21.4,
-        0,
-        {
-          seed: 258,
-        },
-        0,
-      ),
-      e(
-        "light_mast",
-        4.2,
-        24.1,
-        0,
-        {
-          seed: 259,
-        },
-        0,
-      ),
-      e(
-        "floodlight_stand",
-        -10.2,
-        23.6,
-        0.45,
-        {
-          seed: 260,
-        },
-        0,
-      ),
+    // Pipe gantries + masts + clutter — open sightlines, repair silhouette.
+    (pipeGantry(i, -18.6, 10.4, 8.8, 4.4),
+      pipeGantry(i, -12.2, 12.6, 7.2, 3.6),
+      pipeGantry(i, 6.4, 11.8, 9.4, 4.8),
+      e("pipe_stack", -15.8, 10.2, 0.15, { seed: 241 }, 0),
+      e("pipe_stack", -14.2, 12.8, -0.25, { seed: 242 }, 0),
+      e("toolbox_cart", -16.6, 11.4, 0.4, { seed: 243 }, 0),
+      e("gas_cylinders", -13.1, 11.9, 0.2, { seed: 244 }, 0),
+      e("light_mast", 13.2, 11.8, 0, { seed: 245 }, 0),
+      e("floodlight_stand", 14.6, 13.4, 0.5, { seed: 246 }, 0),
+      e("tarp_cargo", 12.4, 13.1, 0.3, { seed: 247 }, 0),
+      e("crate_wood", 4.2, 10.6, 0.2, { seed: 248 }, 0),
+      // Service catwalk alone — no container stairs plaza.
+      i.catwalk(2.4, 12.42, 0, 2.54, { seed: 10 }),
+      // Far north — pipes/masts only (no staggered TEU field).
+      pipeGantry(i, -16.4, 20.6, 8.2, 4.0),
+      pipeGantry(i, 4.8, 21.2, 9.6, 5.0),
+      pipeGantry(i, 12.6, 22.4, 7.4, 3.4),
+      e("pipe_stack", -12.4, 21.2, 0.1, { seed: 251 }, 0),
+      e("pipe_stack", -1.4, 21.6, -0.2, { seed: 252 }, 0),
+      e("pipe_stack", 9.6, 21.1, 0.35, { seed: 253 }, 0),
+      e("crate_stack", -4.8, 22.4, 0.1, { seed: 254 }, 0),
+      e("pallet_stack", 10.8, 22.8, 0.2, { seed: 255 }, 0),
+      e("toolbox_cart", 0.6, 20.2, -0.4, { seed: 256 }, 0),
+      e("light_mast", -28.4, 22.6, 0, { seed: 257 }, 0),
+      e("light_mast", -6.2, 21.4, 0, { seed: 258 }, 0),
+      e("light_mast", 4.2, 24.1, 0, { seed: 259 }, 0),
+      e("floodlight_stand", -10.2, 23.6, 0.45, { seed: 260 }, 0),
+      e("floodlight_stand", -22.4, 19.8, 0.5, { seed: 261 }, 0),
+      Ka(i, -20.6, 18.4, 0.1, "paint_orange", 31),
+      Ka(i, 8.2, 19.6, -0.12, "paint_blue", 32),
       i.label("机修北场", 0.28, -10.4, 0.02, 21.4, "y+", {
         color: "yellow",
         font: "stencil",
         distress: 0.2,
       }));
   } else if (mid === "reefer") {
-    // B4 cold corridors — parallel low white reefers, narrow ambush lanes (not B8 triple walls).
-    (t(-22.4, 9.6, [
-      [
-        20,
-        "white",
-        {
-          reefer: !0,
-        },
-      ],
-      [
-        20,
-        "white",
-        {
-          reefer: !0,
-          flip: !0,
-        },
-      ],
-    ],
-      0.12,
-    ),
-      t(-14.8, 9.6, [
+    // B4 north — insulated wall grid + compressor accents (not TEU doubles).
+    (coldWall(i, -23.2, 8.8, -19.6, 11.0, 3.5),
+      coldWall(i, -16.4, 9.0, -12.8, 11.2, 3.3),
+      coldWall(i, -23.6, 12.0, -20.0, 14.2, 3.45),
+      coldWall(i, 2.0, 10.8, 5.6, 13.2, 3.3),
+      coldWall(i, 11.2, 10.6, 15.0, 13.0, 3.4),
+      t(-17.6, 10.2, [
         [
           20,
           "white",
@@ -1384,122 +1121,8 @@ function hR(i, layout) {
             reefer: !0,
           },
         ],
-      ],
-        0.18,
-      ),
-      t(-22.8, 12.1, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-        [
-          20,
-          "teal",
-          {
-            reefer: !0,
-          },
-        ],
-      ],
-        0.1,
-      ),
-      // Gap corridor between west reefer walls — short ambush lane.
-      e(
-        "jersey_barrier",
-        -18.4,
-        10.7,
-        Math.PI / 2 + 0.05,
-        {
-          seed: 4011,
-        },
-        0,
-      ),
-      e(
-        "reefer_unit",
-        -17.2,
-        11.4,
-        0.25,
-        {
-          seed: 4012,
-        },
-        0,
-      ),
-      e(
-        "cable_reel",
-        -16.6,
-        13.0,
-        0.7,
-        {
-          seed: 4013,
-        },
-        0,
-      ),
-      // East mid-north: low insulated rows instead of blue/green pair.
-      t(3.2, 11.8, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
-      ],
-        0.05,
-      ),
-      t(12.6, 11.6, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-        [
-          20,
-          "grey",
-          {
-            reefer: !0,
-          },
-        ],
-      ],
-        0.08,
-      ),
-      e(
-        "jersey_barrier",
-        7.8,
-        11.2,
-        0.1,
-        {
-          seed: 4014,
-        },
-        0,
-      ),
-      e(
-        "floodlight_stand",
-        8.6,
-        13.4,
-        0.4,
-        {
-          seed: 4015,
-        },
-        0,
-      ),
-      i.stairs(-0.1, 12.42, 0, 0, {
-        seed: 9,
-      }),
-      // Far north — dense low reefer grid with choke gaps (reads cold-chain, not classic yard).
-      t(-20.2, 18.8, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
+      ]),
+      t(7.4, 11.6, [
         [
           20,
           "white",
@@ -1509,7 +1132,23 @@ function hR(i, layout) {
           },
         ],
       ]),
-      t(-11.4, 18.6, [
+      e("jersey_barrier", -18.4, 10.7, Math.PI / 2 + 0.05, { seed: 4011 }, 0),
+      e("jersey_barrier", -18.35, 12.4, Math.PI / 2 - 0.04, { seed: 4020 }, 0),
+      e("reefer_unit", -17.2, 11.4, 0.25, { seed: 4012 }, 0),
+      e("cable_reel", -16.6, 13.0, 0.7, { seed: 4013 }, 0),
+      e("jersey_barrier", 7.8, 11.2, 0.1, { seed: 4014 }, 0),
+      e("floodlight_stand", 8.6, 13.4, 0.4, { seed: 4015 }, 0),
+      e("generator", 6.2, 12.8, 0.1, { seed: 4021 }, 0),
+      // Far north insulated lanes
+      coldWall(i, -21.4, 18.2, -17.6, 20.4, 3.4),
+      coldWall(i, -12.8, 18.0, -9.2, 20.2, 3.25),
+      coldWall(i, -21.8, 21.0, -18.0, 23.2, 3.5),
+      coldWall(i, 1.2, 18.4, 5.0, 20.6, 3.35),
+      coldWall(i, 10.6, 18.2, 14.4, 20.4, 3.3),
+      coldWall(i, 1.0, 21.2, 4.6, 23.4, 3.4),
+      coldWall(i, 11.2, 21.4, 15.0, 23.6, 3.45),
+      coldWall(i, -33.2, 22.4, -30.0, 25.6, 3.4),
+      t(-14.2, 21.6, [
         [
           20,
           "white",
@@ -1518,40 +1157,7 @@ function hR(i, layout) {
           },
         ],
       ]),
-      t(-20.6, 21.4, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-        [
-          20,
-          "teal",
-          {
-            reefer: !0,
-          },
-        ],
-      ]),
-      t(-8.8, 21.2, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
-      ]),
-      t(2.4, 19.0, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
+      t(7.2, 19.4, [
         [
           20,
           "white",
@@ -1561,109 +1167,21 @@ function hR(i, layout) {
           },
         ],
       ]),
-      t(11.8, 18.8, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
-      ]),
-      t(2.1, 21.6, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-      ]),
-      t(12.4, 21.8, [
-        [
-          20,
-          "grey",
-          {
-            reefer: !0,
-          },
-        ],
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
-      ]),
-      // NW cold choke instead of teal/orange 40ft wall.
-      t(-32.4, 22.8, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-          },
-        ],
-      ]),
-      t(-32.1, 25.2, [
-        [
-          20,
-          "white",
-          {
-            reefer: !0,
-            flip: !0,
-          },
-        ],
-      ]),
-      e(
-        "jersey_barrier",
-        -28.6,
-        23.6,
-        Math.PI / 2,
-        {
-          seed: 4016,
-        },
-        0,
-      ),
-      e(
-        "reefer_unit",
-        -29.8,
-        24.4,
-        0.2,
-        {
-          seed: 4017,
-        },
-        0,
-      ),
-      e(
-        "generator",
-        -26.4,
-        24.8,
-        -0.1,
-        {
-          seed: 4018,
-        },
-        0,
-      ),
-      e(
-        "sign_post",
-        -15.2,
-        19.4,
-        ts,
-        {
-          seed: 4019,
-          sign: "hazard_voltage",
-          text: "冷柜巷 · 禁停",
-        },
-        0,
-      ),
+      e("jersey_barrier", -28.6, 23.6, Math.PI / 2, { seed: 4016 }, 0),
+      e("reefer_unit", -29.8, 24.4, 0.2, { seed: 4017 }, 0),
+      e("generator", -26.4, 24.8, -0.1, { seed: 4018 }, 0),
+      e("reefer_unit", -10.4, 19.6, 0.2, { seed: 4022 }, 0),
+      e("sign_post", -15.2, 19.4, ts, {
+        seed: 4019,
+        sign: "hazard_voltage",
+        text: "冷柜巷 · 禁停",
+      }, 0),
       i.label("冷柜北巷", 0.26, -10.8, 0.02, 19.6, "y+", {
         color: "white",
         font: "stencil",
         distress: 0.26,
       }),
-      i.col(-18.8, 0, 10.2, -18.1, 1.05, 12.0, "concrete"));
+      i.col(-18.8, 0, 10.2, -18.1, 1.05, 12.8, "concrete"));
   } else {
     // B8 classic dense mixed mid-north + far-north walls.
     (t(-21.1, 9.92, [[20, "yellow"]], 0, 0.3),
