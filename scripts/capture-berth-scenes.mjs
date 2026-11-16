@@ -13,49 +13,65 @@ const ROOT = path.resolve(__dirname, "..");
 const OUT = process.argv[2]
   ? path.resolve(process.argv[2])
   : path.resolve(
-      "/cursor/stores/bc-c1cdf02f-ad23-47ae-8ae6-5ded1a6bd2c2/media/b4-b6-scene-redesign",
+      "/cursor/stores/bc-c1cdf02f-ad23-47ae-8ae6-5ded1a6bd2c2/media/launch-identity-perf",
     );
 const DOCS_SHOTS = path.join(ROOT, "docs/shots");
 const SEED = 4207;
 
 const SHOTS = [
-  // Title / select — skyline + berth card
+  // Title / select — per-berth cinematic path reads immediately
   { mission: "b8", name: "b8-title", extra: {} },
   { mission: "b4", name: "b4-title", extra: {} },
   { mission: "b6", name: "b6-title", extra: {} },
-  // Mid-yard silhouette from gateward approach
+  // Mid-yard — berth-owned cams (not one shared gateward angle)
   {
     mission: "b8",
-    name: "b8-mid-silhouette",
+    name: "b8-mid",
     extra: { autostart: "1", cam: "-28,3.2,6.2,-2,4.5,4", noweapon: "1" },
   },
   {
     mission: "b4",
-    name: "b4-mid-silhouette",
-    extra: { autostart: "1", cam: "-28,3.2,6.2,-2,4.5,4", noweapon: "1" },
+    name: "b4-mid",
+    extra: { autostart: "1", cam: "-6,2.4,6.8,4,3.2,8.5", noweapon: "1" },
   },
   {
     mission: "b6",
-    name: "b6-mid-silhouette",
-    extra: { autostart: "1", cam: "-28,3.2,6.2,-2,4.5,4", noweapon: "1" },
+    name: "b6-mid",
+    extra: { autostart: "1", cam: "-10,2.8,4.5,2,4.8,-6", noweapon: "1" },
   },
-  // North / cold corridor vs open apron vs classic
+  // Spawn / first-look identity
   {
     mission: "b8",
-    name: "b8-north-wide",
-    extra: { autostart: "1", cam: "-8,2.8,8.5,2,5.5,20", noweapon: "1" },
+    name: "b8-spawn",
+    extra: { autostart: "1", cam: "-32,1.7,6,-12,2.4,6.5", noweapon: "1" },
   },
   {
     mission: "b4",
-    name: "b4-north-wide",
-    extra: { autostart: "1", cam: "-8,2.8,8.5,2,5.5,20", noweapon: "1" },
+    name: "b4-spawn",
+    extra: { autostart: "1", cam: "22.4,1.7,-11.2,14,3.2,-18", noweapon: "1" },
   },
   {
     mission: "b6",
-    name: "b6-north-wide",
-    extra: { autostart: "1", cam: "-8,2.8,8.5,2,5.5,20", noweapon: "1" },
+    name: "b6-spawn",
+    extra: { autostart: "1", cam: "-6.2,1.7,-2.4,-2,3.8,-12", noweapon: "1" },
   },
-  // Shed / annex / canopy face
+  // Landmark — shed face / plant / canopy
+  {
+    mission: "b8",
+    name: "b8-landmark",
+    extra: { autostart: "1", cam: "-4,2.4,2.5,-2,4.2,-18", noweapon: "1" },
+  },
+  {
+    mission: "b4",
+    name: "b4-landmark",
+    extra: { autostart: "1", cam: "8,2.6,-8,18,4.2,-20", noweapon: "1" },
+  },
+  {
+    mission: "b6",
+    name: "b6-landmark",
+    extra: { autostart: "1", cam: "-14,2.8,-2,2,5.5,-8", noweapon: "1" },
+  },
+  // Same shed-face angle A/B (structure language, not paint-only)
   {
     mission: "b8",
     name: "b8-shed-face",
@@ -63,29 +79,13 @@ const SHOTS = [
   },
   {
     mission: "b4",
-    name: "b4-cold-plant",
-    extra: { autostart: "1", cam: "8,2.6,-8,18,4.2,-20", noweapon: "1" },
+    name: "b4-shed-face",
+    extra: { autostart: "1", cam: "-4,2.4,2.5,-2,4.2,-18", noweapon: "1" },
   },
   {
     mission: "b6",
-    name: "b6-apron-canopy",
-    extra: { autostart: "1", cam: "-14,2.8,-2,2,5.5,-8", noweapon: "1" },
-  },
-  // Extract approach
-  {
-    mission: "b8",
-    name: "b8-extract",
-    extra: { autostart: "1", cam: "18,2.4,8,28,1.2,18", noweapon: "1" },
-  },
-  {
-    mission: "b4",
-    name: "b4-extract",
-    extra: { autostart: "1", cam: "18,2.4,5.6,28,1.2,16", noweapon: "1" },
-  },
-  {
-    mission: "b6",
-    name: "b6-extract",
-    extra: { autostart: "1", cam: "18,2.4,9.6,28,1.2,20", noweapon: "1" },
+    name: "b6-shed-face",
+    extra: { autostart: "1", cam: "-4,2.4,2.5,-2,4.2,-18", noweapon: "1" },
   },
 ];
 
@@ -187,30 +187,7 @@ async function main() {
   // and also write jpg via playwright screenshot re-encode isn't available — copy PNGs
   // then use a tiny node conversion with chromium print if needed.
   // For docs/shots we capture dedicated jpgs:
-  const docsMap = [
-    ["b8-mid-silhouette", "b8-skyline.jpg"],
-    ["b4-mid-silhouette", "b4-skyline.jpg"],
-    ["b6-mid-silhouette", "b6-skyline.jpg"],
-    ["b8-extract", "b8-gate.jpg"],
-    ["b4-cold-plant", "b4-gate.jpg"],
-    ["b6-apron-canopy", "b6-gate.jpg"],
-    ["b8-extract", "extract-plaza.jpg"],
-    ["b8-title", "hero-title.jpg"],
-  ];
-  for (const [src, dest] of docsMap) {
-    const page = await context.newPage();
-    try {
-      // Re-encode png→jpeg via CDP
-      const png = path.join(OUT, `${src}.png`);
-      const buf = await (await import("node:fs/promises")).readFile(png);
-      // Use page to render image and screenshot as jpeg is heavy; instead write jpeg via CDP on live scene.
-      // Fallback: keep existing docs shots and overwrite with fresh capture of same angles as jpeg.
-    } finally {
-      await page.close().catch(() => {});
-    }
-  }
-
-  // Dedicated jpeg captures for docs/shots
+  // Dedicated jpeg captures for docs/shots — berth-owned mid cams
   const jpegShots = [
     {
       file: "b8-skyline.jpg",
@@ -220,27 +197,27 @@ async function main() {
     {
       file: "b4-skyline.jpg",
       mission: "b4",
-      cam: "-28,3.2,6.2,-2,4.5,4",
+      cam: "-6,2.4,6.8,4,3.2,8.5",
     },
     {
       file: "b6-skyline.jpg",
       mission: "b6",
-      cam: "-28,3.2,6.2,-2,4.5,4",
+      cam: "-10,2.8,4.5,2,4.8,-6",
     },
     {
       file: "b8-gate.jpg",
       mission: "b8",
-      cam: "-34,2.2,5.5,-20,2.8,6",
+      cam: "-4,2.4,2.5,-2,4.2,-18",
     },
     {
       file: "b4-gate.jpg",
       mission: "b4",
-      cam: "-34,2.2,5.5,-20,2.8,6",
+      cam: "8,2.6,-8,18,4.2,-20",
     },
     {
       file: "b6-gate.jpg",
       mission: "b6",
-      cam: "-34,2.2,5.5,-20,2.8,6",
+      cam: "-14,2.8,-2,2,5.5,-8",
     },
     {
       file: "extract-plaza.jpg",

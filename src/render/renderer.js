@@ -434,6 +434,8 @@ async function createRenderer(context) {
         wet: 1,
         berthSh: [0.84, 0.97, 1.08],
         berthHi: [1.14, 0.98, 0.78],
+        berthFog: [0.5, 0.42, 0.34],
+        volDust: 1,
         grain: 0.03,
         vignette: 0.4,
       },
