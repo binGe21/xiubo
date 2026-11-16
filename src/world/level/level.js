@@ -342,6 +342,10 @@ async function createLevel(context) {
         min: mt(no.X0, 0, no.Z0),
         max: mt(no.X1, no.RIDGE, no.Z1),
       },
+      ...((n.interiorExtras || []).map((box) => ({
+        min: mt(box.min.x, box.min.y, box.min.z),
+        max: mt(box.max.x, box.max.y, box.max.z),
+      })) || []),
     ],
     A = [
       {
