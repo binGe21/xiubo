@@ -80,16 +80,54 @@ function createGameFlow(context) {
       Y = V.sense || {},
       L = V.audio || {},
       feel = V.feel || {},
-      Z = (P && P.hud) || {};
+      Z = (P && P.hud) || {},
+      render = context.render,
+      sun = render && render.sun,
+      skyMat =
+        render &&
+        render.sky &&
+        render.sky.material &&
+        render.sky.material.uniforms;
     (t = Number.isFinite(Y.saturation) ? Y.saturation : 1),
       e &&
         ((e.saturation = t),
         (e.berthSh = Y.gradeSh || [0.84, 0.97, 1.08]),
         (e.berthHi = Y.gradeHi || [1.14, 0.98, 0.78]),
         Number.isFinite(Y.grain) && (e.grain = Y.grain),
-        Number.isFinite(Y.vignette) && (e.vignette = Y.vignette)),
+        Number.isFinite(Y.vignette) && (e.vignette = Y.vignette),
+        (e.berthFog = Y.fog || [0.5, 0.42, 0.34]),
+        Number.isFinite(Y.volDust) && (e.volDust = Y.volDust)),
       a(context.ground, "setRain", Number.isFinite(Y.rain) ? Y.rain : 0.78),
-      a(context.audio, "setBerthAmbient", L),
+      a(
+        context.ground,
+        "setRainWind",
+        Y.rainWind || [-3.1, -10.2, 1.35],
+      ),
+      Number.isFinite(Y.titleSpeed) && (GAME_FLOW.titleSpeed = Y.titleSpeed),
+      Number.isFinite(Y.titleFov) && (GAME_FLOW.titleFov = Y.titleFov);
+    if (sun && Y.sunTint) {
+      sun.color.setRGB(Y.sunTint[0], Y.sunTint[1], Y.sunTint[2]);
+      if (Number.isFinite(Y.sunIntensity)) sun.intensity = Y.sunIntensity;
+    }
+    if (skyMat) {
+      Y.zenith &&
+        skyMat.uZen &&
+        skyMat.uZen.value.set(Y.zenith[0], Y.zenith[1], Y.zenith[2]);
+      Y.horizon &&
+        skyMat.uHor &&
+        skyMat.uHor.value.set(Y.horizon[0], Y.horizon[1], Y.horizon[2]);
+      Y.horizonAway &&
+        skyMat.uHorAway &&
+        skyMat.uHorAway.value.set(
+          Y.horizonAway[0],
+          Y.horizonAway[1],
+          Y.horizonAway[2],
+        );
+      Y.sunTint &&
+        skyMat.uSunCol &&
+        skyMat.uSunCol.value.set(Y.sunTint[0], Y.sunTint[1], Y.sunTint[2]);
+    }
+    (a(context.audio, "setBerthAmbient", L),
       a(n, "applyFeel", feel),
       a(context.weapon, "setName", (P && P.weaponName) || "PAC-9 深水"),
       a(context.backdrop, "setExtractOffset", V.extractZ || 0),
@@ -109,7 +147,7 @@ function createGameFlow(context) {
         chip: Z.chip || ((P && P.tag) || "B8") + " · " + ((P && P.name) || ""),
         accent: Z.accent || V.id || "home",
       }),
-      l.setVictoryChrome && l.setVictoryChrome(P);
+      l.setVictoryChrome && l.setVictoryChrome(P));
   }
   let startAfterLayout = (P = {}) => {
       let V = () => {

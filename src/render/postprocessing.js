@@ -1141,7 +1141,9 @@ ${fe}`,
       Oe
         ? (be.uBoxMin.value.copy(Oe.min),
           be.uBoxMax.value.copy(Oe.max),
-          (be.uBoxDust.value = g.volInteriorDust))
+          (be.uBoxDust.value =
+            g.volInteriorDust *
+            (Number.isFinite(I.volDust) ? I.volDust : 1)))
         : (be.uBoxDust.value = 0);
       let pt = le.shadow && le.shadow.map ? le.shadow.map.texture : null;
       ((be.tShadow.value = pt),
@@ -1153,12 +1155,13 @@ ${fe}`,
         (be.uFarZ.value = fe.far));
       let ut = le.intensity * g.volSunScale;
       be.uSunRad.value.set(le.color.r * ut, le.color.g * ut, le.color.b * ut);
-      let nn = g.volAmbient * (1 + ce * 1.5);
-      (be.uAmb.value.set(
-        SKY_COLORS.fog.r * nn,
-        SKY_COLORS.fog.g * nn,
-        SKY_COLORS.fog.b * nn,
-      ),
+      let nn = g.volAmbient * (1 + ce * 1.5),
+        fogC = I.berthFog || [
+          SKY_COLORS.fog.r,
+          SKY_COLORS.fog.g,
+          SKY_COLORS.fog.b,
+        ];
+      (be.uAmb.value.set(fogC[0] * nn, fogC[1] * nn, fogC[2] * nn),
         l(H, y.volA),
         (q.uniforms.tSrc.value = y.volA.texture),
         q.uniforms.uDir.value.set(ze, 0),

@@ -347,56 +347,63 @@ async function createLevel(context) {
         max: mt(box.max.x, box.max.y, box.max.z),
       })) || []),
     ],
-    A = [
-      {
-        pos: [-34, 1.6, 6.2],
-        look: [-12, 2.6, 6.6],
-      },
-      {
-        pos: [-20, 1.3, 5.6],
-        look: [0, 2.2, 7],
-      },
-      {
-        pos: [-6.2, 2.1, 7.9],
-        look: [2, 1.6, 7.6],
-      },
-      {
-        pos: [-6.6, 2.5, 0.4],
-        look: [-4, 2.6, -12],
-      },
-      {
-        pos: [-4.4, 1.9, -8.6],
-        look: [-2.4, 2.8, -19.5],
-      },
-      {
-        pos: [-3.2, 2.2, -15],
-        look: [-2, 2.2, -20.5],
-      },
-      {
-        pos: [4.2, 2.6, -19.6],
-        look: [12, 3.2, -19.5],
-      },
-      {
-        pos: [15, 2, -19.5],
-        look: [24, 3.5, -6],
-      },
-      {
-        pos: [20.2, 1.7, -9],
-        look: [23, 1.6, 0],
-      },
-      {
-        pos: [25.9, 1.8, 1.5],
-        look: [27.5, 1.2, 12],
-      },
-      {
-        pos: [27.3, 1.8, 12],
-        look: [29.6, 0.4, 20],
-      },
-      {
-        pos: [28.4, 1.9, 17.2],
-        look: [31.5, -0.8, 21],
-      },
-    ],
+    // Per-berth title tour (layouts.cinematicPath); B8 path is the quality reference.
+    A =
+      layout.cinematicPath && layout.cinematicPath.length >= 2
+        ? layout.cinematicPath.map((z) => ({
+            pos: z.pos.slice(),
+            look: z.look.slice(),
+          }))
+        : [
+            {
+              pos: [-34, 1.6, 6.2],
+              look: [-12, 2.6, 6.6],
+            },
+            {
+              pos: [-20, 1.3, 5.6],
+              look: [0, 2.2, 7],
+            },
+            {
+              pos: [-6.2, 2.1, 7.9],
+              look: [2, 1.6, 7.6],
+            },
+            {
+              pos: [-6.6, 2.5, 0.4],
+              look: [-4, 2.6, -12],
+            },
+            {
+              pos: [-4.4, 1.9, -8.6],
+              look: [-2.4, 2.8, -19.5],
+            },
+            {
+              pos: [-3.2, 2.2, -15],
+              look: [-2, 2.2, -20.5],
+            },
+            {
+              pos: [4.2, 2.6, -19.6],
+              look: [12, 3.2, -19.5],
+            },
+            {
+              pos: [15, 2, -19.5],
+              look: [24, 3.5, -6],
+            },
+            {
+              pos: [20.2, 1.7, -9],
+              look: [23, 1.6, 0],
+            },
+            {
+              pos: [25.9, 1.8, 1.5],
+              look: [27.5, 1.2, 12],
+            },
+            {
+              pos: [27.3, 1.8, 12],
+              look: [29.6, 0.4, 20],
+            },
+            {
+              pos: [28.4, 1.9, 17.2],
+              look: [31.5, -0.8, 21],
+            },
+          ],
     _ = [
       mt(-33.9, 0, 3.8),
       mt(-27.3, 0, 2.3),
@@ -608,6 +615,20 @@ async function createLevel(context) {
   S);
 }
 
+/** Dispose GPU geometry on a removed level/backdrop subtree (shared mats stay). */
+function disposeLevelTree(root) {
+  if (!root) return;
+  try {
+    root.traverse((n) => {
+      if (n.geometry && n.geometry.dispose) {
+        try {
+          n.geometry.dispose();
+        } catch {}
+      }
+    });
+  } catch {}
+}
+
 /** Tear down level colliders/meshes and rebuild for a berth layout. */
 async function rebuildLevel(context, missionId) {
   let e = context.level;
@@ -615,6 +636,7 @@ async function rebuildLevel(context, missionId) {
     try {
       context.scene.remove(e.root);
     } catch {}
+    disposeLevelTree(e.root);
   }
   (context.physics.clearSource && context.physics.clearSource("level"),
     (context.mission = {

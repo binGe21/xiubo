@@ -1641,21 +1641,55 @@ function ab(i, layout = null) {
       seed: Math.round(L * 5 + 40),
     });
   // Yard-facing shell identity — title + color band (reads before interior).
-  (s(t(wallBandPaint), h + 1.2, 3.55, d + 0.02, f - 1.2, 4.05, d + 0.09),
-    s(t(accentPaint), h + 1.2, 4.05, d + 0.02, f - 1.2, 4.22, d + 0.09),
-    i.label(shedTitle, 0.4, (h + f) / 2, 4.55, d + 0.08, "z+", {
-      color: shedLabelColor,
-      font: "stencil",
-      distress: 0.22,
-    }),
-    i.decal(
-      (layout && layout.gateDecal) || "berth8",
-      1.6,
-      (h + f) / 2 - 4.2,
-      5.1,
-      d + 0.08,
-      "z+",
-    ));
+  {
+    let face = shell.face || "classic",
+      bandY0 = face === "cold" ? 3.15 : face === "maint" ? 3.75 : 3.55,
+      bandY1 = face === "cold" ? 3.85 : face === "maint" ? 4.35 : 4.05,
+      accentY1 = bandY1 + (face === "cold" ? 0.22 : face === "maint" ? 0.28 : 0.17),
+      titleY = accentY1 + 0.38,
+      titleSize = face === "cold" ? 0.46 : face === "maint" ? 0.44 : 0.4;
+    (s(t(wallBandPaint), h + 1.2, bandY0, d + 0.02, f - 1.2, bandY1, d + 0.09),
+      s(t(accentPaint), h + 1.2, bandY1, d + 0.02, f - 1.2, accentY1, d + 0.09),
+      i.label(shedTitle, titleSize, (h + f) / 2, titleY, d + 0.08, "z+", {
+        color: shedLabelColor,
+        font: "stencil",
+        distress: face === "cold" ? 0.12 : face === "maint" ? 0.28 : 0.22,
+      }),
+      i.decal(
+        (layout && layout.gateDecal) || "berth8",
+        face === "maint" ? 1.85 : 1.6,
+        (h + f) / 2 - (face === "cold" ? 5.1 : 4.2),
+        titleY + 0.55,
+        d + 0.08,
+        "z+",
+      ));
+    // Structural face language — not paint-only (B8 stays classic flat band).
+    if (face === "cold") {
+      // Dual teal rails + vertical insulated ribs + eave parapet (reads past fog).
+      (s(t("paint_blue"), h + 1.4, 2.2, d + 0.01, f - 1.4, 2.55, d + 0.09),
+        s(t("paint_blue"), h + 1.4, 5.15, d + 0.01, f - 1.4, 5.35, d + 0.08),
+        s(e("paint_white"), h + 0.9, v - 0.18, d + 0.01, f - 0.9, v + 0.18, d + 0.16));
+      for (let L = h + 2.0; L < f - 1.4; L += 1.85)
+        (s(t("paint_blue"), L, 0.35, d + 0.01, L + 0.22, bandY0 - 0.08, d + 0.1),
+          s(t("steel_galv"), L + 0.04, 0.35, d + 0.1, L + 0.18, bandY0 - 0.08, d + 0.22));
+      // Condenser boxes under eave — cold-plant read from mid yard.
+      for (let L of [h + 2.8, h + 7.4, f - 6.2])
+        (s(t("steel_galv"), L, 5.35, d + 0.05, L + 1.45, 6.25, d + 0.62),
+          s(t("paint_blue"), L + 0.1, 5.85, d + 0.62, L + 1.35, 6.05, d + 0.7));
+    } else if (face === "maint") {
+      // Hazard stripe + pipe runs + flood brackets — repair apron shed.
+      (s(t("paint_orange"), h + 1.6, 2.45, d + 0.01, f - 1.6, 2.85, d + 0.1),
+        s(e("steel_dark"), h + 0.8, v - 0.08, d + 0.02, f - 0.8, v + 0.28, d + 0.18));
+      for (let L = h + 1.8; L < f - 1.2; L += 2.85)
+        (s(t("steel_galv"), L, 0.9, d + 0.04, L + 0.16, bandY0 - 0.1, d + 0.28),
+          o(e("steel_dark"), 0.09, 2.6, L + 0.08, 4.1, d + 0.34, {
+            axis: "z",
+            seg: 8,
+          }));
+      for (let L of [h + 3.2, (h + f) / 2, f - 4.4])
+        s(t("paint_orange"), L, 5.55, d + 0.05, L + 0.95, 6.45, d + 0.48);
+    }
+  }
   // South eave / apron shell props — cold compressors vs maint pipes vs mixed tires.
   mid === "reefer"
     ? (Y("reefer_unit", -14.2, -27.2, 0.15, { seed: 25 }, 0),

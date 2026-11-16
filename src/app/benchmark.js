@@ -4,7 +4,8 @@ function enableBenchmark(context) {
   let e = document.createElement("pre");
   ((e.id = "bench"),
     (e.style.cssText =
-      'position:absolute;left:12px;top:12px;z-index:90;margin:0;padding:10px 12px;font:12px/1.45 "IBM Plex Mono",ui-monospace,monospace;color:#d8f0d0;background:rgba(0,0,0,.72);white-space:pre-wrap;max-width:min(560px,90vw);pointer-events:none'),
+      'position:absolute;left:12px;bottom:12px;z-index:9999;margin:0;padding:10px 12px;font:12px/1.45 "IBM Plex Mono",ui-monospace,monospace;color:#d8f0d0;background:rgba(0,0,0,.82);white-space:pre-wrap;max-width:min(560px,90vw);pointer-events:none'),
+    (e.textContent = "XIUBO BENCH warming…"),
     document.getElementById("app").appendChild(e));
   let t = "unknown";
   try {

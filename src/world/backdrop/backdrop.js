@@ -64,13 +64,58 @@ function Eb(i, { only: e = null, showcase: t = !1, skyline: skyOpt = null } = {}
         }),
       ));
   }
+  function disposeBackdropNode(node) {
+    if (!node) return;
+    try {
+      node.traverse((b) => {
+        if (b.geometry && b.geometry.dispose) {
+          try {
+            b.geometry.dispose();
+          } catch {}
+        }
+      });
+    } catch {}
+  }
+  function applyFarCityProfile(p) {
+    if (!(u && u.root)) return;
+    let tint = (p && p.cityTint) || [1, 1, 1],
+      sy = Number.isFinite(p && p.cityScaleY) ? p.cityScaleY : 1,
+      sz = Number.isFinite(p && p.cityScaleZ) ? p.cityScaleZ : 1,
+      dz = Number.isFinite(p && p.cityDz) ? p.cityDz : 0;
+    // Cheap silhouette fork — no shared-material mutation, no Mb rebuild hitch.
+    (u.root.scale.set(1, sy, sz), (u.root.position.z = dz));
+    u.root.traverse((b) => {
+      if (!(b.isMesh && b.geometry)) return;
+      let attr = b.geometry.getAttribute && b.geometry.getAttribute("color");
+      if (!attr || !attr.array) return;
+      if (!b.userData._cityColorBase) {
+        b.userData._cityColorBase = Float32Array.from(attr.array);
+      }
+      let base = b.userData._cityColorBase,
+        arr = attr.array,
+        stride = attr.itemSize || 3;
+      for (let i = 0, v = 0; i < attr.count; i++, v += stride) {
+        arr[v] = base[v] * tint[0];
+        arr[v + 1] = base[v + 1] * tint[1];
+        arr[v + 2] = base[v + 2] * tint[2];
+      }
+      attr.needsUpdate = !0;
+    });
+  }
   function mountCraneSkyline(profile) {
     let p = profile || defaultSkyline();
-    if (l && l.root && l.root.parent) l.root.parent.remove(l.root);
-    if (gantry && gantry.root && gantry.root.parent)
-      gantry.root.parent.remove(gantry.root);
-    if (craneLampMesh && craneLampMesh.parent)
-      craneLampMesh.parent.remove(craneLampMesh);
+    if (l && l.root) {
+      if (l.root.parent) l.root.parent.remove(l.root);
+      disposeBackdropNode(l.root);
+    }
+    if (gantry && gantry.root) {
+      if (gantry.root.parent) gantry.root.parent.remove(gantry.root);
+      disposeBackdropNode(gantry.root);
+    }
+    if (craneLampMesh) {
+      if (craneLampMesh.parent) craneLampMesh.parent.remove(craneLampMesh);
+      disposeBackdropNode(craneLampMesh);
+    }
     if (n("crane")) {
       l = z1(i, craneLamps, {
         craneId: p.craneId || "锈泊 08",
@@ -91,6 +136,7 @@ function Eb(i, { only: e = null, showcase: t = !1, skyline: skyOpt = null } = {}
       craneLampMesh.frustumCulled = !1;
       s.add(craneLampMesh);
     }
+    applyFarCityProfile(p);
     return p;
   }
   (mountCraneSkyline(skyProfile),
@@ -204,7 +250,7 @@ function Eb(i, { only: e = null, showcase: t = !1, skyline: skyOpt = null } = {}
           a && a.root && ((a.root.position.z = A), (a.root.position.x = r.x)),
           extractionPoint.set(30, 0, 20 + m));
       },
-      /** Swap near crane + far gantry field for the active berth (grade/audio untouched). */
+      /** Swap near crane + far gantry field; tint/scale far city without rebuild. */
       setSkyline(profile) {
         activeSkyline = mountCraneSkyline(profile || defaultSkyline());
         refreshCraneColliders();

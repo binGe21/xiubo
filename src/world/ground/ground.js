@@ -129,6 +129,9 @@ async function createGround(context) {
       setRain(M) {
         x.setRain(M);
       },
+      setRainWind(M) {
+        x.setRainWind && x.setRainWind(M);
+      },
       get rainLevel() {
         return x.rainLevel;
       },

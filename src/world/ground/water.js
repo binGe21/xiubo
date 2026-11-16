@@ -524,6 +524,14 @@ function Nb(i, e) {
     setRain(w) {
       m = Math.min(1, Math.max(0, w));
     },
+    setRainWind(w) {
+      if (!w) return;
+      let S = Array.isArray(w) ? w : [w.x, w.y, w.z];
+      Number.isFinite(S[0]) &&
+        Number.isFinite(S[1]) &&
+        Number.isFinite(S[2]) &&
+        p.uVel.value.set(S[0], S[1], S[2]);
+    },
     get rainLevel() {
       return b;
     },
